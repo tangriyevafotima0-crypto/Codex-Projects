@@ -14,11 +14,11 @@
       "test_id": "T01.01",
       "acceptance": "Rahbar/Admin/Teacher uchun kanal va amal jadvali mavjud; parent/student web login scope tashqarisida. Har PDF talabi manba sahifasi va R-IDga bog‘langan.",
       "prompt": "prompts/S01/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/01.01-A.md",
+      "reviewed_revision": "artifact-sha256:19334e3c5c415c4f6a79ce2ce3f551e32b54ac5c8fafe6c11c04a1b9c1c94718",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "01.02",

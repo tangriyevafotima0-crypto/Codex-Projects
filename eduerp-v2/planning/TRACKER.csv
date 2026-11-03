@@ -1,5 +1,5 @@
 step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
-01.01,01,"Rahbar, Admin, Teacher, parent Telegram chegaralarini va v3 istisnolarini yozish",docs/spec/scope.md,,NOT_STARTED,,
+01.01,01,"Rahbar, Admin, Teacher, parent Telegram chegaralarini va v3 istisnolarini yozish",docs/spec/scope.md,,CHANGES_REQUIRED,state/reviews/01.01-A.md,artifact-sha256:19334e3c5c415c4f6a79ce2ce3f551e32b54ac5c8fafe6c11c04a1b9c1c94718
 01.02,01,"Pro-rata, trial, freeze, discount, refund va payroll qoidalarini misollar bilan tasdiqlash",docs/spec/business-rules.md,01.01,NOT_STARTED,,
 01.03,01,"Har talabga R-ID, rol, kirish, natija va sinov biriktirish",docs/spec/acceptance.md,01.02,NOT_STARTED,,
 01.04,01,"240/250 demo, oy/12 dars, bot tasdiqlash, zaxira va xizmat darajasi noaniqliklarini yopish",docs/spec/decisions.md,01.03,NOT_STARTED,,
