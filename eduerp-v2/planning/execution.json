@@ -1,0 +1,2756 @@
+{
+  "plan_version": "2.2",
+  "steps": [
+    {
+      "id": "01.01",
+      "stage": "01",
+      "title": "Rahbar, Admin, Teacher, parent Telegram chegaralarini va v3 istisnolarini yozish",
+      "kind": "DOCUMENT",
+      "depends_on": [],
+      "technical_inputs": [],
+      "targets": [
+        "docs/spec/scope.md"
+      ],
+      "test_id": "T01.01",
+      "acceptance": "Rahbar/Admin/Teacher uchun kanal va amal jadvali mavjud; parent/student web login scope tashqarisida. Har PDF talabi manba sahifasi va R-IDga bog‘langan.",
+      "prompt": "prompts/S01/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "01.02",
+      "stage": "01",
+      "title": "Pro-rata, trial, freeze, discount, refund va payroll qoidalarini misollar bilan tasdiqlash",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "01.01"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "docs/spec/business-rules.md"
+      ],
+      "test_id": "T01.02",
+      "acceptance": "480000×7/12=280000 misoli, trialning ikkinchi attendance transitioni, grant, freeze va refund hisoblari qarorlar bilan berilgan; noma’lum natija taxminiy PASS emas.",
+      "prompt": "prompts/S01/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "01.03",
+      "stage": "01",
+      "title": "Har talabga R-ID, rol, kirish, natija va sinov biriktirish",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "01.02"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "docs/spec/acceptance.md"
+      ],
+      "test_id": "T01.03",
+      "acceptance": "Har talabning kamida bitta owner stepi va tekshiriladigan natijasi bor; barcha 8 sahifa qamrovi tekshirilgan; qabul qiluvchi rol belgilangan.",
+      "prompt": "prompts/S01/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "01.04",
+      "stage": "01",
+      "title": "240/250 demo, oy/12 dars, bot tasdiqlash, zaxira va xizmat darajasi noaniqliklarini yopish",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "01.03"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "docs/spec/decisions.md"
+      ],
+      "test_id": "T01.04",
+      "acceptance": "D01–D18 holati PROPOSED/ACCEPTED/DEFERRED; egasi va qaysi stepni bloklashi bor. Moliya qarori ochiq bo‘lsa aynan unga bog‘liq step bloklanadi, butun repo emas.",
+      "prompt": "prompts/S01/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "01.05",
+      "stage": "01",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "01.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S01.md"
+      ],
+      "test_id": "T01.05",
+      "acceptance": "Barcha ochiq moliyaviy qarorlar egasi bilan belgilangan; tasdiqlanmagan qoida kodga aylantirilmaydi",
+      "prompt": "prompts/S01/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "02.01",
+      "stage": "02",
+      "title": "Har markazga alohida API, worker, PostgreSQL, fayl hajmi va bot chegaralarini loyihalash",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "01.05"
+      ],
+      "technical_inputs": [
+        "01"
+      ],
+      "targets": [
+        "docs/architecture/system.md"
+      ],
+      "test_id": "T02.01",
+      "acceptance": "Center A va B uchun database credential, storage, bot va network chegarasi chizmada ko‘rsatilgan; shared VPS nosozlik domeni alohida yozilgan.",
+      "prompt": "prompts/S02/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "02.02",
+      "stage": "02",
+      "title": "UUID, version, foreign key, unique va immutable ledger jadvallarini ER diagrammada belgilash",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "02.01"
+      ],
+      "technical_inputs": [
+        "01"
+      ],
+      "targets": [
+        "docs/architecture/data-model.md"
+      ],
+      "test_id": "T02.02",
+      "acceptance": "Enrollment ko‘p guruhni, guardian ko‘p farzandni, lesson bir kunda ko‘p darsni qo‘llaydi. Ledger/invoice/allocation va audit o‘rtasidagi FKlar ko‘rsatilgan.",
+      "prompt": "prompts/S02/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "02.03",
+      "stage": "02",
+      "title": "Auth, students, groups, lessons, billing, payments, imports va sync kontraktlarini belgilash",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "02.02"
+      ],
+      "technical_inputs": [
+        "01"
+      ],
+      "targets": [
+        "docs/architecture/openapi.yaml"
+      ],
+      "test_id": "T02.03",
+      "acceptance": "Har write endpointda rol, body, error, idempotency yoki expected_version talabi bor; Teacher DTOda telefon yo‘q. OpenAPI parse/validationdan o‘tadi.",
+      "prompt": "prompts/S02/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "02.04",
+      "stage": "02",
+      "title": "Outbox hodisalari, idempotency, event version va retry semantikasini yozish",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "02.03"
+      ],
+      "technical_inputs": [
+        "01"
+      ],
+      "targets": [
+        "docs/architecture/events.md"
+      ],
+      "test_id": "T02.04",
+      "acceptance": "PaymentRecorded va AttendanceSubmitted schema versiyasi, outbox transaction, retry, dedup key, consumer va retentioni belgilangan. At-least-once chegarasi ochiq.",
+      "prompt": "prompts/S02/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "02.05",
+      "stage": "02",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "02.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S02.md"
+      ],
+      "test_id": "T02.05",
+      "acceptance": "Har API uchun rol va xato kodi bor; boshqa markaz bazasiga marshrut yo‘q",
+      "prompt": "prompts/S02/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "03.01",
+      "stage": "03",
+      "title": "JS workspace va Flutter toolchainni alohida pin qilish, install/build buyruqlarini yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "02.05"
+      ],
+      "technical_inputs": [
+        "02"
+      ],
+      "targets": [
+        "package.json"
+      ],
+      "test_id": "T03.01",
+      "acceptance": "Toza checkoutda belgilangan runtime bilan install va workspace build ishlaydi; Flutter alohida toolchain bo‘lib JS lockfilega kirmaydi.",
+      "prompt": "prompts/S03/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "03.02",
+      "stage": "03",
+      "title": "NestJS API health, config validation va request ID poydevorini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "03.01"
+      ],
+      "technical_inputs": [
+        "02"
+      ],
+      "targets": [
+        "apps/api/src/main.ts"
+      ],
+      "test_id": "T03.02",
+      "acceptance": "Config yo‘q yoki noto‘g‘ri bo‘lsa xizmat aniq xato bilan startni rad etadi; health secret/DB password qaytarmaydi; request ID logda bor.",
+      "prompt": "prompts/S03/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "03.03",
+      "stage": "03",
+      "title": "Mahalliy PostgreSQL, API va worker servislarini secretsiz sozlash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "03.02"
+      ],
+      "technical_inputs": [
+        "02"
+      ],
+      "targets": [
+        "infra/compose.dev.yml"
+      ],
+      "test_id": "T03.03",
+      "acceptance": "Dev Compose healthcheckdan o‘tadi; DB tashqi internetga ochilmaydi; .env.example haqiqiy kalitsiz; lokal volume qayta startda saqlanadi.",
+      "prompt": "prompts/S03/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "03.04",
+      "stage": "03",
+      "title": "Lint, typecheck, test, build va maxfiy kalitlarni tekshirishni ulash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "03.03"
+      ],
+      "technical_inputs": [
+        "02"
+      ],
+      "targets": [
+        ".github/workflows/ci.yml"
+      ],
+      "test_id": "T03.04",
+      "acceptance": "Atay buzilgan type/test bilan CI qizil, tuzatilganda yashil. Hali mavjud bo‘lmagan app uchun soxta PASS yoki barcha testlarni skip qilish yo‘q.",
+      "prompt": "prompts/S03/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "03.05",
+      "stage": "03",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "03.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S03.md"
+      ],
+      "test_id": "T03.05",
+      "acceptance": "Toza checkout hujjatdagi buyruqlar bilan ishga tushadi; CI yashil",
+      "prompt": "prompts/S03/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "04.01",
+      "stage": "04",
+      "title": "Staff, student, guardian, enrollment, group, lesson, invoice, ledger, audit, outbox jadvallarini yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "03.05"
+      ],
+      "technical_inputs": [
+        "03"
+      ],
+      "targets": [
+        "apps/api/prisma/schema.prisma"
+      ],
+      "test_id": "T04.01",
+      "acceptance": "DB modelda barcha invariant FK/unique bilan ifodalangan; student archive ledgerni cascade delete qilmaydi; guardian unlink qarzni o‘chirmaydi.",
+      "prompt": "prompts/S04/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "04.02",
+      "stage": "04",
+      "title": "FK, unique, check, indekslar va ledger UPDATE/DELETE cheklovlarini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "04.01"
+      ],
+      "technical_inputs": [
+        "03"
+      ],
+      "targets": [
+        "apps/api/prisma/migrations/initial/migration.sql"
+      ],
+      "test_id": "T04.02",
+      "acceptance": "Runtime user ledger UPDATE/DELETE qila olmaydi; migrator user alohida. Invoice period va attendance lesson/student duplicate DB darajasida rad.",
+      "prompt": "prompts/S04/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "04.03",
+      "stage": "04",
+      "title": "Tranzaksiya chegarasi va parallel yozish xatolarini boshqarish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "04.02"
+      ],
+      "technical_inputs": [
+        "03"
+      ],
+      "targets": [
+        "apps/api/src/database/transaction.ts"
+      ],
+      "test_id": "T04.03",
+      "acceptance": "Payment transactionning o‘rtasida fault kiritilganda payment/allocation/audit/outboxning hammasi rollback; deadlock retry cheklangan va idempotent.",
+      "prompt": "prompts/S04/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "04.04",
+      "stage": "04",
+      "title": "Migratsiya, rollarning DB huquqlari, restore-compatible seed va cheklovlarni tekshirish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "04.03"
+      ],
+      "technical_inputs": [
+        "03"
+      ],
+      "targets": [
+        "apps/api/test/database.integration.spec.ts"
+      ],
+      "test_id": "T04.04",
+      "acceptance": "Bo‘sh DBga barcha migration, oldingi snapshotga yangi migration ishlaydi; schema drift aniqlanadi. Restore faylining format/version kontrakti qayd etilgan.",
+      "prompt": "prompts/S04/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "04.05",
+      "stage": "04",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "04.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S04.md"
+      ],
+      "test_id": "T04.05",
+      "acceptance": "Bo‘sh bazada migratsiya o‘tadi; runtime DB roli ledgerni o‘chira olmaydi",
+      "prompt": "prompts/S04/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "05.01",
+      "stage": "05",
+      "title": "Parol hash, login limit, session revoke va birinchi kirishda parol almashtirishni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "04.05"
+      ],
+      "technical_inputs": [
+        "04"
+      ],
+      "targets": [
+        "apps/api/src/auth/auth.service.ts"
+      ],
+      "test_id": "T05.01",
+      "acceptance": "Bruteforce limit, disabled staff, token rotation/revoke va logout tekshiriladi; browser sessiyasida CSRF siyosati, mobile token saqlash kontrakti bor.",
+      "prompt": "prompts/S05/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "05.02",
+      "stage": "05",
+      "title": "Director/Admin/Teacher huquqlari va har bir obyekt darajasidagi tekshiruvni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "05.01"
+      ],
+      "technical_inputs": [
+        "04"
+      ],
+      "targets": [
+        "apps/api/src/auth/permissions.guard.ts"
+      ],
+      "test_id": "T05.02",
+      "acceptance": "Teacher A boshqa teacher guruh IDsi bilan GET/POST/export qila olmaydi; URLni almashtirish huquq bermaydi; API role va object scope tekshiradi.",
+      "prompt": "prompts/S05/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "05.03",
+      "stage": "05",
+      "title": "Xodim yaratish, o‘chirish o‘rniga deaktivatsiya va rol almashtirishni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "05.02"
+      ],
+      "technical_inputs": [
+        "04"
+      ],
+      "targets": [
+        "apps/api/src/auth/staff.controller.ts"
+      ],
+      "test_id": "T05.03",
+      "acceptance": "O‘zini oxirgi Director sifatida deaktivatsiya qilib markazni egasiz qoldirish rad; rol o‘zgarganda eski session vakolati yo‘qoladi; audit bor.",
+      "prompt": "prompts/S05/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "05.04",
+      "stage": "05",
+      "title": "Teacher boshqa guruhni, telefonni va moliyani ololmasligini sinash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "05.03"
+      ],
+      "technical_inputs": [
+        "04"
+      ],
+      "targets": [
+        "apps/api/src/auth/auth.integration.spec.ts"
+      ],
+      "test_id": "T05.04",
+      "acceptance": "Har role uchun allow/deny jadvali bajarilgan; pagination, search va error response orqali ham telefon/moliya sizib chiqmaydi.",
+      "prompt": "prompts/S05/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "05.05",
+      "stage": "05",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "05.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S05.md"
+      ],
+      "test_id": "T05.05",
+      "acceptance": "ID almashtirib kirish urinishlari 403/404; response va exportlarda ham shaxsiy telefon yashirilgan",
+      "prompt": "prompts/S05/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "06.01",
+      "stage": "06",
+      "title": "O‘quvchi yaratish, tahrir, archive va UUID asosidagi qidiruvni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "05.05"
+      ],
+      "technical_inputs": [
+        "05"
+      ],
+      "targets": [
+        "apps/api/src/students/students.service.ts"
+      ],
+      "test_id": "T06.01",
+      "acceptance": "Bir xil create idempotency key bitta student; bir xil ismli turli student mumkin; archived student qidiruv defaultida yashirin, tarixda saqlanadi.",
+      "prompt": "prompts/S06/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "06.02",
+      "stage": "06",
+      "title": "Telefon normalizatsiyasi, ko‘p farzand va bir nechta vasiy munosabatini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "06.01"
+      ],
+      "technical_inputs": [
+        "05"
+      ],
+      "targets": [
+        "apps/api/src/students/guardians.service.ts"
+      ],
+      "test_id": "T06.02",
+      "acceptance": "Bir guardian ikki farzandga bog‘lanadi, bir farzand ikki guardian bilan ishlaydi; guardian phone o‘zgarishida eski Telegram link avtomatik ishonchli qolmaydi.",
+      "prompt": "prompts/S06/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "06.03",
+      "stage": "06",
+      "title": "Trial/active/frozen/left holatlari va kursga a’zolik tarixini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "06.02"
+      ],
+      "technical_inputs": [
+        "05"
+      ],
+      "targets": [
+        "apps/api/src/students/enrollments.service.ts"
+      ],
+      "test_id": "T06.03",
+      "acceptance": "Faqat ruxsat etilgan status transitionlari; enrollmentning effective sanasi bor; guruh almashishda oldingi enrollment va moliya tarixi saqlanadi.",
+      "prompt": "prompts/S06/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "06.04",
+      "stage": "06",
+      "title": "Ism va telefon o‘xshashligini ogohlantirish; aka-ukalarni xato bloklamaslikni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "06.03"
+      ],
+      "technical_inputs": [
+        "05"
+      ],
+      "targets": [
+        "apps/api/src/students/duplicates.service.ts"
+      ],
+      "test_id": "T06.04",
+      "acceptance": "Bitta familiya/telefonli aka-ukalar bloklanmaydi; ehtimoliy dublikat Admin ko‘rigiga chiqadi; merge moliyaviy tarixni fizik o‘chirmaydi.",
+      "prompt": "prompts/S06/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "06.05",
+      "stage": "06",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "06.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S06.md"
+      ],
+      "test_id": "T06.05",
+      "acceptance": "Bitta telefonli ikki farzand saqlanadi; bir o‘quvchini ikki marta qo‘shish aniqlanadi",
+      "prompt": "prompts/S06/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "07.01",
+      "stage": "07",
+      "title": "Kurs, narx tarixi, guruh va asosiy o‘qituvchini yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "06.05"
+      ],
+      "technical_inputs": [
+        "06"
+      ],
+      "targets": [
+        "apps/api/src/academics/groups.service.ts"
+      ],
+      "test_id": "T07.01",
+      "acceptance": "Guruh narxi o‘zgarsa oldingi invoice snapshoti o‘zgarmaydi; yangi narx effective sanadan; teacher deaktivatsiyasida ochiq darslar ogohlantiriladi.",
+      "prompt": "prompts/S07/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "07.02",
+      "stage": "07",
+      "title": "Dars occurrence, timezone, bayram, ko‘chirilgan va bekor darsni modellashtirish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "07.01"
+      ],
+      "technical_inputs": [
+        "06"
+      ],
+      "targets": [
+        "apps/api/src/academics/lessons.service.ts"
+      ],
+      "test_id": "T07.02",
+      "acceptance": "Bir kun ikki dars alohida lesson ID; reschedule eski IDni saqlaydi yoki aniq replacement relation; cancelled lesson ping/billingni noto‘g‘ri qo‘zg‘atmaydi.",
+      "prompt": "prompts/S07/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "07.03",
+      "stage": "07",
+      "title": "Faqat bitta dars uchun vaqtinchalik Teacher huquqi va haq egasini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "07.02"
+      ],
+      "technical_inputs": [
+        "06"
+      ],
+      "targets": [
+        "apps/api/src/academics/substitutions.service.ts"
+      ],
+      "test_id": "T07.03",
+      "acceptance": "Substitute faqat belgilangan lessonni ko‘radi; ruxsat qaytarilganda offline yozuv reauth qilinadi; haq oluvchi assignment tarixda snapshot bo‘ladi.",
+      "prompt": "prompts/S07/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "07.04",
+      "stage": "07",
+      "title": "O‘z guruhida imtihon bali va izohlarni yozish, tarixni saqlash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "07.03"
+      ],
+      "technical_inputs": [
+        "06"
+      ],
+      "targets": [
+        "apps/api/src/academics/grades.service.ts"
+      ],
+      "test_id": "T07.04",
+      "acceptance": "Teacher faqat vakolatli lesson/enrollmentga baho qo‘yadi; diapazondan tashqari ball rad; izohlar XSSdan himoyalanadi; edit version conflict ko‘rinadi.",
+      "prompt": "prompts/S07/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "07.05",
+      "stage": "07",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "07.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S07.md"
+      ],
+      "test_id": "T07.05",
+      "acceptance": "Bir kunda ikki dars to‘qnashmaydi; o‘rindosh huquqi darsdan tashqari amal qilmaydi",
+      "prompt": "prompts/S07/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "08.01",
+      "stage": "08",
+      "title": "Qolgan/to‘liq rejalashtirilgan dars ulushi bo‘yicha pro-rata va yaxlitlashni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "07.05"
+      ],
+      "technical_inputs": [
+        "07"
+      ],
+      "targets": [
+        "apps/api/src/billing/calendar-proration.ts"
+      ],
+      "test_id": "T08.01",
+      "acceptance": "480000×7/12=280000. Qolgan 0 dars →0; total=0 →hisob chiqarish bloklanadi. Yaxlitlash va narx effective sanasi ACCEPTED policyga mos.",
+      "prompt": "prompts/S08/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "08.02",
+      "stage": "08",
+      "title": "Kalendar oy, rolling month va 12-dars paketini alohida siyosat sifatida yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "08.01"
+      ],
+      "technical_inputs": [
+        "07"
+      ],
+      "targets": [
+        "apps/api/src/billing/subscriptions.ts"
+      ],
+      "test_id": "T08.02",
+      "acceptance": "12 dars va rolling month alohida: 31-yanvar renewal hamda cancelled lesson holati misollar bilan; calendar oy rejimi 1-sanaga bog‘langan.",
+      "prompt": "prompts/S08/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "08.03",
+      "stage": "08",
+      "title": "Ikkinchi haqiqiy qatnashuvda birinchi trialdan hisobni bir marta chiqarish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "08.02"
+      ],
+      "technical_inputs": [
+        "07"
+      ],
+      "targets": [
+        "apps/api/src/billing/trial-conversion.ts"
+      ],
+      "test_id": "T08.03",
+      "acceptance": "Birinchi trial present qarz yaratmaydi; ikkinchi distinct attended lesson bir marta activation beradi; attendance retry yangi invoice bermaydi. Correction uchun reversal siyosati bor.",
+      "prompt": "prompts/S08/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "08.04",
+      "stage": "08",
+      "title": "Davr uchun idempotent invoice, line item, narx snapshot va kredit qoldig‘ini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "08.03"
+      ],
+      "technical_inputs": [
+        "07"
+      ],
+      "targets": [
+        "apps/api/src/billing/invoice-generator.ts"
+      ],
+      "test_id": "T08.04",
+      "acceptance": "Bir enrollment/davr/generator versiya qayta yugursa dublikat yo‘q; price/policy snapshot saqlanadi; service keyingi discount/freeze adjustmentlarini qabul qiladigan kontraktga ega.",
+      "prompt": "prompts/S08/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "08.05",
+      "stage": "08",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "08.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S08.md"
+      ],
+      "test_id": "T08.05",
+      "acceptance": "480000 × 7/12 = 280000; qayta ishga tushirishda ikkinchi qarz yozilmaydi",
+      "prompt": "prompts/S08/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "09.01",
+      "stage": "09",
+      "title": "Foiz/fiks chegirma, sabab, muddat va oilaviy taklif yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "08.05"
+      ],
+      "technical_inputs": [
+        "08"
+      ],
+      "targets": [
+        "apps/api/src/adjustments/discount-requests.ts"
+      ],
+      "test_id": "T09.01",
+      "acceptance": "Admin so‘rov yaratadi lekin invoice o‘zgarmaydi; reason va expiry majburiy; percent 0–100; fixed discount summasi manfiy invoice yaratmaydi.",
+      "prompt": "prompts/S09/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "09.02",
+      "stage": "09",
+      "title": "Faqat rahbar tasdig‘i bilan qo‘llash; qo‘shilish tartibi va limitlarni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "09.01"
+      ],
+      "technical_inputs": [
+        "08"
+      ],
+      "targets": [
+        "apps/api/src/adjustments/discount-approval.ts"
+      ],
+      "test_id": "T09.02",
+      "acceptance": "Faqat Director approve; parallel ikki approve bitta effect; eskirgan/revoked request rad; stacking tartibi va tarixiy invoicega ta’sir siyosati testlangan.",
+      "prompt": "prompts/S09/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "09.03",
+      "stage": "09",
+      "title": "Freeze interval, dars kesishmasi va keyingi davr kreditini hisoblash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "09.02"
+      ],
+      "technical_inputs": [
+        "08"
+      ],
+      "targets": [
+        "apps/api/src/adjustments/freeze-credit.ts"
+      ],
+      "test_id": "T09.03",
+      "acceptance": "Overlap freeze double credit bermaydi; cancelled lesson uchun ikki kredit yo‘q; grant uchun sun’iy cash refund yo‘q; keyingi davr kredit allocationi auditda.",
+      "prompt": "prompts/S09/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "09.04",
+      "stage": "09",
+      "title": "Chiqish sanasi, besh sabab va yakuniy hisobni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "09.03"
+      ],
+      "technical_inputs": [
+        "08"
+      ],
+      "targets": [
+        "apps/api/src/adjustments/withdrawal.ts"
+      ],
+      "test_id": "T09.04",
+      "acceptance": "Chiqishning besh sababi majburiy; effective sanadan keyin yangi charge yo‘q; oldingi qarz saqlanadi; re-enrollment yangi tarix beradi.",
+      "prompt": "prompts/S09/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "09.05",
+      "stage": "09",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "09.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S09.md"
+      ],
+      "test_id": "T09.05",
+      "acceptance": "Tasdiqsiz chegirma ishlamaydi; overlapping freeze ikki kredit bermaydi; grant qarzi nol",
+      "prompt": "prompts/S09/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "10.01",
+      "stage": "10",
+      "title": "Naqd/karta/Click/Payme/transfer qaydini pulning kichik birligida va tranzaksiyada yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "09.05"
+      ],
+      "technical_inputs": [
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/payments/payment.service.ts"
+      ],
+      "test_id": "T10.01",
+      "acceptance": "Payment commit va outbox atomik; bir key+bir body bitta payment; bir key+boshqa amount 409; pul string/minor-unit bilan, float yo‘q.",
+      "prompt": "prompts/S10/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "10.02",
+      "stage": "10",
+      "title": "Qisman, ortiqcha va ko‘p invoicega taqsimlangan to‘lovni hisoblash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "10.01"
+      ],
+      "technical_inputs": [
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/payments/allocation.service.ts"
+      ],
+      "test_id": "T10.02",
+      "acceptance": "500000 invoicega 300000 payment →200000 qarz; 600000 payment →0 qarz+100000 unapplied credit. Allocation yig‘indisi paymentdan oshmaydi.",
+      "prompt": "prompts/S10/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "10.03",
+      "stage": "10",
+      "title": "Sababli tuzatish so‘rovi, rahbar tasdig‘i va append-only reversal yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "10.02"
+      ],
+      "technical_inputs": [
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/payments/reversal.service.ts"
+      ],
+      "test_id": "T10.03",
+      "acceptance": "4000000 xato yozuv o‘chmaydi; Director tasdiqlangan reversal va 400000 yangi paymentdan keyin net400000. Partial refund va double approval ortiqcha qaytarishga yo‘l qo‘ymaydi.",
+      "prompt": "prompts/S10/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "10.04",
+      "stage": "10",
+      "title": "Noyob kvitansiya raqami va tasdiqlangan ledgerdan elektron kvitansiya yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "10.03"
+      ],
+      "technical_inputs": [
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/payments/receipts.service.ts"
+      ],
+      "test_id": "T10.04",
+      "acceptance": "Kvitansiya ledger commitdan keyin yaratiladi; unique raqam, amount/method/date va remaining balance bor; fiscal chek deb belgilanmaydi; begona studentga berilmaydi.",
+      "prompt": "prompts/S10/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "10.05",
+      "stage": "10",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "10.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S10.md"
+      ],
+      "test_id": "T10.05",
+      "acceptance": "Ikki parallel bir xil idempotency key bitta to‘lov yaratadi; reversal originalni o‘zgartirmaydi",
+      "prompt": "prompts/S10/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "11.01",
+      "stage": "11",
+      "title": "Kassa ochish, sanalgan pul, discrepancy va yopilgan smenani qulflash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "10.05"
+      ],
+      "technical_inputs": [
+        "10"
+      ],
+      "targets": [
+        "apps/api/src/cash/shifts.service.ts"
+      ],
+      "test_id": "T11.01",
+      "acceptance": "Yopiq smenaga yangi naqd payment rad yoki yangi smena talab qiladi; parallel close bitta natija; counted va expected farqi reason/audit bilan.",
+      "prompt": "prompts/S11/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "11.02",
+      "stage": "11",
+      "title": "Xarajat toifasi, hujjat, vakolat va reversal bilan naqd chiqimini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "11.01"
+      ],
+      "technical_inputs": [
+        "10"
+      ],
+      "targets": [
+        "apps/api/src/cash/expenses.service.ts"
+      ],
+      "test_id": "T11.02",
+      "acceptance": "Expense uchun rol/sabab/summa talab qilinadi; reverse expense cash balancega bir marta ta’sir qiladi; karta expense naqdni kamaytirmaydi.",
+      "prompt": "prompts/S11/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "11.03",
+      "stage": "11",
+      "title": "Partial payment va promise atomik commandini integratsiya qilish, debt yopilganda eslatmani bekor qilish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "11.02"
+      ],
+      "technical_inputs": [
+        "10"
+      ],
+      "targets": [
+        "apps/api/src/cash/promises.service.ts"
+      ],
+      "test_id": "T11.03",
+      "acceptance": "Qisman payment+promise yaratish atomik command orqali: sana yo‘q bo‘lsa payment ham commit bo‘lmaydi. Qarz nol bo‘lganda eski promise CANCELLED.",
+      "prompt": "prompts/S11/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "11.04",
+      "stage": "11",
+      "title": "To‘lov usullari bo‘yicha tushum, kutilgan naqd va smena hisobotini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "11.03"
+      ],
+      "technical_inputs": [
+        "10"
+      ],
+      "targets": [
+        "apps/api/src/cash/reconciliation.service.ts"
+      ],
+      "test_id": "T11.04",
+      "acceptance": "Opening0+cash3200000-expense150000=3050000; card1800000 naqdga qo‘shilmaydi. Refund, opening float va discrepancy alohida satrlar bilan reconcile.",
+      "prompt": "prompts/S11/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "11.05",
+      "stage": "11",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "11.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S11.md"
+      ],
+      "test_id": "T11.05",
+      "acceptance": "3200000 naqd −150000 xarajat =3050000; karta naqd qoldiqqa qo‘shilmaydi",
+      "prompt": "prompts/S11/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "12.01",
+      "stage": "12",
+      "title": "Draftda default present, faqat submitdan keyin tasdiqlangan davomat yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "11.05"
+      ],
+      "technical_inputs": [
+        "07",
+        "08",
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/attendance/attendance.service.ts"
+      ],
+      "test_id": "T12.01",
+      "acceptance": "Draft default present ota-onaga xabar yubormaydi; submit har student uchun unique result; kechikish holati distinct; teacher bo‘lmagan actor rad.",
+      "prompt": "prompts/S12/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "12.02",
+      "stage": "12",
+      "title": "client operation UUID, expected version va lesson_id+student_id orqali dedup yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "12.01"
+      ],
+      "technical_inputs": [
+        "07",
+        "08",
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/attendance/sync.service.ts"
+      ],
+      "test_id": "T12.02",
+      "acceptance": "Bir operation UUID retransmitda oldingi natija; boshqa body shu UUID bilan conflict. Batchda har op natijasi qaytadi va SQLite faqat ackdan keyin synced.",
+      "prompt": "prompts/S12/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "12.03",
+      "stage": "12",
+      "title": "Eski Excelni rad etish, Teacher tasdig‘ini himoyalash va Admin sababli override yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "12.02"
+      ],
+      "technical_inputs": [
+        "07",
+        "08",
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/attendance/conflicts.service.ts"
+      ],
+      "test_id": "T12.03",
+      "acceptance": "Stale Excel409 va per-row conflict; Teacher tasdiqini Admin faqat sababli override qiladi; blind last-write-wins yo‘q; teng versionli ikki write biri yutadi.",
+      "prompt": "prompts/S12/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "12.04",
+      "stage": "12",
+      "title": "Tasdiqlangan absence/late hodisasi, trial activation va billingga bog‘lash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "12.03"
+      ],
+      "technical_inputs": [
+        "07",
+        "08",
+        "09"
+      ],
+      "targets": [
+        "apps/api/src/attendance/attendance.events.ts"
+      ],
+      "test_id": "T12.04",
+      "acceptance": "Submitted event trialni bir marta aktiv qiladi; absence correction yangi event/audit beradi; oldingi jo‘natilgan xabar o‘chirildi deb da’vo qilinmaydi.",
+      "prompt": "prompts/S12/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "12.05",
+      "stage": "12",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "12.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S12.md"
+      ],
+      "test_id": "T12.05",
+      "acceptance": "Eski Excel yangi mobil davomatni buzmaydi; retransmit yangi hodisa yaratmaydi",
+      "prompt": "prompts/S12/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "13.01",
+      "stage": "13",
+      "title": "DB outboxni lease bilan olish, bounded retry va dead-letter holatini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "12.05"
+      ],
+      "technical_inputs": [
+        "10",
+        "11",
+        "12"
+      ],
+      "targets": [
+        "apps/worker/src/outbox.worker.ts"
+      ],
+      "test_id": "T13.01",
+      "acceptance": "Worker DB commitdan oldin yiqilsa lease tugagach retry; tashqi senddan keyin yiqilsa duplicate ehtimoli kuzatiladi; poison event DLQga, qolganlari davom etadi.",
+      "prompt": "prompts/S13/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "13.02",
+      "stage": "13",
+      "title": "Markaz vaqtida 09:00 va’da eslatmasi, to‘langan qarzni qayta tekshirish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "13.01"
+      ],
+      "technical_inputs": [
+        "10",
+        "11",
+        "12"
+      ],
+      "targets": [
+        "apps/worker/src/reminders.worker.ts"
+      ],
+      "test_id": "T13.02",
+      "acceptance": "Center local09:00da due debt qayta hisoblanadi; payment qilingan promisega xabar yo‘q; worker ertalab offline bo‘lsa catch-up siyosati bo‘yicha bir marta.",
+      "prompt": "prompts/S13/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "13.03",
+      "stage": "13",
+      "title": "20 daqiqada davomat yo‘q bo‘lsa ping, dars tugaganda Admin escalation yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "13.02"
+      ],
+      "technical_inputs": [
+        "10",
+        "11",
+        "12"
+      ],
+      "targets": [
+        "apps/worker/src/teacher-ping.worker.ts"
+      ],
+      "test_id": "T13.03",
+      "acceptance": "20 daqiqada submitted bo‘lmasa bitta ping; cancelled lesson yoki substitute eski teacherga ping bermaydi; lesson endda Admin escalation bir marta.",
+      "prompt": "prompts/S13/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "13.04",
+      "stage": "13",
+      "title": "Billing, smena, trial no-show follow-up va missed job catch-upni idempotent qilish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "13.03"
+      ],
+      "technical_inputs": [
+        "10",
+        "11",
+        "12"
+      ],
+      "targets": [
+        "apps/worker/src/schedules.worker.ts"
+      ],
+      "test_id": "T13.04",
+      "acceptance": "Ikki worker bir vaqt billing jobni ishga tushirsa bitta effect; timezone/clock boundary, restart catch-up va disabled center siyosati sinovlangan. Trial no-show follow-up vazifasi yaratiladi.",
+      "prompt": "prompts/S13/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "13.05",
+      "stage": "13",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "13.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S13.md"
+      ],
+      "test_id": "T13.05",
+      "acceptance": "Worker to‘xtab qaytsa hodisalar yo‘qolmaydi; bekor qarzga eslatma ketmaydi",
+      "prompt": "prompts/S13/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "14.01",
+      "stage": "14",
+      "title": "Bir martalik invite va Telegram contact.user_id tekshiruvi bilan vasiy bog‘lash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "13.05"
+      ],
+      "technical_inputs": [
+        "13",
+        "05"
+      ],
+      "targets": [
+        "apps/bot/src/linking.ts"
+      ],
+      "test_id": "T14.01",
+      "acceptance": "Contact user_id yuboruvchiga teng emas →rad; invite single-use va expiry bor; qayta linkingda eski chat huquqi bekor; guardian children serverdan aniqlanadi.",
+      "prompt": "prompts/S14/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "14.02",
+      "stage": "14",
+      "title": "Guardian so‘rovlari va Director approval callbacklarini backend command API orqali ulash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "14.01"
+      ],
+      "technical_inputs": [
+        "13",
+        "05"
+      ],
+      "targets": [
+        "apps/bot/src/queries.ts"
+      ],
+      "test_id": "T14.02",
+      "acceptance": "Callbackda student IDni almashtirish rad; unlinkdan keyin eski callback ma’lumot bermaydi; Director approve callback role/request version va replay tekshiradi.",
+      "prompt": "prompts/S14/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "14.03",
+      "stage": "14",
+      "title": "Kvitansiya, absence, late, xavfsizlik va smena xabarlarini navbatdan yuborish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "14.02"
+      ],
+      "technical_inputs": [
+        "13",
+        "05"
+      ],
+      "targets": [
+        "apps/bot/src/notifications.ts"
+      ],
+      "test_id": "T14.03",
+      "acceptance": "Paid receipt, absence/late, discount approval request, reversal alert va shift report shablonlari event IDga bog‘langan; demo recipient allowlist mavjud.",
+      "prompt": "prompts/S14/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "14.04",
+      "stage": "14",
+      "title": "429 retry_after, 403 blocked, unlinked va API accepted holatlarini saqlash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "14.03"
+      ],
+      "technical_inputs": [
+        "13",
+        "05"
+      ],
+      "targets": [
+        "apps/bot/src/delivery.ts"
+      ],
+      "test_id": "T14.04",
+      "acceptance": "429 retry_after,403 blocked,network timeout holatlari farqlanadi; accepted ≠read. Webhook secret tekshiriladi, Telegram update_id dedup; bot yo‘q guardian Admin ro‘yxatiga chiqadi.",
+      "prompt": "prompts/S14/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "14.05",
+      "stage": "14",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "14.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S14.md"
+      ],
+      "test_id": "T14.05",
+      "acceptance": "Begona raqam bilan bola ochilmaydi; API accepted holati o‘qildi deb ko‘rsatilmaydi",
+      "prompt": "prompts/S14/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "15.01",
+      "stage": "15",
+      "title": "15 soniyalik ro‘yxatga olish oqimi, guruh va guardian tanlashni qurish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "14.05"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "14"
+      ],
+      "targets": [
+        "apps/web/src/features/students/StudentForm.tsx"
+      ],
+      "test_id": "T15.01",
+      "acceptance": "Admin yangi student+guardian+group oqimini klaviaturada bajaradi; validation inputni yo‘qotmaydi; dublikat ogohlantirish ko‘rinadi; 15 soniya maqsadi real task timing bilan o‘lchanadi.",
+      "prompt": "prompts/S15/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "15.02",
+      "stage": "15",
+      "title": "To‘lov, va’da sanasi, kvitansiya va tuzatish so‘rovini qurish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "15.01"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "14"
+      ],
+      "targets": [
+        "apps/web/src/features/payments/PaymentForm.tsx"
+      ],
+      "test_id": "T15.02",
+      "acceptance": "Double click bitta payment; pending/error/success holati; debt bo‘lsa promise majburiy; receipt va reversal request ko‘rinadi; closed shift/read-only write tugmasi izohli blok.",
+      "prompt": "prompts/S15/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "15.03",
+      "stage": "15",
+      "title": "Guruh, jadval, substitute, ballar va davomat ekranlarini qurish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "15.02"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "14"
+      ],
+      "targets": [
+        "apps/web/src/features/academics/AttendancePage.tsx"
+      ],
+      "test_id": "T15.03",
+      "acceptance": "Guruh/jadval/substitute/grade/attendance integratsiya qilingan; Teacher telefon ko‘rmaydi; unsaved draft ogohlantiradi; keyboard va mobil ekran tekshiriladi.",
+      "prompt": "prompts/S15/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "15.04",
+      "stage": "15",
+      "title": "Chegirma/refund tasdiqlash, kassa, qarz va audit ekranlarini qurish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "15.03"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "14"
+      ],
+      "targets": [
+        "apps/web/src/features/director/ApprovalsPage.tsx"
+      ],
+      "test_id": "T15.04",
+      "acceptance": "Director approval, kassa, audit va qarzdor ekranlari real APIga ulangan; full financial/payroll/churn dashboard S18.04gacha PENDING_INTEGRATION, soxta raqam productionga chiqmaydi.",
+      "prompt": "prompts/S15/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "15.05",
+      "stage": "15",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "15.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S15.md"
+      ],
+      "test_id": "T15.05",
+      "acceptance": "Rollar bo‘yicha end-to-end oqim; double click ikki to‘lov yaratmaydi; xato va loading holatlari bor",
+      "prompt": "prompts/S15/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "16.01",
+      "stage": "16",
+      "title": "Versiyali locked XLSX, hidden UUID, row version va yangi student uchun IDsiz shablon yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "15.05"
+      ],
+      "technical_inputs": [
+        "15"
+      ],
+      "targets": [
+        "apps/api/src/imports/template.ts"
+      ],
+      "test_id": "T16.01",
+      "acceptance": "Export hidden UUID+version; yangi student shabloni ID bo‘sh bo‘lishini qo‘llaydi; template_version va center binding bor. Protected sheet xavfsizlik deb qabul qilinmaydi.",
+      "prompt": "prompts/S16/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "16.02",
+      "stage": "16",
+      "title": "Ustun, tur, hajm, formula injection, duplicate, foreign UUID va stale versionni tekshirish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "16.01"
+      ],
+      "technical_inputs": [
+        "15"
+      ],
+      "targets": [
+        "apps/api/src/imports/validate.ts"
+      ],
+      "test_id": "T16.02",
+      "acceptance": "Zip bomb/hajm limit, formula cell, foreign center ID, duplicate row va schema mismatch rad; CSV/XLSX eksportdagi =,+,-,@ prefikslar xavfsiz matn.",
+      "prompt": "prompts/S16/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "16.03",
+      "stage": "16",
+      "title": "Qizil/yashil dry-run, qator xatosi, immutable upload hash va preview token yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "16.02"
+      ],
+      "technical_inputs": [
+        "15"
+      ],
+      "targets": [
+        "apps/api/src/imports/preview.ts"
+      ],
+      "test_id": "T16.03",
+      "acceptance": "Dry-run DBni o‘zgartirmaydi; har row action/error ko‘rsatiladi; token user/center/file hash va expiryga bog‘langan; boshqa foydalanuvchi tokeni ishlamaydi.",
+      "prompt": "prompts/S16/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "16.04",
+      "stage": "16",
+      "title": "Tasdiqda hash/versionni yana tekshirish; atomik import, idempotency va audit yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "16.03"
+      ],
+      "technical_inputs": [
+        "15"
+      ],
+      "targets": [
+        "apps/api/src/imports/commit.ts",
+        "apps/web/src/features/imports/ImportPage.tsx"
+      ],
+      "test_id": "T16.04",
+      "acceptance": "Previewdan keyin version o‘zgarsa commit qayta tekshiradi; bir invalid row →atomik rad. Qabul limitidan katta fayl rad, transaction cheksiz emas; retry bitta import batch.",
+      "prompt": "prompts/S16/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "16.05",
+      "stage": "16",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "16.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S16.md"
+      ],
+      "test_id": "T16.05",
+      "acceptance": "Previewdan keyin o‘zgargan qator conflict; xatoli fayl bazaga qisman tushmaydi; ism bo‘yicha match yo‘q",
+      "prompt": "prompts/S16/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "17.01",
+      "stage": "17",
+      "title": "Flutter staff login, xavfsiz token va role navigation yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "16.05"
+      ],
+      "technical_inputs": [
+        "12",
+        "15"
+      ],
+      "targets": [
+        "apps/mobile/lib/auth/session.dart"
+      ],
+      "test_id": "T17.01",
+      "acceptance": "Token secure storage; logout account+center local namespace tozalanadi yoki himoyalangan pending disposition ko‘rsatiladi; Director/Teacher routing server rolega mos.",
+      "prompt": "prompts/S17/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "17.02",
+      "stage": "17",
+      "title": "SQLite draft, pending operation, retry metadata va minimal local data yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "17.01"
+      ],
+      "technical_inputs": [
+        "12",
+        "15"
+      ],
+      "targets": [
+        "apps/mobile/lib/attendance/local_store.dart"
+      ],
+      "test_id": "T17.02",
+      "acceptance": "Airplane mode draft→app kill→restartda saqlanadi; SQLite migratsiya eski pendingni yo‘qotmaydi; boshqa center account queue sini ko‘rmaydi.",
+      "prompt": "prompts/S17/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "17.03",
+      "stage": "17",
+      "title": "Foreground/manual sync, tarmoq qaytishi, conflict UI va qayta yuborishni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "17.02"
+      ],
+      "technical_inputs": [
+        "12",
+        "15"
+      ],
+      "targets": [
+        "apps/mobile/lib/attendance/sync_engine.dart"
+      ],
+      "test_id": "T17.03",
+      "acceptance": "Network flap, timeout after server commit va conflict409 qayta yuborish testlari; ACKsiz local delete yo‘q; expired session va license lock queue ni soxta synced qilmaydi.",
+      "prompt": "prompts/S17/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "17.04",
+      "stage": "17",
+      "title": "Teacher guruh/ball/davomat, Admin asosiy amallar va Director hisobotini yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "17.03"
+      ],
+      "technical_inputs": [
+        "12",
+        "15"
+      ],
+      "targets": [
+        "apps/mobile/lib/screens/staff_screens.dart"
+      ],
+      "test_id": "T17.04",
+      "acceptance": "Teacher attendance/grades, Admin asosiy amallar mavjud; Director full report API S18.04da ulanadi. Foreground/manual sync kafolatlangan; OS background execution doimiy deb va’da qilinmaydi.",
+      "prompt": "prompts/S17/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "17.05",
+      "stage": "17",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "17.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S17.md"
+      ],
+      "test_id": "T17.05",
+      "acceptance": "Airplane mode → app restart → reconnectda davomat saqlanadi; konflikt ko‘rinadi; logout eski akkaunt queue sini yubormaydi",
+      "prompt": "prompts/S17/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "18.01",
+      "stage": "18",
+      "title": "Kun/hafta/oy cash va accrued daromadni alohida, qarz va forecast hisoblash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "17.05"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "17"
+      ],
+      "targets": [
+        "apps/api/src/reports/finance.ts"
+      ],
+      "test_id": "T18.01",
+      "acceptance": "Cash va accrual alohida; paymentdan oldin invoice qarz ko‘rsatadi; grant/refund/unapplied credit ikki hisoblanmaydi; date filter center timezone.",
+      "prompt": "prompts/S18/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "18.02",
+      "stage": "18",
+      "title": "Tasdiqlangan fixed/per lesson/percentage qoida, substitute ulushi va payroll snapshot yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "18.01"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "17"
+      ],
+      "targets": [
+        "apps/api/src/reports/payroll.ts"
+      ],
+      "test_id": "T18.02",
+      "acceptance": "Fixed/per-lesson/percentage ACCEPTED qoida; substitute faqat haqiqiy dars haqini oladi; yopilgan payroll immutable snapshot, keyingi correction adjustment bilan.",
+      "prompt": "prompts/S18/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "18.03",
+      "stage": "18",
+      "title": "Sabab, teacher, cohort va davr bo‘yicha ketganlar hisobini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "18.02"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "17"
+      ],
+      "targets": [
+        "apps/api/src/reports/churn.ts"
+      ],
+      "test_id": "T18.03",
+      "acceptance": "Churn denominator, period/cohort va kursni tugatish alohida metrikasi hujjatlangan; teacher almashsa attribution effective sanaga mos.",
+      "prompt": "prompts/S18/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "18.04",
+      "stage": "18",
+      "title": "Vakolatli eksport va ledger reconciliation; web/mobile Director dashboardni haqiqiy report APIga ulash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "18.03"
+      ],
+      "technical_inputs": [
+        "11",
+        "12",
+        "17"
+      ],
+      "targets": [
+        "apps/api/src/reports/exports.ts",
+        "apps/web/src/features/director/ReportsPage.tsx",
+        "apps/mobile/lib/screens/director_reports.dart"
+      ],
+      "test_id": "T18.04",
+      "acceptance": "Web va Flutter Director dashboard real finance/payroll/churn endpointga ulanadi; role-aware eksport ledger bilan reconcile. S15.04/S17.04 pending integrations yopiladi.",
+      "prompt": "prompts/S18/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "18.05",
+      "stage": "18",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "18.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S18.md"
+      ],
+      "test_id": "T18.05",
+      "acceptance": "Hisobot ledger bilan teng; grant, refund va substitute maoshga tasdiqlangan qoida bo‘yicha ta’sir qiladi",
+      "prompt": "prompts/S18/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "19.01",
+      "stage": "19",
+      "title": "Alohida Vendor auth, MFA siyosati, center registri va audit bilan boshqaruv yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "18.05"
+      ],
+      "technical_inputs": [
+        "18"
+      ],
+      "targets": [
+        "apps/vendor/src/centers.ts"
+      ],
+      "test_id": "T19.01",
+      "acceptance": "Vendor auth center staff authdan alohida, kuchli autentifikatsiya va audit; listda student/ledger yo‘q; center credential/token logda yoki UI listingda ko‘rinmaydi.",
+      "prompt": "prompts/S19/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "19.02",
+      "stage": "19",
+      "title": "Signed license, expiry, grace va audited read-only o‘tishni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "19.01"
+      ],
+      "technical_inputs": [
+        "18"
+      ],
+      "targets": [
+        "apps/vendor/src/licenses.ts"
+      ],
+      "test_id": "T19.02",
+      "acceptance": "Imzo va center ID mismatch license rad; expiry/grace policy versiyalangan; downgrade/upgrade auditda; private signing key centerga berilmaydi.",
+      "prompt": "prompts/S19/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "19.03",
+      "stage": "19",
+      "title": "API/worker/import/offline yozishlarni bloklash, login/read/export/backupni saqlash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "19.02"
+      ],
+      "technical_inputs": [
+        "18"
+      ],
+      "targets": [
+        "apps/vendor/src/read-only-policy.ts",
+        "apps/api/src/licensing/write-policy.ts",
+        "apps/web/src/features/license/ReadOnlyBanner.tsx"
+      ],
+      "test_id": "T19.03",
+      "acceptance": "Read-onlyda API/import/offline/worker moliyaviy write blok; login/read/export/backup va approved system telemetry allowlist; role bypass yo‘q.",
+      "prompt": "prompts/S19/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "19.04",
+      "stage": "19",
+      "title": "Vendor uzilishi, cache, soat siljishi va uzaytirishdan keyingi tiklanishni yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "19.03"
+      ],
+      "technical_inputs": [
+        "18"
+      ],
+      "targets": [
+        "apps/vendor/src/license-recovery.ts",
+        "apps/mobile/lib/attendance/sync_engine.dart"
+      ],
+      "test_id": "T19.04",
+      "acceptance": "Vendor offline cached valid license bilan kelishilgan grace; renewdan keyin queued ops version/permission bilan qayta tekshiriladi, blind replay yo‘q.",
+      "prompt": "prompts/S19/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "19.05",
+      "stage": "19",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "19.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S19.md"
+      ],
+      "test_id": "T19.05",
+      "acceptance": "Read-onlyni worker yoki sync orqali chetlab bo‘lmaydi; ma’lumot o‘chmaydi; xabar navbati siyosati sinovdan o‘tadi",
+      "prompt": "prompts/S19/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "20.01",
+      "stage": "20",
+      "title": "Har markazga alohida network, volumes, DB credentials, API va worker yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "19.05"
+      ],
+      "technical_inputs": [
+        "19"
+      ],
+      "targets": [
+        "infra/compose.center.yml"
+      ],
+      "test_id": "T20.01",
+      "acceptance": "A credentials bilan B DBga kira olmaydi; volumes/network alohida; service resource limits, health va restart policy bor; DB public port yopiq.",
+      "prompt": "prompts/S20/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "20.02",
+      "stage": "20",
+      "title": "Slug validation, preflight, BotFather token input, DNS/TLS tekshirish va qayta bajariladigan deploy yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "20.01"
+      ],
+      "technical_inputs": [
+        "19"
+      ],
+      "targets": [
+        "infra/scripts/deploy_center.sh"
+      ],
+      "test_id": "T20.02",
+      "acceptance": "Slug shell injection urinishlari rad; token CLI history/logga tushmaydi; BotFather bot creation manual precondition. DNS/TLS tayyor emasligi aniq; half deploy retry data o‘chirmaydi.",
+      "prompt": "prompts/S20/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "20.03",
+      "stage": "20",
+      "title": "Version pin, backup, migratsiya, health va app rollback protokolini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "20.02"
+      ],
+      "technical_inputs": [
+        "19"
+      ],
+      "targets": [
+        "infra/scripts/upgrade_center.sh"
+      ],
+      "test_id": "T20.03",
+      "acceptance": "Old release→new migration rehearsal, offsite backup va app compatibility tekshiriladi; failed migrationda avtomatik down yo‘q. App rollback faqat schema-compatible bo‘lsa.",
+      "prompt": "prompts/S20/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "20.04",
+      "stage": "20",
+      "title": "Login, bot webhook, storage va ikki markaz izolyatsiyasini tekshirish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "20.03"
+      ],
+      "technical_inputs": [
+        "19"
+      ],
+      "targets": [
+        "infra/scripts/smoke_center.sh"
+      ],
+      "test_id": "T20.04",
+      "acceptance": "Yangi center staff login+webhook+storage smoke; A teacher B API/receipt/importga kira olmaydi. Bu qadamdan oldin real mijoz deployi taqiqlangan, synthetic staging ishlatiladi.",
+      "prompt": "prompts/S20/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "20.05",
+      "stage": "20",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "20.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S20.md"
+      ],
+      "test_id": "T20.05",
+      "acceptance": "Ikki markaz testida baza/fayl/bot aralashmaydi; yarim deploydan qayta ishga tushirish xavfsiz",
+      "prompt": "prompts/S20/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "21.01",
+      "stage": "21",
+      "title": "Encrypted DB dump va kerakli fayllarni alohida offsite saqlash; retention va checksum yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "20.05"
+      ],
+      "technical_inputs": [
+        "20"
+      ],
+      "targets": [
+        "infra/ops/backup.sh"
+      ],
+      "test_id": "T21.01",
+      "acceptance": "DB+attachments manifest, encryption, retention va checksum; backup destination alohida credential. Missing/partial upload alert; secret key dump bilan bir joyda emas.",
+      "prompt": "prompts/S21/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "21.02",
+      "stage": "21",
+      "title": "Toza muhitga restore, versiya mosligi va nazorat summalarini tekshirish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "21.01"
+      ],
+      "technical_inputs": [
+        "20"
+      ],
+      "targets": [
+        "infra/ops/restore.sh"
+      ],
+      "test_id": "T21.02",
+      "acceptance": "Yangi muhitda DB+files restore, row count va ledger reconciliation; bot outbound avval disabled, stale jobs replay nazorati; RPO/RTO o‘lchanadi.",
+      "prompt": "prompts/S21/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "21.03",
+      "stage": "21",
+      "title": "DB, queue age, disk, backup age, TLS va login xatolari monitoringini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "21.02"
+      ],
+      "technical_inputs": [
+        "20"
+      ],
+      "targets": [
+        "infra/ops/alerts.yml"
+      ],
+      "test_id": "T21.03",
+      "acceptance": "Disk full, DB down, oldest queue age, backup age, TLS expiry simulated alert; alertga recipient/runbook va dedup bor; logs PII redact.",
+      "prompt": "prompts/S21/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "21.04",
+      "stage": "21",
+      "title": "Incident, kalit rotatsiyasi, Telegram backup opsiyasi va restore mashqini hujjatlashtirish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "21.03"
+      ],
+      "technical_inputs": [
+        "20"
+      ],
+      "targets": [
+        "infra/ops/runbooks.md"
+      ],
+      "test_id": "T21.04",
+      "acceptance": "Lost key, leaked bot token, center down va failed upgrade bo‘yicha aniq recovery; Telegram opsiyasi privacy/size qaroridan keyin. Drill dalili bor, nazariy runbookning o‘zi PASS emas.",
+      "prompt": "prompts/S21/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "21.05",
+      "stage": "21",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "21.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S21.md"
+      ],
+      "test_id": "T21.05",
+      "acceptance": "Zaxiradan alohida muhitda to‘liq restore qilinadi; RPO/RTO o‘lchanadi; kalit backup bilan birga saqlanmaydi",
+      "prompt": "prompts/S21/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "22.01",
+      "stage": "22",
+      "title": "240 sintetik student, 14 group, 6 teacher, discount/grant/debt va reproducible random seed yaratish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "21.05"
+      ],
+      "technical_inputs": [
+        "21"
+      ],
+      "targets": [
+        "demo/seed.ts"
+      ],
+      "test_id": "T22.01",
+      "acceptance": "240 synthetic student,14 group,6 teacher invariant; seed deterministik; 50%/grant/debt/trial/freeze/substitute fixture mavjud; hech qanday real contact yo‘q.",
+      "prompt": "prompts/S22/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "22.02",
+      "stage": "22",
+      "title": "Faqat DEMO flag va alohida DBda qayta tiklash; productionda qat’iy rad etish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "22.01"
+      ],
+      "technical_inputs": [
+        "21"
+      ],
+      "targets": [
+        "demo/reset.ts"
+      ],
+      "test_id": "T22.02",
+      "acceptance": "Production envda reset abort; faqat DEMO=true yetarli emas: demo DB identity ham tasdiqlanadi; demo outbound recipient allowlist bilan cheklangan.",
+      "prompt": "prompts/S22/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "22.03",
+      "stage": "22",
+      "title": "3 daqiqada virtual farzand, absence va 400000 so‘mlik kvitansiya ssenariysini yozish",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "22.02"
+      ],
+      "technical_inputs": [
+        "21"
+      ],
+      "targets": [
+        "demo/sales-script.md"
+      ],
+      "test_id": "T22.03",
+      "acceptance": "3 daqiqalik ssenariy virtual child absence+400000 payment receipt bilan; network/Telegram uzilishi uchun oldindan yozilgan fallback; latency o‘lchanadi, 1 soniya va’da emas.",
+      "prompt": "prompts/S22/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "22.04",
+      "stage": "22",
+      "title": "Video ssenariysi, help registry, UI playback/fallback va haqiqiy content readinessni boshqarish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "22.03"
+      ],
+      "technical_inputs": [
+        "21"
+      ],
+      "targets": [
+        "demo/guides.md",
+        "apps/web/src/help/registry.ts",
+        "apps/mobile/lib/help/guide_registry.dart",
+        "docs/guides/content-manifest.json"
+      ],
+      "test_id": "T22.04",
+      "acceptance": "45 soniyalik video ssenariyi bilan birga UI help registry va playback/fallback integratsiyasi; real video URL/assets yo‘q bo‘lsa CONTENT_PENDING, tayyor video deb da’vo qilinmaydi.",
+      "prompt": "prompts/S22/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "22.05",
+      "stage": "22",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "22.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S22.md"
+      ],
+      "test_id": "T22.05",
+      "acceptance": "Demo kontaktlar real shaxslarga yubormaydi; tasdiqli demo chatda to‘liq ssenariy ishlaydi",
+      "prompt": "prompts/S22/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "23.01",
+      "stage": "23",
+      "title": "Enrollment→billing→partial payment→promise→receipt→refund to‘liq oqimini sinash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "22.05"
+      ],
+      "technical_inputs": [
+        "22"
+      ],
+      "targets": [
+        "tests/release/journeys.spec.ts"
+      ],
+      "test_id": "T23.01",
+      "acceptance": "Enrollment→invoice→300000 partial→promise→200000 payment→receipt→reversal ketma-ketligi API/UI orqali ledger bilan mos; barcha asosiy rollar UAT.",
+      "prompt": "prompts/S23/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "23.02",
+      "stage": "23",
+      "title": "Offline, queue crash, double submit, stale Excel, license va restore regressiyasini sinash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "23.01"
+      ],
+      "technical_inputs": [
+        "22"
+      ],
+      "targets": [
+        "tests/release/resilience.spec.ts"
+      ],
+      "test_id": "T23.02",
+      "acceptance": "Offline sync, crash, stale Excel, license lock, restore va release upgrade fault injection; rollbackdan so‘ng old client ham qo‘llangan kontraktda ishlaydi.",
+      "prompt": "prompts/S23/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "23.03",
+      "stage": "23",
+      "title": "RBAC, cross-center, guardian unlink va eksportdagi maxfiylikni sinash",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "23.02"
+      ],
+      "technical_inputs": [
+        "22"
+      ],
+      "targets": [
+        "tests/release/isolation.spec.ts"
+      ],
+      "test_id": "T23.03",
+      "acceptance": "Cross-center, IDOR, revoked guardian, teacher export, vendor privilege va malicious Excel sinovlari; unauthorized mutationda DB side effect nol.",
+      "prompt": "prompts/S23/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "23.04",
+      "stage": "23",
+      "title": "Pilot UAT, ma’lum kamchilik, performance o‘lchovi va rollback qarorini yozish",
+      "kind": "IMPLEMENTATION",
+      "depends_on": [
+        "23.03"
+      ],
+      "technical_inputs": [
+        "22"
+      ],
+      "targets": [
+        "tests/release/release-checklist.md"
+      ],
+      "test_id": "T23.04",
+      "acceptance": "P0/P1 ochiq bo‘lsa NO_GO; accepted P2 risk egasi bilan. Release artifact digest, migration, backup drill, workload/latency va real UAT dalili release manifestga biriktirilgan.",
+      "prompt": "prompts/S23/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "23.05",
+      "stage": "23",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "23.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S23.md"
+      ],
+      "test_id": "T23.05",
+      "acceptance": "Pul yo‘qolishi, begona ma’lumot yoki restore xatosi ochiq bo‘lsa release bloklanadi",
+      "prompt": "prompts/S23/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "24.01",
+      "stage": "24",
+      "title": "1–3 kun eski ma’lumotni tozalash, opening balance va markaz bilan reconciliation qilish",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "23.05"
+      ],
+      "technical_inputs": [
+        "23"
+      ],
+      "targets": [
+        "docs/operations/migration-playbook.md"
+      ],
+      "test_id": "T24.01",
+      "acceptance": "Import oldidan frozen source snapshot, opening debt/credit mapping va line totals; importdan keyin markaz imzoli reconciliation; tarixiy paymentni yangi tushum deb kiritmaslik.",
+      "prompt": "prompts/S24/01.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "24.02",
+      "stage": "24",
+      "title": "4–7 kun Admin 1 soat, Teacher 15 daqiqa, ota-ona botga ulanishini o‘rgatish",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "24.01"
+      ],
+      "technical_inputs": [
+        "23"
+      ],
+      "targets": [
+        "docs/operations/training.md"
+      ],
+      "test_id": "T24.02",
+      "acceptance": "Admin1 soat/Teacher15 daqiqa amaliy topshiriq bilan; bot adoptionning denominator va foizi yozilgan; unlinked parents uchun call list; video mavjudligi tekshirilgan.",
+      "prompt": "prompts/S24/02.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "24.03",
+      "stage": "24",
+      "title": "2–4 hafta haftada ikki audit; kuzatuv→ustuvorlik→patch→regression→natijani o‘lchash",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "24.02"
+      ],
+      "technical_inputs": [
+        "23"
+      ],
+      "targets": [
+        "docs/operations/pilot-loop.md"
+      ],
+      "test_id": "T24.03",
+      "acceptance": "Haftada ikki auditda PII-minimal metrikalar; issue→fix→regression→deploy→measured outcome. Tugmani topish >5s real kuzatuv, logdan taxmin emas.",
+      "prompt": "prompts/S24/03.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "24.04",
+      "stage": "24",
+      "title": "2–3 oy maosh/kassa sign-off, case study roziligi va keyingi 4–5 markaz rollout mezonlari",
+      "kind": "DOCUMENT",
+      "depends_on": [
+        "24.03"
+      ],
+      "technical_inputs": [
+        "23"
+      ],
+      "targets": [
+        "docs/operations/expansion.md"
+      ],
+      "test_id": "T24.04",
+      "acceptance": "1–3 oylik real davr va birinchi payroll/cash sign-off; case study uchun alohida rozilik; 4–5 markazdan oldin support capacity, restore va upgrade readiness tasdiqlangan.",
+      "prompt": "prompts/S24/04.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    },
+    {
+      "id": "24.05",
+      "stage": "24",
+      "title": "Review, regressiya va handoff",
+      "kind": "REVIEW",
+      "depends_on": [
+        "24.04"
+      ],
+      "technical_inputs": [],
+      "targets": [
+        "planning/state/handoffs/S24.md"
+      ],
+      "test_id": "T24.05",
+      "acceptance": "Birinchi oy hisoblari rahbar bilan solishtirilgan; muammolar egasi va patch natijasi yozilgan",
+      "prompt": "prompts/S24/05.md",
+      "status": "NOT_STARTED",
+      "evidence": null,
+      "reviewed_revision": null,
+      "review_result": null,
+      "reviewer": null
+    }
+  ]
+}

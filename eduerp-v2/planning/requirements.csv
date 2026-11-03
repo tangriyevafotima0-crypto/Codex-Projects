@@ -1,0 +1,97 @@
+requirement_id,requirement,source_pages,origin,owner_step,test_id,evidence_status
+R01.01,"Rahbar, Admin, Teacher, parent Telegram chegaralarini va v3 istisnolarini yozish",1–8,PDF-derived + engineering detail (see decisions),01.01,T01.01,PLANNED
+R01.02,"Pro-rata, trial, freeze, discount, refund va payroll qoidalarini misollar bilan tasdiqlash",1–8,PDF-derived + engineering detail (see decisions),01.02,T01.02,PLANNED
+R01.03,"Har talabga R-ID, rol, kirish, natija va sinov biriktirish",1–8,PDF-derived + engineering detail (see decisions),01.03,T01.03,PLANNED
+R01.04,"240/250 demo, oy/12 dars, bot tasdiqlash, zaxira va xizmat darajasi noaniqliklarini yopish",1–8,PDF-derived + engineering detail (see decisions),01.04,T01.04,PLANNED
+R02.01,"Har markazga alohida API, worker, PostgreSQL, fayl hajmi va bot chegaralarini loyihalash","1,3,5–7",PDF-derived + engineering detail (see decisions),02.01,T02.01,PLANNED
+R02.02,"UUID, version, foreign key, unique va immutable ledger jadvallarini ER diagrammada belgilash","1,3,5–7",PDF-derived + engineering detail (see decisions),02.02,T02.02,PLANNED
+R02.03,"Auth, students, groups, lessons, billing, payments, imports va sync kontraktlarini belgilash","1,3,5–7",PDF-derived + engineering detail (see decisions),02.03,T02.03,PLANNED
+R02.04,"Outbox hodisalari, idempotency, event version va retry semantikasini yozish","1,3,5–7",PDF-derived + engineering detail (see decisions),02.04,T02.04,PLANNED
+R03.01,"JS workspace va Flutter toolchainni alohida pin qilish, install/build buyruqlarini yaratish",7,PDF-derived + engineering detail (see decisions),03.01,T03.01,PLANNED
+R03.02,"NestJS API health, config validation va request ID poydevorini yozish",7,PDF-derived + engineering detail (see decisions),03.02,T03.02,PLANNED
+R03.03,"Mahalliy PostgreSQL, API va worker servislarini secretsiz sozlash",7,PDF-derived + engineering detail (see decisions),03.03,T03.03,PLANNED
+R03.04,"Lint, typecheck, test, build va maxfiy kalitlarni tekshirishni ulash",7,PDF-derived + engineering detail (see decisions),03.04,T03.04,PLANNED
+R04.01,"Staff, student, guardian, enrollment, group, lesson, invoice, ledger, audit, outbox jadvallarini yaratish",3–6,PDF-derived + engineering detail (see decisions),04.01,T04.01,PLANNED
+R04.02,"FK, unique, check, indekslar va ledger UPDATE/DELETE cheklovlarini yozish",3–6,PDF-derived + engineering detail (see decisions),04.02,T04.02,PLANNED
+R04.03,Tranzaksiya chegarasi va parallel yozish xatolarini boshqarish,3–6,PDF-derived + engineering detail (see decisions),04.03,T04.03,PLANNED
+R04.04,"Migratsiya, rollarning DB huquqlari, restore-compatible seed va cheklovlarni tekshirish",3–6,PDF-derived + engineering detail (see decisions),04.04,T04.04,PLANNED
+R05.01,"Parol hash, login limit, session revoke va birinchi kirishda parol almashtirishni yozish",3–4,PDF-derived + engineering detail (see decisions),05.01,T05.01,PLANNED
+R05.02,Director/Admin/Teacher huquqlari va har bir obyekt darajasidagi tekshiruvni yozish,3–4,PDF-derived + engineering detail (see decisions),05.02,T05.02,PLANNED
+R05.03,"Xodim yaratish, o‘chirish o‘rniga deaktivatsiya va rol almashtirishni yozish",3–4,PDF-derived + engineering detail (see decisions),05.03,T05.03,PLANNED
+R05.04,"Teacher boshqa guruhni, telefonni va moliyani ololmasligini sinash",3–4,PDF-derived + engineering detail (see decisions),05.04,T05.04,PLANNED
+R06.01,"O‘quvchi yaratish, tahrir, archive va UUID asosidagi qidiruvni yozish","3–4,8",PDF-derived + engineering detail (see decisions),06.01,T06.01,PLANNED
+R06.02,"Telefon normalizatsiyasi, ko‘p farzand va bir nechta vasiy munosabatini yozish","3–4,8",PDF-derived + engineering detail (see decisions),06.02,T06.02,PLANNED
+R06.03,Trial/active/frozen/left holatlari va kursga a’zolik tarixini yozish,"3–4,8",PDF-derived + engineering detail (see decisions),06.03,T06.03,PLANNED
+R06.04,Ism va telefon o‘xshashligini ogohlantirish; aka-ukalarni xato bloklamaslikni yozish,"3–4,8",PDF-derived + engineering detail (see decisions),06.04,T06.04,PLANNED
+R07.01,"Kurs, narx tarixi, guruh va asosiy o‘qituvchini yaratish","3–4,8",PDF-derived + engineering detail (see decisions),07.01,T07.01,PLANNED
+R07.02,"Dars occurrence, timezone, bayram, ko‘chirilgan va bekor darsni modellashtirish","3–4,8",PDF-derived + engineering detail (see decisions),07.02,T07.02,PLANNED
+R07.03,Faqat bitta dars uchun vaqtinchalik Teacher huquqi va haq egasini yozish,"3–4,8",PDF-derived + engineering detail (see decisions),07.03,T07.03,PLANNED
+R07.04,"O‘z guruhida imtihon bali va izohlarni yozish, tarixni saqlash","3–4,8",PDF-derived + engineering detail (see decisions),07.04,T07.04,PLANNED
+R08.01,Qolgan/to‘liq rejalashtirilgan dars ulushi bo‘yicha pro-rata va yaxlitlashni yozish,4–5,PDF-derived + engineering detail (see decisions),08.01,T08.01,PLANNED
+R08.02,"Kalendar oy, rolling month va 12-dars paketini alohida siyosat sifatida yozish",4–5,PDF-derived + engineering detail (see decisions),08.02,T08.02,PLANNED
+R08.03,Ikkinchi haqiqiy qatnashuvda birinchi trialdan hisobni bir marta chiqarish,4–5,PDF-derived + engineering detail (see decisions),08.03,T08.03,PLANNED
+R08.04,"Davr uchun idempotent invoice, line item, narx snapshot va kredit qoldig‘ini yozish",4–5,PDF-derived + engineering detail (see decisions),08.04,T08.04,PLANNED
+R09.01,"Foiz/fiks chegirma, sabab, muddat va oilaviy taklif yaratish",4–5,PDF-derived + engineering detail (see decisions),09.01,T09.01,PLANNED
+R09.02,Faqat rahbar tasdig‘i bilan qo‘llash; qo‘shilish tartibi va limitlarni yozish,4–5,PDF-derived + engineering detail (see decisions),09.02,T09.02,PLANNED
+R09.03,"Freeze interval, dars kesishmasi va keyingi davr kreditini hisoblash",4–5,PDF-derived + engineering detail (see decisions),09.03,T09.03,PLANNED
+R09.04,"Chiqish sanasi, besh sabab va yakuniy hisobni yozish",4–5,PDF-derived + engineering detail (see decisions),09.04,T09.04,PLANNED
+R10.01,Naqd/karta/Click/Payme/transfer qaydini pulning kichik birligida va tranzaksiyada yozish,"3,5",PDF-derived + engineering detail (see decisions),10.01,T10.01,PLANNED
+R10.02,"Qisman, ortiqcha va ko‘p invoicega taqsimlangan to‘lovni hisoblash","3,5",PDF-derived + engineering detail (see decisions),10.02,T10.02,PLANNED
+R10.03,"Sababli tuzatish so‘rovi, rahbar tasdig‘i va append-only reversal yaratish","3,5",PDF-derived + engineering detail (see decisions),10.03,T10.03,PLANNED
+R10.04,Noyob kvitansiya raqami va tasdiqlangan ledgerdan elektron kvitansiya yaratish,"3,5",PDF-derived + engineering detail (see decisions),10.04,T10.04,PLANNED
+R11.01,"Kassa ochish, sanalgan pul, discrepancy va yopilgan smenani qulflash","3,5",PDF-derived + engineering detail (see decisions),11.01,T11.01,PLANNED
+R11.02,"Xarajat toifasi, hujjat, vakolat va reversal bilan naqd chiqimini yozish","3,5",PDF-derived + engineering detail (see decisions),11.02,T11.02,PLANNED
+R11.03,"Partial payment va promise atomik commandini integratsiya qilish, debt yopilganda eslatmani bekor qilish","3,5",PDF-derived + engineering detail (see decisions),11.03,T11.03,PLANNED
+R11.04,"To‘lov usullari bo‘yicha tushum, kutilgan naqd va smena hisobotini yozish","3,5",PDF-derived + engineering detail (see decisions),11.04,T11.04,PLANNED
+R12.01,"Draftda default present, faqat submitdan keyin tasdiqlangan davomat yaratish","4–6,8",PDF-derived + engineering detail (see decisions),12.01,T12.01,PLANNED
+R12.02,"client operation UUID, expected version va lesson_id+student_id orqali dedup yozish","4–6,8",PDF-derived + engineering detail (see decisions),12.02,T12.02,PLANNED
+R12.03,"Eski Excelni rad etish, Teacher tasdig‘ini himoyalash va Admin sababli override yozish","4–6,8",PDF-derived + engineering detail (see decisions),12.03,T12.03,PLANNED
+R12.04,"Tasdiqlangan absence/late hodisasi, trial activation va billingga bog‘lash","4–6,8",PDF-derived + engineering detail (see decisions),12.04,T12.04,PLANNED
+R13.01,"DB outboxni lease bilan olish, bounded retry va dead-letter holatini yozish","5–6,8",PDF-derived + engineering detail (see decisions),13.01,T13.01,PLANNED
+R13.02,"Markaz vaqtida 09:00 va’da eslatmasi, to‘langan qarzni qayta tekshirish","5–6,8",PDF-derived + engineering detail (see decisions),13.02,T13.02,PLANNED
+R13.03,"20 daqiqada davomat yo‘q bo‘lsa ping, dars tugaganda Admin escalation yozish","5–6,8",PDF-derived + engineering detail (see decisions),13.03,T13.03,PLANNED
+R13.04,"Billing, smena, trial no-show follow-up va missed job catch-upni idempotent qilish","5–6,8",PDF-derived + engineering detail (see decisions),13.04,T13.04,PLANNED
+R14.01,Bir martalik invite va Telegram contact.user_id tekshiruvi bilan vasiy bog‘lash,"2–6,8",PDF-derived + engineering detail (see decisions),14.01,T14.01,PLANNED
+R14.02,Guardian so‘rovlari va Director approval callbacklarini backend command API orqali ulash,"2–6,8",PDF-derived + engineering detail (see decisions),14.02,T14.02,PLANNED
+R14.03,"Kvitansiya, absence, late, xavfsizlik va smena xabarlarini navbatdan yuborish","2–6,8",PDF-derived + engineering detail (see decisions),14.03,T14.03,PLANNED
+R14.04,"429 retry_after, 403 blocked, unlinked va API accepted holatlarini saqlash","2–6,8",PDF-derived + engineering detail (see decisions),14.04,T14.04,PLANNED
+R15.01,"15 soniyalik ro‘yxatga olish oqimi, guruh va guardian tanlashni qurish","3–5,8",PDF-derived + engineering detail (see decisions),15.01,T15.01,PLANNED
+R15.02,"To‘lov, va’da sanasi, kvitansiya va tuzatish so‘rovini qurish","3–5,8",PDF-derived + engineering detail (see decisions),15.02,T15.02,PLANNED
+R15.03,"Guruh, jadval, substitute, ballar va davomat ekranlarini qurish","3–5,8",PDF-derived + engineering detail (see decisions),15.03,T15.03,PLANNED
+R15.04,"Chegirma/refund tasdiqlash, kassa, qarz va audit ekranlarini qurish","3–5,8",PDF-derived + engineering detail (see decisions),15.04,T15.04,PLANNED
+R16.01,"Versiyali locked XLSX, hidden UUID, row version va yangi student uchun IDsiz shablon yaratish","2,5–7",PDF-derived + engineering detail (see decisions),16.01,T16.01,PLANNED
+R16.02,"Ustun, tur, hajm, formula injection, duplicate, foreign UUID va stale versionni tekshirish","2,5–7",PDF-derived + engineering detail (see decisions),16.02,T16.02,PLANNED
+R16.03,"Qizil/yashil dry-run, qator xatosi, immutable upload hash va preview token yaratish","2,5–7",PDF-derived + engineering detail (see decisions),16.03,T16.03,PLANNED
+R16.04,"Tasdiqda hash/versionni yana tekshirish; atomik import, idempotency va audit yozish","2,5–7",PDF-derived + engineering detail (see decisions),16.04,T16.04,PLANNED
+R17.01,"Flutter staff login, xavfsiz token va role navigation yaratish",6–7,PDF-derived + engineering detail (see decisions),17.01,T17.01,PLANNED
+R17.02,"SQLite draft, pending operation, retry metadata va minimal local data yaratish",6–7,PDF-derived + engineering detail (see decisions),17.02,T17.02,PLANNED
+R17.03,"Foreground/manual sync, tarmoq qaytishi, conflict UI va qayta yuborishni yozish",6–7,PDF-derived + engineering detail (see decisions),17.03,T17.03,PLANNED
+R17.04,"Teacher guruh/ball/davomat, Admin asosiy amallar va Director hisobotini yaratish",6–7,PDF-derived + engineering detail (see decisions),17.04,T17.04,PLANNED
+R18.01,"Kun/hafta/oy cash va accrued daromadni alohida, qarz va forecast hisoblash","3,7–8",PDF-derived + engineering detail (see decisions),18.01,T18.01,PLANNED
+R18.02,"Tasdiqlangan fixed/per lesson/percentage qoida, substitute ulushi va payroll snapshot yaratish","3,7–8",PDF-derived + engineering detail (see decisions),18.02,T18.02,PLANNED
+R18.03,"Sabab, teacher, cohort va davr bo‘yicha ketganlar hisobini yozish","3,7–8",PDF-derived + engineering detail (see decisions),18.03,T18.03,PLANNED
+R18.04,Vakolatli eksport va ledger reconciliation; web/mobile Director dashboardni haqiqiy report APIga ulash,"3,7–8",PDF-derived + engineering detail (see decisions),18.04,T18.04,PLANNED
+R19.01,"Alohida Vendor auth, MFA siyosati, center registri va audit bilan boshqaruv yaratish",3,PDF-derived + engineering detail (see decisions),19.01,T19.01,PLANNED
+R19.02,"Signed license, expiry, grace va audited read-only o‘tishni yozish",3,PDF-derived + engineering detail (see decisions),19.02,T19.02,PLANNED
+R19.03,"API/worker/import/offline yozishlarni bloklash, login/read/export/backupni saqlash",3,PDF-derived + engineering detail (see decisions),19.03,T19.03,PLANNED
+R19.04,"Vendor uzilishi, cache, soat siljishi va uzaytirishdan keyingi tiklanishni yozish",3,PDF-derived + engineering detail (see decisions),19.04,T19.04,PLANNED
+R20.01,"Har markazga alohida network, volumes, DB credentials, API va worker yaratish","1–3,7",PDF-derived + engineering detail (see decisions),20.01,T20.01,PLANNED
+R20.02,"Slug validation, preflight, BotFather token input, DNS/TLS tekshirish va qayta bajariladigan deploy yozish","1–3,7",PDF-derived + engineering detail (see decisions),20.02,T20.02,PLANNED
+R20.03,"Version pin, backup, migratsiya, health va app rollback protokolini yozish","1–3,7",PDF-derived + engineering detail (see decisions),20.03,T20.03,PLANNED
+R20.04,"Login, bot webhook, storage va ikki markaz izolyatsiyasini tekshirish","1–3,7",PDF-derived + engineering detail (see decisions),20.04,T20.04,PLANNED
+R21.01,Encrypted DB dump va kerakli fayllarni alohida offsite saqlash; retention va checksum yozish,8,PDF-derived + engineering detail (see decisions),21.01,T21.01,PLANNED
+R21.02,"Toza muhitga restore, versiya mosligi va nazorat summalarini tekshirish",8,PDF-derived + engineering detail (see decisions),21.02,T21.02,PLANNED
+R21.03,"DB, queue age, disk, backup age, TLS va login xatolari monitoringini yozish",8,PDF-derived + engineering detail (see decisions),21.03,T21.03,PLANNED
+R21.04,"Incident, kalit rotatsiyasi, Telegram backup opsiyasi va restore mashqini hujjatlashtirish",8,PDF-derived + engineering detail (see decisions),21.04,T21.04,PLANNED
+R22.01,"240 sintetik student, 14 group, 6 teacher, discount/grant/debt va reproducible random seed yaratish","2–3,7",PDF-derived + engineering detail (see decisions),22.01,T22.01,PLANNED
+R22.02,Faqat DEMO flag va alohida DBda qayta tiklash; productionda qat’iy rad etish,"2–3,7",PDF-derived + engineering detail (see decisions),22.02,T22.02,PLANNED
+R22.03,"3 daqiqada virtual farzand, absence va 400000 so‘mlik kvitansiya ssenariysini yozish","2–3,7",PDF-derived + engineering detail (see decisions),22.03,T22.03,PLANNED
+R22.04,"Video ssenariysi, help registry, UI playback/fallback va haqiqiy content readinessni boshqarish","2–3,7",PDF-derived + engineering detail (see decisions),22.04,T22.04,PLANNED
+R23.01,Enrollment→billing→partial payment→promise→receipt→refund to‘liq oqimini sinash,1–8,PDF-derived + engineering detail (see decisions),23.01,T23.01,PLANNED
+R23.02,"Offline, queue crash, double submit, stale Excel, license va restore regressiyasini sinash",1–8,PDF-derived + engineering detail (see decisions),23.02,T23.02,PLANNED
+R23.03,"RBAC, cross-center, guardian unlink va eksportdagi maxfiylikni sinash",1–8,PDF-derived + engineering detail (see decisions),23.03,T23.03,PLANNED
+R23.04,"Pilot UAT, ma’lum kamchilik, performance o‘lchovi va rollback qarorini yozish",1–8,PDF-derived + engineering detail (see decisions),23.04,T23.04,PLANNED
+R24.01,"1–3 kun eski ma’lumotni tozalash, opening balance va markaz bilan reconciliation qilish",7–8,PDF-derived + engineering detail (see decisions),24.01,T24.01,PLANNED
+R24.02,"4–7 kun Admin 1 soat, Teacher 15 daqiqa, ota-ona botga ulanishini o‘rgatish",7–8,PDF-derived + engineering detail (see decisions),24.02,T24.02,PLANNED
+R24.03,2–4 hafta haftada ikki audit; kuzatuv→ustuvorlik→patch→regression→natijani o‘lchash,7–8,PDF-derived + engineering detail (see decisions),24.03,T24.03,PLANNED
+R24.04,"2–3 oy maosh/kassa sign-off, case study roziligi va keyingi 4–5 markaz rollout mezonlari",7–8,PDF-derived + engineering detail (see decisions),24.04,T24.04,PLANNED

@@ -1,0 +1,15 @@
+# Credentials and personal records
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.sql
+*.sql.gz
+*.dump
+__pycache__/
+*.pyc
+node_modules/
+.dart_tool/
+build/
+.DS_Store

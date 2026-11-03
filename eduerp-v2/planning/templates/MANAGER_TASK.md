@@ -1,0 +1,13 @@
+# Argon task packet
+TASK_ID:
+STEP_ID:
+MODE: IMPLEMENT / FIX / EVIDENCE / READ_ONLY_SETUP
+REPO / PROJECT_ROOT:
+BASE_COMMIT:
+BRANCH:
+INPUT_FILES:
+SCOPE / TARGET_FILES:
+ACCEPTANCE:
+KNOWN_ISSUES:
+REQUIRED_EVIDENCE:
+STOP: faqat shu task; yakunda IN_REVIEW, keyingi qadam menejer promptidan keyin.
