@@ -1,14 +1,15 @@
 # ACTIVE TASK
-Task: ARGON-01.01-FIX-01
-Step: 01.01
-Mode: DOCUMENT_ONLY_OFFLINE_FIX
+Task: BATCH-01.01-01.02-B
+Mode: DOCUMENT_FIX_AND_NEXT_DRAFT_OFFLINE
 Owner: Argon
 Manager: Codex
 Status: READY_TO_ASSIGN
-Decision on previous artifact: CHANGES_REQUIRED
-Read: planning/state/reviews/01.01-A.md (F01–F05)
-Baseline: manager promptdagi yangi commit + TASK_INPUT.json
-Candidate: offline ZIPdagi docs/* va planning/state/steps/01.01.md original topshiriqdan overlay qilingan; ular main canonical fayllari emas.
-Allowed outputs: docs/spec/scope.md, docs/spec/scope-traceability.csv, docs/verification/01.01.md, planning/state/steps/01.01.md; transport SUBMISSION.json.
-Acceptance: F01–F05 tuzatilgan; 7 CSV ustun/119 unique ID saqlangan; haqiqiy anchor, source page va origin tekshiruvi; qarorlar o‘zboshimchalik bilan qabul qilinmaydi.
-STOP: 01.02, mahsulot kodi, execution/CURRENT/TRACKER yoki boshqa reja fayllarini o‘zgartirish yo‘q.
+Supersedes: ARGON-01.01-FIX-01 faqat single-step stop bo‘yicha; F01–F05 talablari saqlangan
+Scope: 01.01 fix + 01.02 business-rules draft; 01.03/app kodi tashqarida
+Assignment: planning/assignments/BATCH-01.01-01.02-B.md
+Policy: planning/09_BATCH_POLICY.md
+Learning: planning/state/ARGON_LEARNING.md
+Baseline: jonli manager prompt va delta TASK_INPUT.json
+Candidate inputs: oldingi FIX inputdagi4 hujjat yoki o‘sha taskning yangi lokal fix natijasi
+Canonical state: 01.01 CHANGES_REQUIRED; 01.02 NOT_STARTED. Draft yuborilgach manager bosqichma-bosqich statusni tekshiradi; Argon registrga yozmaydi.
+Deliverable:7 hujjat+SUBMISSION.json, bitta ZIP, IN_REVIEW

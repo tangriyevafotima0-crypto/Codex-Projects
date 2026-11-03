@@ -1,3 +1,6 @@
+# Amaldagi batch qo‘shimchasi
+planning/09_BATCH_POLICY.md va ACTIVE_TASKdagi scope ushbu umumiy single-step shablonini moslashtiradi.
+
 # v2.2 boshqaruv tuzatishi
 Ushbu rejada rollar AGENTS.md va MANAGER_WORKFLOW.mdga muvofiq: Argon ijrochi, Codex menejer. Self-review tayyorgarlik bo‘lishi mumkin, lekin APPROVEDni faqat menejer beradi. Navbatdagi step yangi menejer task prompti bilan ochiladi. Avvalgi umumiy avtomatik davom etish tavsiyalari shu loyiha uchun qo‘llanmaydi.
 
@@ -11,7 +14,7 @@ Ushbu rejada rollar AGENTS.md va MANAGER_WORKFLOW.mdga muvofiq: Argon ijrochi, C
 Boshlash ruxsati bir marta sessiyada berilsa qayta so‘ralmaydi. Hozirgi paketni upgrade qilish mahsulot kodini boshlash ruxsati emas. Repo/push/deploy doirasi keyingi ijro topshirig‘iga muvofiq bo‘ladi; allaqachon berilgan ruxsatni bekor qiluvchi sun’iy gate qo‘ymang.
 
 ## Ketma-ketlik
-Bitta aniq yo‘l: S01.01→…→S01.05→S02.01→…→S24.05. `depends_on` — ijro tartibi; `technical_inputs` — domen bog‘liqligi. Har ish oldingi stepi APPROVED bo‘lishini talab qiladi. S01.01 uchun oldingi step/handoff yo‘q; AGENTS.md yoki state fayl hali yo‘q bo‘lsa bu o‘z-o‘zidan blocker emas. Ushbu paket boshlang‘ich state beradi.
+Bitta aniq yo‘l: S01.01→…→S01.05→S02.01→…→S24.05. `depends_on` — ijro tartibi; `technical_inputs` — domen bog‘liqligi. Canonical approval oldingi step APPROVED bo‘lishini talab qiladi. Manager sanab bergan batch ichida candidate draftlar oldingi local fix/verificationdan so‘ng yaratilishi mumkin; canonical statusni bu bilan APPROVEDga aylantirish mumkin emas. S01.01 uchun oldingi step/handoff yo‘q; AGENTS.md yoki state fayl hali yo‘q bo‘lsa bu o‘z-o‘zidan blocker emas. Ushbu paket boshlang‘ich state beradi.
 
 Step .05 stage REVIEWni bajaradi: u o‘zining oldindan APPROVED bo‘lishini talab qilmaydi. .01–.04 hisobotlarini tekshiradi va stage handoff beradi. Reviewni shu agent aniq alohida passda qilishi mumkin; bu mustaqil tashqi audit deb nomlanmaydi. Yangi reviewer chat ishlatish mumkin, majburiy subagent yo‘q.
 

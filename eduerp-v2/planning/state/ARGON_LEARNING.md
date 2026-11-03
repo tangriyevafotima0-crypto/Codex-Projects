@@ -1,0 +1,14 @@
+# Argon review kuzatuvlari
+Dataset: bitta yakunlangan submission ARGON-01.01-A, bitta manager review; fix hali olinmagan. Takroriy pattern yoki aniqlik oshgani haqida statistik da’vo yo‘q.
+
+| ID | Kuzatuv | Manbasi | Promptdagi prevention | Keyingi tekshiruv |
+|---|---|---|---|---|
+| L01 | Source va taklif bo‘lsa ham role tableda definitive huquq | F01, executor synthesis | origin + decision_status; noaniq grant OPEN | FIX/BATCHda tekshiriladi |
+| L02 | CSV119 ID bor, ammo anchorlar uydirma | F02, executor | explicit anchors + parser existence | FIX/BATCHda tekshiriladi |
+| L03 | Sahifa xatosi source mappingdan ko‘chgan, yangi detail ham tekshirilmagan | F03, manager/executor shared | source matni ustuvor; upstream correction report | FIX/BATCHda tekshiriladi |
+| L04 | Privacyda bir nechta muqobil ifoda qolgan | F04, executor wording | raw data boundary aniq, UI maskga tayanmaslik | FIX/BATCHda tekshiriladi |
+| L05 | Birlik qisqartmasi va broad PASS semantik xatoni yashirgan | F05, executor | explicit unit + row count/semantic coverage separate | FIX/BATCHda tekshiriladi |
+
+Kuchli natijalar: barcha ruxsat etilgan fayllar bor; 4 hash mos; 119 unique ID original setga teng; transport va scopega amal qilingan. Model nomiga qarab kuch/zaiflik bahosi berilmaydi.
+
+Keyingi reviewda: qaysi finding yopildi, qaysisi takrorlandi/yangi issue, downstream ta’siri va promptga eng qisqa o‘zgarish yoziladi. Token yoki vaqt sarfi o‘lchanmagan; tejash hozir dizayn maqsadi.

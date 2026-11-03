@@ -1,3 +1,6 @@
+# User tasdiqlagan paket usuli
+Manager bir promptda sanab bergan fix va bir nechta stepni bitta sessiyada bajarish mumkin. Har step orasida alohida manager javobi kutilmaydi. Faqat sanalgan scope ichida; yakunda IN_REVIEW, approval managerda. Batafsil: planning/09_BATCH_POLICY.md. Eski «faqat bitta step» chegarasi paketdagi aniq ro‘yxatga nisbatan qo‘llanadi.
+
 # EduERP umumiy ish qoidalari — v2.2
 
 Bu fayl faqat eduerp-v2/ loyihasiga tegishli. User topshirig‘i ustuvor. Argon avtomatik AGENTS.md o‘qiydi deb taxmin qilinmaydi: boshlang‘ich prompt uni aniq o‘qitadi.
