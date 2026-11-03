@@ -1,0 +1,26 @@
+{
+  "task_id": "ARGON-01.01-A",
+  "step_id": "01.01",
+  "mode": "DOCUMENT_ONLY_OFFLINE",
+  "status": "IN_REVIEW",
+  "base_commit": "2dc88d152c96d963ccd6d883053569c670ad3620",
+  "project_root": "eduerp-v2",
+  "files": [
+    {
+      "path": "docs/spec/scope.md",
+      "sha256": "3ecf97d3c3bb93ff2065e25723951e195ab490c2b0725d2cfb8458f01a4f45e6"
+    },
+    {
+      "path": "docs/spec/scope-traceability.csv",
+      "sha256": "a59eb0fa4e67c6c08429dd4edd3a9fb180a9b03dbd7762f0e50326bb5ba0d19c"
+    },
+    {
+      "path": "docs/verification/01.01.md",
+      "sha256": "4056a696b6e3a093dc5a021324bd3673ab4d97ea78969991479d80f218a192c9"
+    },
+    {
+      "path": "planning/state/steps/01.01.md",
+      "sha256": "ad653eaf9d8338c774167eb1a3e640f2c1aa0519c40e54b9caf447718d4ab393"
+    }
+  ]
+}
