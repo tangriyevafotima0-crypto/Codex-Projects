@@ -28,3 +28,10 @@ SETUP-00 uning repo o‘qish, branch/push/PR, terminal/test va framework imkoniy
 
 ## Birinchi qadam
 SETUP-00: repo/muhitni tekshirish. Mahsulot kodini yozmaydi; uning muvaffaqiyati S01.01ni bajarish ruxsati emas. User «qurishni boshlaymiz» degach Codex S01.01 topshirig‘ini beradi. Hozirgi buyurtma boshqaruv tartibini tayyorlash va repoga joylash.
+
+## SETUP-00dan keyingi amaldagi transport
+Argon outbound internet/push/PR yo‘qligini xabar qildi. Shuning uchun menejer bazis commitga mos offline ZIP beradi; user uni Argonga uzatadi. Argon faqat ruxsat etilgan yangi/o‘zgargan fayllar ZIPini, task/base commit va sha256 manifestini qaytaradi. PR majburiy emas; qo‘lda chatdan katta diff nusxalash ham asosiy usul emas. ZIP eksporti bo‘lmasa to‘rtta hujjatni path sarlavhalari bilan to‘liq matn sifatida qaytarish mumkin; menejer keyin faylga aylantiradi.
+
+Menejer received ZIPni repo bazisi bilan solishtiradi, diff/hash/path va acceptance tekshiradi. Bazis main o‘zgargan bo‘lsa affected pathlarni solishtirmasdan overwrite qilmaydi. Natijani review branchga joylashtirishi mumkin; keyingi step faqat manager qaroridan keyin. Joriy cheklangan taskda status registrini faqat menejer o‘zgartiradi — Argon snapshotni qayta yuborib boshqa ish holatini bosib ketmaydi.
+
+Task paketiga faqat ishga zarur fayllar kiradi; maxfiy token/parol va real student data kirmaydi. Kichik doc step uchun git clone, internet, package install yoki app build talab qilinmaydi.
