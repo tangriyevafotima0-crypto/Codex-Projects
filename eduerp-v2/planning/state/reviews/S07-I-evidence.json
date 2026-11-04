@@ -1,0 +1,75 @@
+{
+  "task_id": "S07FULL-I",
+  "decision": "CHANGES_REQUIRED",
+  "submission_sha256": "c504083addd057dd9ae0ec499274d07fce6619d45d1b8386c877d95865ff9c3b",
+  "original_commit": "1c2598d866123ea1ef240bad2ab5598af8515742",
+  "base_commit": "f365207ca2b41ae6aceeb1577ff1aea0a2883569",
+  "candidate_input_commit": "ad56d67c7c08e7c7cb4e80abeccf67c069337bc5",
+  "strict_ci": {
+    "run_id": 41843091487,
+    "conclusion": "success",
+    "jobs": 3,
+    "tests": {
+      "unit_runtime": 31,
+      "database": 18,
+      "auth": 14,
+      "students": 6,
+      "academics": 7,
+      "total": 76
+    }
+  },
+  "adversarial_probe": {
+    "run_id": 41843091349,
+    "conclusion": "diagnostic_execution_success_not_acceptance",
+    "observed": {
+      "director_login": 200,
+      "substitute_login": 200,
+      "initial_grade": 200,
+      "revoke": 200,
+      "revoked_same_key_grade_replay": 200,
+      "revoked_new_key_grade": 403,
+      "future_group_price_update": 200,
+      "future_group_list_status": 200,
+      "group_fee_after_effective_date": "480000",
+      "expected_group_fee": "650000"
+    }
+  },
+  "initial_runtime": {
+    "run_id": 41842706014,
+    "auth_pass": 14,
+    "students_pass": 6,
+    "academics_pass": 6,
+    "academics_fail": 1,
+    "grade_sql_error": "multiple assignments to same column updated_at"
+  },
+  "mechanical_assists": [
+    "Remove unused test token variable",
+    "Use env.roleApiRuntime; ACL queries on env.migratorPoolA",
+    "Finish each Director race test transaction independently; require exactly one commit/reject",
+    "Bound CI job and gate durations",
+    "Remove duplicate updated_at assignment at grade optimistic update callsite"
+  ],
+  "open_findings": [
+    {
+      "id": "I03",
+      "priority": "P1",
+      "issue": "Revoked substitute exact idempotent grade replay bypasses current object authorization",
+      "actual": 200,
+      "expected": 403,
+      "new_key_actual": 403,
+      "scope": "cached response exposure; no new grade write demonstrated"
+    },
+    {
+      "id": "I04",
+      "priority": "P2",
+      "issue": "Future group-specific tariff does not become effective on group read",
+      "actual": "480000",
+      "expected": "650000",
+      "effective_date": "2026-11-10",
+      "clock_after": "2026-11-11"
+    }
+  ],
+  "approved_stages": 6,
+  "approved_steps": 30,
+  "total_steps": 120
+}

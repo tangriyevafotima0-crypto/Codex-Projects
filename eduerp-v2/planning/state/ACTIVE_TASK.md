@@ -1,9 +1,7 @@
 # ACTIVE TASK
 
-- Task: **S07FULL-I**.
-- Owner: Argon; manager: Codex. Status: **READY_TO_ASSIGN**.
-- Scope: **07.01–07.05** — kurs, narx tarixi, guruh, jadval, o‘rindosh va baholar; assignmentdagi R1/R2/R3 hardening.
-- Read: planning/assignments/S07FULL-I.md, state/reviews/S04-S06-H.md va state/OWNER_DECISIONS.md.
-- Exact base commit: paket ildizidagi TASK_INPUT.json. S01–S06 poydevori tasdiqlangan.
-- Output: changed/new delta + SUBMISSION.json, **IN_REVIEW**. Ijrochi self-approval qilmaydi.
-- Stop: S08 billing, real Telegram xabari, production migration/deploy va real mijoz ma’lumoti.
+- Task: **S07FIX-J**; owner Argon, manager Codex; **READY_TO_ASSIGN**.
+- S01–S06 approved:30/120 steps. S07FULL-I **CHANGES_REQUIRED**; candidate source review branchda, main mahsulot kodi S06 holatida.
+- Scope: I01–I06 closure va 07.01–07.05 acceptance, assignment planning/assignments/S07FIX-J.md.
+- Exact approved main/base va candidate input commit: root TASK_INPUT.json. Input candidate + manager assists ekanini unutmang; main source bilan bir xil emas.
+- Output: S07FIX_J_SUBMISSION.zip changed/new delta+SUBMISSION.json, IN_REVIEW. S08, billing formula, production va Telegram live scopega kirmaydi.

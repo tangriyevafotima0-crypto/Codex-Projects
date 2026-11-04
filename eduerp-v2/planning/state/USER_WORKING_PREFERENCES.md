@@ -31,3 +31,7 @@ G reviewdan keyin navbatdagi katta paket:S04S05FIX-S06FULL-H. G01–G07fix+S06fu
 
 ## Haccepted — currentplanstate
 S01–S06foundationapproved atcodeee0c12dfd89c91de3079ce0bb4be51afc4439c37,CI41832572394,64tests.30/120steps=25%byplancount. NextS07FULL-Iwholeacademicstage+minorR1/R2/R3. Usercenter-configurablebillingexamplesrecordedOWNER-20261104-02;moneyformulastillpartiallyopen.
+
+
+## Ireview — current state
+S07candidateCHANGES_REQUIRED:manager-assisted76tests+DockerPASS,lekin revokedcachedgradeaccess va futuregroupfeeOPEN. Approved30/120=25%saqlanadi. Keyingibitta mustaqil paketS07FIX-J:6closureworkstream+S07acceptance,oldworkingcodepreserved,S08explicitstop. Ko‘p ish berish security acceptance o‘rnini bosmaydi; bu xatolar tuzatilguncha pul enginega o‘tilmaydi.

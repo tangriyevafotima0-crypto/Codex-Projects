@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 7 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 8 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
@@ -59,3 +59,13 @@ L32:futurebotURL/refhash mosligi va realissuance yo‘q edi. Next:futureintegrat
 L33:2pycoutputartifactkeraksiz;exactrawZIPreviewbranchda,productcachefree.
 Manager-induced broadINSERTVALUESreplacement strictCIcatchqildi va scope-specificfixbo‘ldi;Argonxatosi debhisoblanmaydi. NextmanagereditsmaydoncontextvaactualG3fixturebilantekshiriladi.
 Dataset7artifacts,statistikbenchmarkemas. P2R1limiterfailclosed/R2explicitreuse nextpacketgaassigned.
+
+
+## Sakkizinchi artifact — S07FULL-I
+Kuchli jihat:48source hash/lock/cache discipline yaxshi; offline NOT_RUN halol; R1fail-closed/R2explicitreuse actual HTTP/PGda ishladi. Manager assistsdan keyin76tests+Docker strictCI418430914873/3SUCCESS, ammo2semantic finding OPEN. S07approval yo‘q.
+L34:helper SET ownershipni bilmagan callsite updated_atni ikki marta yozdi; actualgrade500. Prevention:real helper SQL roundtrip + isolated grade positive/negative tests. Manager minimalfix inputda.
+L23/L26 yangi kesishma:authorization faqat new idempotency handlerda; cached grade response revokeddan keyin200. Prevention:current object check BEFORE cache response, samekeyafterrevoke/reassign test. Bu rawcredential storage takrorlandi degani emas; umumiy cache/auth boundary patterni.
+L35:futuregroup pricehistorywrite bor, effective date o‘tgach groupreadprojection eski. Prevention:clock advance BEFORE/ON/AFTER va authoritative as-ofresolver barcha readlarda.
+L36:typed harness property ixtiro qilingan, ACL correct DB identity tekshirilmagan. Prevention:real interface + target DB/role, cleanupgrantfinally. Managerfixed.
+Inherited/shared tooling:oldDB-IT-19 wait-both-before-commit nondeterministic hang. Argonnewregressionimas. ManagerindependentCOMMIT/ROLLBACK+assertonewinner+CIboundsfixqildi. Runtimeprobe ilkfixturesnapshot missing edi, managerfixture correction; Argonxatosi deb hisoblanmaydi.
+L05coverage yana:76existingtestsPASS2adversarialsemanticsni isbotlamadi. PromptJcountquotaemas,failuremodeassertionlarni talabqiladi. Dataset8artifact, statistik modelbenchmark yoki token-efficiency o‘lchovi yo‘q.

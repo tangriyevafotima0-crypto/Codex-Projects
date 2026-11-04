@@ -1,0 +1,319 @@
+{
+  "task_id": "S07FULL-I",
+  "base_commit": "f365207ca2b41ae6aceeb1577ff1aea0a2883569",
+  "candidate_input_commit": "f365207ca2b41ae6aceeb1577ff1aea0a2883569",
+  "verified_code_commit_base": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+  "package_lock_sha256_preserved": "392316f8fce7ac4e9646d8b9f1b4f2787602d252a1e390c177aa291f9a1d6472",
+  "status": "IN_REVIEW",
+  "scope": [
+    "R1 limiter fail-closed",
+    "R2 strict guardian reuse/booleans",
+    "R3 packaging/evidence",
+    "07.01",
+    "07.02",
+    "07.03",
+    "07.04",
+    "07.05"
+  ],
+  "needs_manager_dependency_refresh": false,
+  "deleted_paths": [],
+  "policy_gates_enforced": [
+    "OWNER-20261104-02: Course groups store billing_mode, due_date_rule ('ENROLLMENT_ANNIVERSARY' | 'CENTER_FIXED_DAY' with fixed_due_day 1..31), and collection_timing ('ADVANCE' | 'ARREARS') as separate parameters; unconfirmed S08 monetary pro-rata/package/refund calculations fail closed with 403 POLICY_DECISION_NOT_CONFIRMED.",
+    "D03/D21/D14/D22: Retroactive invoice recalculation on course price update (recalculate_existing_invoices=true), automatic initial cycle invoice issuance on group creation (auto_generate_initial_cycle_invoices=true), and unconfirmed package credit/extension on lesson cancellation (apply_unconfirmed_package_credit_or_extension=true) fail closed with 403 POLICY_DECISION_NOT_CONFIRMED.",
+    "D11: Completed lesson historical primary_teacher_snapshot_id and pay_recipient_teacher_id snapshots are immutable and cannot be retroactively reassigned or revoked via substitute endpoints (403 POLICY_DECISION_NOT_CONFIRMED)."
+  ],
+  "executed_checks": [
+    {
+      "name": "input_manifest_sha256_verification",
+      "command": "python3 -c '<verify INPUT_MANIFEST.json 370 files>'",
+      "status": "PASS",
+      "details": "All 370 files in INPUT_MANIFEST.json verified with 0 hash mismatches; package-lock.json preserved untouched (392316f8fce7ac4e9646d8b9f1b4f2787602d252a1e390c177aa291f9a1d6472)."
+    },
+    {
+      "name": "s01_s02_contract_and_openapi_verification",
+      "command": "python3 -B tools/verify_s01_s02.py",
+      "status": "PASS",
+      "details": "67 OpenAPI 3.1.0 operations (5 public bootstrap, 62 protected), 969 local $ref targets, 0 OAS 3.0 nullable keywords, 16 operation-inventory rows, 119 traceability rows, 12 negative self-tests PASS."
+    },
+    {
+      "name": "s04_s05_s06_s07_schema_migration_and_sql_verification",
+      "command": "python3 -B tools/verify_s04.py",
+      "status": "PASS",
+      "details": "46 Prisma models, 46 SQL tables across 4 migrations, 100 ON DELETE RESTRICT FKs, 24 immutability triggers, 11 lineage triggers, 21 DB-IT + 17 AUTH-IT + 9 STU-IT + 10 ACAD-IT scenarios, 36 RBAC matrix rows, 144 TS SQL INSERT statements verified."
+    },
+    {
+      "name": "planning_governance_verifiers",
+      "command": "python3 -B planning/tools/check_plan.py && python3 -B planning/tools/test_plan.py",
+      "status": "PASS",
+      "details": "Planning integrity and 15 synthetic governance tests PASS; global governance files untouched."
+    },
+    {
+      "name": "node_unit_and_subprocess_tests",
+      "command": "node --test <babel-transpiled contracts.test.ts, config.test.ts, auth-unit.test.ts, students-unit.test.ts, academics-unit.test.ts, worker.test.ts, process.test.ts>",
+      "status": "PASS",
+      "details": "22/22 unit and subprocess assertions PASS (0 failures) covering R1 fail-closed 503 rate limiter, R2 strict boolean & guardian reuse validation, G07 37-endpoint route policy inventory, UZS BigInt bounds, IANA timezone/DST gap & overlap conversion, grade score/comment sanitization, lesson operational eligibility predicates, and worker SIGTERM lifecycle."
+    }
+  ],
+  "not_run_checks": [
+    {
+      "name": "npm_ci_prisma_generate_lint_typecheck_build",
+      "command": "npm ci && npm run prisma:generate && npm run lint && npm run typecheck && npm run build",
+      "status": "NOT_RUN",
+      "reason": "Sandbox VM has no outbound internet access and no pre-installed node_modules/@prisma/client generated engine binary."
+    },
+    {
+      "name": "live_postgresql_integration_gates_g1_g2_g3_g4",
+      "command": "npm run test:db && npm run test:auth && npm run test:students && npm run test:academics",
+      "status": "NOT_RUN",
+      "reason": "Sandbox VM has no local PostgreSQL 16 server or Docker daemon; DB-IT-01..21, AUTH-IT-01..17 (with R1 privilege revoke), STU-IT-01..09 (with R2 strict guardian reuse), and ACAD-IT-01..10 are wired for live PostgreSQL execution in manager/CI runtime."
+    },
+    {
+      "name": "docker_compose_smoke_test",
+      "command": "docker compose --env-file .env.example -f infra/compose.dev.yml up --build --wait",
+      "status": "NOT_RUN",
+      "reason": "Docker daemon is not installed in the sandbox VM."
+    }
+  ],
+  "files": [
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "sha256": "676806331d67809fe08458f189d9271dbdc182e796ba840e1d9226143be24fed",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261104000400_s07_academics_schedule_substitutes_grades/migration.sql",
+      "sha256": "72f1bf6594bb00f0ae11883712df109db9cb134fe1398ec64a35cb11634549b1",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "1f993130c3c0a527e9f8c0c9d1d254af8230942f03f70debd0ebdd57157dba00",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/academic-access.service.ts",
+      "sha256": "b93531785a3e0bfc0a64a3f44bc14b49c637b32b53a061ec00572e7071630109",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/academic-validation.ts",
+      "sha256": "ff18004930b5df95e6e859d775d7a928a570fb58ee7e9d55fac1d88272677a11",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/academics.module.ts",
+      "sha256": "0e5d7daaf20c94c6ce0c235cac7e59a6d252120beeb62d1b509b65450b0a4627",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/courses.controller.ts",
+      "sha256": "8c40ea819e5c0366547924c56062ab43f7b04cfb4f50a1123772fbe906b84e4f",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/courses.service.ts",
+      "sha256": "4f397e6da37db3fa52a46809d18e6811e21dcde7388a4b84af8dbe4449c78611",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/grades.controller.ts",
+      "sha256": "e5f8c94d5ad2382ce36dbc9c0c77759da450315c441d8fb268657d7a8607a7fd",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/grades.service.ts",
+      "sha256": "e9275ea76170803fb4f6f6722aa2612656d5de8377afaf7e6889ce9659276a69",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/groups.controller.ts",
+      "sha256": "67dfe74bbad88bd1dfd4ea5fa93bf857d7a0faf0074c2a77d67fd39db93d115e",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/groups.service.ts",
+      "sha256": "a76778bec8653d213cfd0559d1a5c2983c1199f469fc30b99ac90ec1fcbe14fb",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/index.ts",
+      "sha256": "17e1007215f081893293d0d186e6e59cebb595a84f044369b1edddc8ef6b51ff",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/lessons.controller.ts",
+      "sha256": "ace744afe5a6b3846dec1488441e4542d47ca51800a98b973668b8707641227e",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/lessons.service.ts",
+      "sha256": "04e944d4365ea3d72e8ef446ceb498eae91d8505e2dd9b000e2d0a5b56feaf53",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/substitutions.controller.ts",
+      "sha256": "85e5830422ba6f2a39665622c1c6e98872a8a9d80abdeb72d385fe7419f639bc",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/substitutions.service.ts",
+      "sha256": "e488deccec555fb78f95b6bc9b120c041bfc90e367e49d7e58922861819d24ca",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "sha256": "b2f9bddabba686148f87acc63c6827c620f4e998552d82f56e357b56feb9eb38",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/auth.service.ts",
+      "sha256": "55043f425cf78435ab91d81eaeec504ad995228d0a2bd91d54927b4092b53151",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/roster.controller.ts",
+      "sha256": "83e57d65c3ebfc69ac2d64035f1155ada96d0824f676e05cd83208fe847b7fab",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/staff.service.ts",
+      "sha256": "94d3054d31c49117ce63fb08316837a5e803ec3e96cd3e10408b544365303041",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/enrollments.service.ts",
+      "sha256": "0be54b2aec550b591ce7dc6f700e8d595a2c9911cab6fda6735a644659d6f08a",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/guardians.service.ts",
+      "sha256": "65509c2c5b20fcebeef9b64e538eb37404c63cac7a5985ea85ea13ac06be1da1",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/normalization.ts",
+      "sha256": "74217e0345e1d195bf0bea9dad02e77ec748a53150adeffc5043d8096df4524c",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/students.service.ts",
+      "sha256": "dddbdebcf53d7c55c66d141eaf0e1cf62f62155ed37a9e645c01d6a572044c88",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/academics/academics-lifecycle.integration.test.ts",
+      "sha256": "68f9b7644d1c1699191730f9b955d2a1558ac379e47c33f3b4ddcb9a1cae716a",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/academics-unit.test.ts",
+      "sha256": "200f5118ba14449348f5c55a2020f95a13e7a498b35fec0efe010de3bdf47ea5",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/auth/auth-and-sessions.integration.test.ts",
+      "sha256": "d1124a58a0a852fa463f2c44106bea9278c88ec6c11f2c2309cc5259b4e488ce",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/auth-unit.test.ts",
+      "sha256": "7a22073cebb03192c10815c60f29cecb9e7c8ced9443a491fb9bc1dfb5d855e6",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "sha256": "17d66985dbf0caa47d1796c44314aa0050285868620fe77ccc31f0bf344f8a56",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/students/students-lifecycle.integration.test.ts",
+      "sha256": "72d81a71ed88a613d5f0068cc3c09bf18fde985efadc38744538448aeb209fa2",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/students-unit.test.ts",
+      "sha256": "6621efb5e613d0417a46ff898faa71a4ab3e51e1c66448b9c0f3079e4f469160",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-007-academics-and-lesson-entitlements.md",
+      "sha256": "c5ed9b256cb8d389f324020500111a5dffbeda25c8d88c2ad2866a6676659f2c",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "sha256": "dc51b0ba92bb710ef5370098c54c6f0082a3fc6f67e919442b5c3ee3f8523aed",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/operation-inventory.csv",
+      "sha256": "5afe6ff5bf4e0c469849fc569da8f0f3c55b8bab9607583050f53c7e4ba324ee",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "sha256": "b96afa0115ce97268d1bbcd257cd8fadddc678dff28a82ccdbb80accd6e995fd",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S07.md",
+      "sha256": "2584c64fe945fedf40c78062140316f8f811f6de3b22e799f4cfc95ee04dfdb2",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "sha256": "e3ba8806f2649cce4f2b667daba8ffa7c41ff79f71a497ea09f185cfe9d3fe90",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "sha256": "d6b48c648e9370ecef9c0c84d75950755c49cb4eb27a4636f34a3337164b84d3",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/index.ts",
+      "sha256": "0ad8d22697b729b2eb5cb9d7acdd35537d0d1661af36414794ad9ff3848428ca",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S07.md",
+      "sha256": "75fee9f012937300321640bc7501d25faa765af1fc7907dc1c09e96692336dc0",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.01.md",
+      "sha256": "001d010fc0297f05d5b4247045a4951826235a3cd2b7869a6a0144854aa11b2a",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.02.md",
+      "sha256": "fe1cabba958ed79510200db9859744d22d9520ff033064f4faa2bfbeb8df601c",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.03.md",
+      "sha256": "19fec08501b160d3c40d25c7c9409c12fd99e42edfe7b920cdc1a050b1eb1e63",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.04.md",
+      "sha256": "a9a17329aa86d042ac7a3050e7c9990a659381d572af3a2b4b5cab3851ad1a24",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.05.md",
+      "sha256": "197f75032af7f385867c0045ea9ece94a3eb9ef3814a7ef801be30fa8b7b5eb1",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s01_s02.py",
+      "sha256": "30c6f62e22aa1e294c84d8382afae44b42e33b04c6a41768cf7298f0e8f248bd",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "9bbfef4ca33ddf47c5ec611d9140a0b68811ce4402d222336d67d7dc74dc81c3",
+      "change_type": "MODIFIED"
+    }
+  ]
+}
