@@ -230,7 +230,7 @@ export class GuardiansService {
                  "linked_phone_e164", "status", "version", "created_at", "updated_at"
                ) VALUES (
                  $1::uuid, $2::uuid, $3::uuid, $4, $5::timestamptz,
-                 $6, 'UNLINKED_REVOKED', 1, $7::timestamptz, $7::timestamptz, $7::timestamptz, 'RELINK_REQUIRED'
+                 $6, 'INVITED', 1, $7::timestamptz, $7::timestamptz
                )`,
               [
                 inviteLinkId,
