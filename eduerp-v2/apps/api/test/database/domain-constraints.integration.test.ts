@@ -587,14 +587,34 @@ describe('PostgreSQL Domain Constraints, Relational Lineage, Race-Safe Last Dire
     const connB = await env.apiPoolA.connect();
     try {
       await Promise.all([connA.query('BEGIN'), connB.query('BEGIN')]);
+      // Each transaction must finish independently; waiting for both UPDATEs before
+      // COMMIT can keep the winning transaction's row lock indefinitely.
       const results = await Promise.allSettled([
-        connA.query(`UPDATE "staff_users" SET "status" = 'DEACTIVATED' WHERE "id" = $1::uuid`, [C.directorId]),
-        connB.query(`UPDATE "staff_users" SET "status" = 'DEACTIVATED' WHERE "id" = $1::uuid`, [d2]),
+        (async () => {
+          try {
+            await connA.query("SET LOCAL statement_timeout = '5000ms'");
+            await connA.query(`UPDATE "staff_users" SET "status" = 'DEACTIVATED' WHERE "id" = $1::uuid`, [C.directorId]);
+            await connA.query('COMMIT');
+          } catch (error) {
+            await connA.query('ROLLBACK');
+            throw error;
+          }
+        })(),
+        (async () => {
+          try {
+            await connB.query("SET LOCAL statement_timeout = '5000ms'");
+            await connB.query(`UPDATE "staff_users" SET "status" = 'DEACTIVATED' WHERE "id" = $1::uuid`, [d2]);
+            await connB.query('COMMIT');
+          } catch (error) {
+            await connB.query('ROLLBACK');
+            throw error;
+          }
+        })(),
       ]);
-      await Promise.allSettled([
-        results[0].status === 'fulfilled' ? connA.query('COMMIT') : connA.query('ROLLBACK'),
-        results[1].status === 'fulfilled' ? connB.query('COMMIT') : connB.query('ROLLBACK'),
-      ]);
+      assert.equal(results.filter((result) => result.status === 'fulfilled').length, 1,
+        'Exactly one Director deactivation must commit');
+      assert.equal(results.filter((result) => result.status === 'rejected').length, 1,
+        'The competing deactivation must be rejected');
     } finally {
       await Promise.allSettled([connA.query('ROLLBACK'), connB.query('ROLLBACK')]);
       connA.release();

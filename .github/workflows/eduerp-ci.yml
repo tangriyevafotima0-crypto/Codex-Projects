@@ -34,6 +34,7 @@ jobs:
   verify-contracts-and-secrets:
     name: "S01/S02/S04/S05 Contract Verification & Secret Scan"
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -91,6 +92,7 @@ jobs:
   build-lint-typecheck-test:
     name: "JS Workspace Lint, Typecheck, Build, Unit, DB (G1) & Auth/RBAC (G2) Tests"
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: verify-contracts-and-secrets
     services:
       postgres:
@@ -142,24 +144,28 @@ jobs:
           psql -h 127.0.0.1 -U eduerp_pg_superuser -d eduerp_guliston_ilm_dev -v ON_ERROR_STOP=1 -f infra/db/02-apply-runtime-grants.sql
 
       - name: Gate G1 — Run real PostgreSQL database integration test suite (DB-IT-01..DB-IT-25)
+        timeout-minutes: 3
         env:
           EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:db
 
       - name: Gate G2 — Run real HTTP + PostgreSQL Auth & RBAC integration test suite (AUTH-IT-01..AUTH-IT-17 & G01..G07)
+        timeout-minutes: 3
         env:
           EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:auth
 
       - name: Gate G3 — Run real HTTP + PostgreSQL Students, Guardians & Enrollments integration test suite (STU-IT-01..STU-IT-10)
+        timeout-minutes: 3
         env:
           EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:students
 
       - name: Gate G4 — Run real HTTP + PostgreSQL Academics, Schedule, Substitute & Grades integration test suite (ACAD-IT-01..ACAD-IT-10 & R1/R2)
+        timeout-minutes: 3
         env:
           EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
@@ -168,6 +174,7 @@ jobs:
   docker-dev-smoke:
     name: "Build and smoke-test the dev Compose stack (migrator + /health + /ready)"
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     needs: build-lint-typecheck-test
     steps:
       - uses: actions/checkout@v4
