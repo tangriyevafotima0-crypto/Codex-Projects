@@ -6,6 +6,7 @@ permissions:
   contents: read
 jobs:
   original-runtime-probes:
+    timeout-minutes: 6
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -48,3 +49,8 @@ jobs:
           mkdir -p apps/api/dist/prisma
           cp -R apps/api/prisma/migrations apps/api/dist/prisma/migrations
           npm --workspace=@eduerp/api run test:db
+      - name: Additional live probes for concurrency, object lineage and idempotency scopes
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: 'true'
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_probe_admin:TEST_ONLY_PROBE_PASSWORD@127.0.0.1:5432/eduerp_test_probe_admin
+        run: node ../s04-extra-probes.cjs
