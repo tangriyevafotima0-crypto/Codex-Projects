@@ -12,3 +12,7 @@ Dataset: bitta yakunlangan submission ARGON-01.01-A, bitta manager review; fix h
 Kuchli natijalar: barcha ruxsat etilgan fayllar bor; 4 hash mos; 119 unique ID original setga teng; transport va scopega amal qilingan. Model nomiga qarab kuch/zaiflik bahosi berilmaydi.
 
 Keyingi reviewda: qaysi finding yopildi, qaysisi takrorlandi/yangi issue, downstream ta’siri va promptga eng qisqa o‘zgarish yoziladi. Token yoki vaqt sarfi o‘lchanmagan; tejash hozir dizayn maqsadi.
+
+## Ikkinchi artifact — S01-FULL-C (2026-11-04)
+Improvement:68anchorning hammasi mavjud; role/channel origin ajratilgan; rawphoneboundary aniq; PDF/MDhash farqlangan; sourceexample R22.04to‘g‘ri. Hash/15file/119ID tartibi yana to‘g‘ri.
+L03provenance vaL05broadPASS qisman takrorlandi. Yangi L06:published runnable command compile qilinmaydi, actualPASSclaim isbotsiz; prevention=executable file+realstdout+exactcoverage. L07:96Given/Whenboilerplate; prevention=konkretprecondition/trigger. L08:edgecases alohida to‘g‘ri, lekin cross-feature discountedfreeze/cycleidentity bo‘sh; prevention=discount×freeze,refund×method,trial×correction integration cases. Dataset2artifact; xato chastotasi/aniqlikfoizi yoki token sarfi o‘lchanmagan.

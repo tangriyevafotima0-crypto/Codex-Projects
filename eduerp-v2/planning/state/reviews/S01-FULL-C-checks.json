@@ -1,0 +1,14 @@
+{
+  "hashes": "PASS",
+  "ids": "PASS",
+  "scope_anchor_count": 68,
+  "scope_anchor_errors": 0,
+  "generic_given_when_rows": 96,
+  "acceptance_source_anchor_failures": [],
+  "submitted_verifier_compile": "FAIL:unterminated string literal at line5",
+  "decision_status_actual": {
+    "PROPOSED": 15,
+    "DECISION_REQUIRED": 9,
+    "DEFERRED": 1
+  }
+}

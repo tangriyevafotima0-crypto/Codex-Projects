@@ -15,8 +15,8 @@
       "acceptance": "Rahbar/Admin/Teacher uchun kanal va amal jadvali mavjud; parent/student web login scope tashqarisida. Har PDF talabi manba sahifasi va R-IDga bog‘langan.",
       "prompt": "prompts/S01/01.md",
       "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/01.01-A.md",
-      "reviewed_revision": "artifact-sha256:19334e3c5c415c4f6a79ce2ce3f551e32b54ac5c8fafe6c11c04a1b9c1c94718",
+      "evidence": "state/reviews/S01-FULL-C.md",
+      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
       "review_result": "CHANGES_REQUIRED",
       "reviewer": "Codex-manager"
     },
@@ -35,11 +35,11 @@
       "test_id": "T01.02",
       "acceptance": "480000×7/12=280000 misoli, trialning ikkinchi attendance transitioni, grant, freeze va refund hisoblari qarorlar bilan berilgan; noma’lum natija taxminiy PASS emas.",
       "prompt": "prompts/S01/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-FULL-C.md",
+      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "01.03",
@@ -56,11 +56,11 @@
       "test_id": "T01.03",
       "acceptance": "Har talabning kamida bitta owner stepi va tekshiriladigan natijasi bor; barcha 8 sahifa qamrovi tekshirilgan; qabul qiluvchi rol belgilangan.",
       "prompt": "prompts/S01/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-FULL-C.md",
+      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "01.04",
@@ -77,11 +77,11 @@
       "test_id": "T01.04",
       "acceptance": "D01–D18 holati PROPOSED/ACCEPTED/DEFERRED; egasi va qaysi stepni bloklashi bor. Moliya qarori ochiq bo‘lsa aynan unga bog‘liq step bloklanadi, butun repo emas.",
       "prompt": "prompts/S01/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-FULL-C.md",
+      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "01.05",
@@ -98,11 +98,11 @@
       "test_id": "T01.05",
       "acceptance": "Barcha ochiq moliyaviy qarorlar egasi bilan belgilangan; tasdiqlanmagan qoida kodga aylantirilmaydi",
       "prompt": "prompts/S01/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-FULL-C.md",
+      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "02.01",

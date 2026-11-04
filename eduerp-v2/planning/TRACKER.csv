@@ -1,9 +1,9 @@
 step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
-01.01,01,"Rahbar, Admin, Teacher, parent Telegram chegaralarini va v3 istisnolarini yozish",docs/spec/scope.md,,CHANGES_REQUIRED,state/reviews/01.01-A.md,artifact-sha256:19334e3c5c415c4f6a79ce2ce3f551e32b54ac5c8fafe6c11c04a1b9c1c94718
-01.02,01,"Pro-rata, trial, freeze, discount, refund va payroll qoidalarini misollar bilan tasdiqlash",docs/spec/business-rules.md,01.01,NOT_STARTED,,
-01.03,01,"Har talabga R-ID, rol, kirish, natija va sinov biriktirish",docs/spec/acceptance.md,01.02,NOT_STARTED,,
-01.04,01,"240/250 demo, oy/12 dars, bot tasdiqlash, zaxira va xizmat darajasi noaniqliklarini yopish",docs/spec/decisions.md,01.03,NOT_STARTED,,
-01.05,01,"Review, regressiya va handoff",planning/state/handoffs/S01.md,01.04,NOT_STARTED,,
+01.01,01,"Rahbar, Admin, Teacher, parent Telegram chegaralarini va v3 istisnolarini yozish",docs/spec/scope.md,,CHANGES_REQUIRED,state/reviews/S01-FULL-C.md,artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89
+01.02,01,"Pro-rata, trial, freeze, discount, refund va payroll qoidalarini misollar bilan tasdiqlash",docs/spec/business-rules.md,01.01,CHANGES_REQUIRED,state/reviews/S01-FULL-C.md,artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89
+01.03,01,"Har talabga R-ID, rol, kirish, natija va sinov biriktirish",docs/spec/acceptance.md,01.02,CHANGES_REQUIRED,state/reviews/S01-FULL-C.md,artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89
+01.04,01,"240/250 demo, oy/12 dars, bot tasdiqlash, zaxira va xizmat darajasi noaniqliklarini yopish",docs/spec/decisions.md,01.03,CHANGES_REQUIRED,state/reviews/S01-FULL-C.md,artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89
+01.05,01,"Review, regressiya va handoff",planning/state/handoffs/S01.md,01.04,CHANGES_REQUIRED,state/reviews/S01-FULL-C.md,artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89
 02.01,02,"Har markazga alohida API, worker, PostgreSQL, fayl hajmi va bot chegaralarini loyihalash",docs/architecture/system.md,01.05,NOT_STARTED,,
 02.02,02,"UUID, version, foreign key, unique va immutable ledger jadvallarini ER diagrammada belgilash",docs/architecture/data-model.md,02.01,NOT_STARTED,,
 02.03,02,"Auth, students, groups, lessons, billing, payments, imports va sync kontraktlarini belgilash",docs/architecture/openapi.yaml,02.02,NOT_STARTED,,

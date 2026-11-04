@@ -1,14 +1,12 @@
 # ACTIVE TASK
-Task: S01-FULL-C
-Mode: DOCUMENT_STAGE_OFFLINE
-Scope:01.01 fix+01.02 rules+01.03 acceptance+01.04 decisions+01.05 self-check/handoff
-Owner:Argon
-Manager:Codex
-Status:READY_TO_ASSIGN
-Supersedes:BATCH-01.01-01.02-B va oldingi alohida FIX taskning to‘xtash chegarasi
-Read first:planning/assignments/S01-FULL-C.md
-Base commit:manager prompt/TASK_INPUT.json
-Inputs:repo baseline+original4 candidate overlay; keyinroq bajarilgan lokal ish bo‘lsa saqlanadi
-Outputs:14 hujjat+SUBMISSION.json, bitta S01_FULL_C_SUBMISSION.zip
-Canonical approval:01.01 CHANGES_REQUIRED; qolganlar NOT_STARTED; draftlar shu batchda ruxsat etilgan, manager statusni natijadan keyin yuritadi
-STOP:S02/app kodi/global registry edit yo‘q; yakun IN_REVIEW
+Task: S01-FIX-S02-FULL-D
+Mode: DOCUMENT_AND_ARCHITECTURE_DRAFT_OFFLINE
+Scope: S01 C01–C06 fix + S02 full architecture 02.01–02.05
+Owner: Argon
+Manager: Codex
+Status: READY_TO_ASSIGN
+Read: planning/assignments/S01-FIX-S02-FULL-D.md
+Prior review: planning/state/reviews/S01-FULL-C.md
+Canonical S01: CHANGES_REQUIRED; S02 NOT_STARTED, candidate draft allowed in this batch
+Output:27 files +SUBMISSION.json =28 files
+STOP: S03/app code/global registry edit yo‘q
