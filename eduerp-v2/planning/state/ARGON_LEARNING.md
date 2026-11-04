@@ -1,18 +1,16 @@
 # Argon review kuzatuvlari
-Dataset: bitta yakunlangan submission ARGON-01.01-A, bitta manager review; fix hali olinmagan. Takroriy pattern yoki aniqlik oshgani haqida statistik da’vo yo‘q.
+Holat: 2026-11-04. Dataset: 2 ta olingan artifact — ARGON-01.01-A va S01-FULL-C. Joriy S01-FIX-S02-FULL-D hali topshirilmagan. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
-| ID | Kuzatuv | Manbasi | Promptdagi prevention | Keyingi tekshiruv |
-|---|---|---|---|---|
-| L01 | Source va taklif bo‘lsa ham role tableda definitive huquq | F01, executor synthesis | origin + decision_status; noaniq grant OPEN | FIX/BATCHda tekshiriladi |
-| L02 | CSV119 ID bor, ammo anchorlar uydirma | F02, executor | explicit anchors + parser existence | FIX/BATCHda tekshiriladi |
-| L03 | Sahifa xatosi source mappingdan ko‘chgan, yangi detail ham tekshirilmagan | F03, manager/executor shared | source matni ustuvor; upstream correction report | FIX/BATCHda tekshiriladi |
-| L04 | Privacyda bir nechta muqobil ifoda qolgan | F04, executor wording | raw data boundary aniq, UI maskga tayanmaslik | FIX/BATCHda tekshiriladi |
-| L05 | Birlik qisqartmasi va broad PASS semantik xatoni yashirgan | F05, executor | explicit unit + row count/semantic coverage separate | FIX/BATCHda tekshiriladi |
+| ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
+|---|---|---|---|
+| L01 | Taklif rol huquqi sifatida qat’iy yozilgan | Birinchi artifactda bor; ikkinchisida asosiy origin/status ajratilishi tuzatilgan | Source/proposal/OPEN aniq ajratiladi |
+| L02 | Mavjud bo‘lmagan anchorlar | Birinchisida bor; ikkinchisidagi68 anchor va barcha scope locatorlar manager tekshiruvida o‘tdi | Haqiqiy anchor parseri; to‘g‘ri ish qayta yozilmaydi |
+| L03 | Source page/section nomuvofiqligi | R22.04/R24.03/R03.01 yaxshilangan; R05.03 kabi residual bor. Bir qismi manager mappingidan meros | Asl manba ustuvor; inherited xatoni takrorlamaslik |
+| L04 | Raw phone maxfiyligi noaniq | Ikkinchi artifactda boundary aniq; aloqasiz OPEN_RBAC ID qayta ishlatilgan | Privacy baseline va unique qaror ma’nosi tekshiriladi |
+| L05 | Keng PASS da’vosi isbotdan katta | Ikkala reviewda turli ko‘rinishda uchragan | Har checkning real qamrovi va run natijasi |
+| L06 | Published checker compile bo‘lmaydi | Ikkinchi artifact literal skripti line5 SyntaxError; PASS matni buni oqlamaydi | Executable file + syntax check + aynan shu fayl stdouti |
+| L07 | Given/When umumiy vazifani takrorlaydi | Ikkinchi artifactda96 row | Konkret precondition, command va observable natija |
+| L08 | Cross-feature biznes chegaralari yetarli emas | Discount×freeze, refund×method, cycle×reactivation | S02ga shu misollar bilan schema/API/event mosligi |
 
-Kuchli natijalar: barcha ruxsat etilgan fayllar bor; 4 hash mos; 119 unique ID original setga teng; transport va scopega amal qilingan. Model nomiga qarab kuch/zaiflik bahosi berilmaydi.
-
-Keyingi reviewda: qaysi finding yopildi, qaysisi takrorlandi/yangi issue, downstream ta’siri va promptga eng qisqa o‘zgarish yoziladi. Token yoki vaqt sarfi o‘lchanmagan; tejash hozir dizayn maqsadi.
-
-## Ikkinchi artifact — S01-FULL-C (2026-11-04)
-Improvement:68anchorning hammasi mavjud; role/channel origin ajratilgan; rawphoneboundary aniq; PDF/MDhash farqlangan; sourceexample R22.04to‘g‘ri. Hash/15file/119ID tartibi yana to‘g‘ri.
-L03provenance vaL05broadPASS qisman takrorlandi. Yangi L06:published runnable command compile qilinmaydi, actualPASSclaim isbotsiz; prevention=executable file+realstdout+exactcoverage. L07:96Given/Whenboilerplate; prevention=konkretprecondition/trigger. L08:edgecases alohida to‘g‘ri, lekin cross-feature discountedfreeze/cycleidentity bo‘sh; prevention=discount×freeze,refund×method,trial×correction integration cases. Dataset2artifact; xato chastotasi/aniqlikfoizi yoki token sarfi o‘lchanmagan.
+Kuchli natijalar: ikkala artifactda fayl/transport tartibi, hashlar va119 ID set mos. Ikkinchi artifact hajmi sezilarli kattaroq bo‘lsa ham bu struktura saqlangan.
+Keyingi review: qaysi finding yopildi, qaysisi takrorlandi, yangi issue, manager/ijrochi/shared sabab va promptga eng qisqa foydali o‘zgarish yoziladi.

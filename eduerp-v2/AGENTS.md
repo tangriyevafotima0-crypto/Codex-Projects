@@ -1,3 +1,6 @@
+# Doimiy loyiha afzalliklari
+Har yangi manager sessiyasida planning/state/USER_WORKING_PREFERENCES.md va ARGON_LEARNING.mdni o‘qing. User katta bog‘liq paketlar, fix+next birlashtirish, kuzatilgan xatoga mos prompt va kam takroriy token sarfini so‘ragan. Joriy offline taskning bazis SHA/ro‘yxati saqlanadi; bu preference yangilanishi uni bekor qilmaydi.
+
 # User tasdiqlagan paket usuli
 Manager bir promptda sanab bergan fix va bir nechta stepni bitta sessiyada bajarish mumkin. Har step orasida alohida manager javobi kutilmaydi. Faqat sanalgan scope ichida; yakunda IN_REVIEW, approval managerda. Batafsil: planning/09_BATCH_POLICY.md. Eski «faqat bitta step» chegarasi paketdagi aniq ro‘yxatga nisbatan qo‘llanadi.
 
