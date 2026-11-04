@@ -1,4 +1,4 @@
-# Credentials and personal records
+# Credentials, secrets, and database dumps
 .env
 .env.*
 !.env.example
@@ -7,9 +7,21 @@
 *.sql
 *.sql.gz
 *.dump
+
+# Node / TypeScript workspace artifacts
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+npm-debug.log*
+
+# Python tools cache
 __pycache__/
 *.pyc
-node_modules/
+
+# Flutter mobile (managed separately in Stage 17; never mixed into JS lockfile)
 .dart_tool/
 build/
+
+# OS metadata
 .DS_Store

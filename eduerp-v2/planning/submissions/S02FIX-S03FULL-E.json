@@ -1,0 +1,300 @@
+{
+  "task_id": "S02FIX-S03FULL-E",
+  "base_commit": "4a9ba11baf08460579d80f262b5c65b6ad64a6d1",
+  "source_candidate_commit": "3477c7bb518eeea61b8f022d71710ea581dcf064",
+  "project_root": "eduerp-v2",
+  "mode": "CONTRACT_FIX_AND_FOUNDATION_SCAFFOLD_OFFLINE",
+  "steps": [
+    "02.01",
+    "02.02",
+    "02.03",
+    "02.04",
+    "02.05",
+    "03.01",
+    "03.02",
+    "03.03",
+    "03.04",
+    "03.05"
+  ],
+  "status": "IN_REVIEW",
+  "closed_findings": [
+    "S2F01",
+    "S2F02",
+    "S2F03",
+    "S2F04",
+    "S2F05",
+    "S2F06",
+    "S2F07"
+  ],
+  "unchanged_s01_approved_files_omitted_per_return_policy": [
+    "docs/spec/scope.md",
+    "docs/spec/scope-traceability.csv",
+    "docs/spec/business-rules.md",
+    "docs/spec/acceptance.md",
+    "docs/spec/acceptance.csv",
+    "docs/spec/decisions.md",
+    "docs/verification/01.01.md",
+    "planning/state/steps/01.01.md",
+    "planning/state/steps/01.02.md",
+    "planning/state/steps/01.03.md",
+    "planning/state/steps/01.04.md",
+    "planning/state/steps/01.05.md",
+    "planning/state/handoffs/S01.md"
+  ],
+  "additional_helper_files": [
+    {
+      "path": "apps/worker/test/worker.test.ts",
+      "reason": "Executable test suite for worker config validation, secret redaction, and graceful SIGTERM shutdown (required by Assignment Section F and permitted by additional_helper_policy)."
+    }
+  ],
+  "files": [
+    {
+      "path": "docs/verification/S01.md",
+      "sha256": "d13e044ee0ad9be0da3c46e3d8d41a042e391d64b09ee9583855c4b45ec724b0"
+    },
+    {
+      "path": "docs/architecture/system.md",
+      "sha256": "34aa75c87975b1d907688ea3a577c38da44eba26132f5f531d842606f68f43b2"
+    },
+    {
+      "path": "docs/architecture/data-model.md",
+      "sha256": "6907979c5ff08702f6ac2d7fed1817e34822d13018980091ae325296e53b0360"
+    },
+    {
+      "path": "docs/architecture/openapi.yaml",
+      "sha256": "b7ff0193e43e146a53b5a230b9fb9efa6bb2fb4266ba37ed880c1b04a651be75"
+    },
+    {
+      "path": "docs/architecture/events.md",
+      "sha256": "3409192b608db31285b23e07e0656a2a6ff2e7411c65a3b953fa0c23d14a91d9"
+    },
+    {
+      "path": "docs/architecture/traceability.csv",
+      "sha256": "d3b6a8bb2a9b6325ea7afdf8109665f9c6488b2f5763f4c43632465ebad5d965"
+    },
+    {
+      "path": "docs/verification/S02.md",
+      "sha256": "ff3564f8614c4fa7dd2ba9fa46b593fa553b5ab8a73f19fcbfc11f7e774d874a"
+    },
+    {
+      "path": "planning/state/steps/02.01.md",
+      "sha256": "5463d0b02ffff1ce46e6cc1047532054e18c851811dd25da9d8d4d73f553d4dc"
+    },
+    {
+      "path": "planning/state/steps/02.02.md",
+      "sha256": "c845ff510f7680e8ce83df36790ebaaf67247ab0c4f974fdf8bf06becd500399"
+    },
+    {
+      "path": "planning/state/steps/02.03.md",
+      "sha256": "23d122736549dd1cb02c039c57db51016ae4f61de6a2f9098bf28d5eb4319489"
+    },
+    {
+      "path": "planning/state/steps/02.04.md",
+      "sha256": "c5ed8fc449d4a784370c46a26337e9dc357c55274660514f18e14eee3800c22c"
+    },
+    {
+      "path": "planning/state/steps/02.05.md",
+      "sha256": "22ac8e85815c04abccdd56fb5c01c9a7515964cfe655f94e3012e023c6907787"
+    },
+    {
+      "path": "planning/state/handoffs/S02.md",
+      "sha256": "aa71a21c5e709a8e7e4558ad2f54e3e9637eee69b25526212c9bc3afcfeb6c30"
+    },
+    {
+      "path": "tools/verify_s01_s02.py",
+      "sha256": "a75edd821ff62726f493447a64cf7bdda4869e302e932abfdfd474709ff9dc39"
+    },
+    {
+      "path": "docs/architecture/operation-inventory.csv",
+      "sha256": "cdf744c1b07a4e77d4aa5b0dbc2521be41a1cb44b48f5bbf981ef191af0c910a"
+    },
+    {
+      "path": "package.json",
+      "sha256": "a41e0d4bcf29ca2b16a3dd9a3f4ff6663af90352e7dab42363fe958de3f85f10"
+    },
+    {
+      "path": "tsconfig.base.json",
+      "sha256": "87cd4d7ddf058dedc4c26029a114b6220b574de95e799920f909d6630fd50527"
+    },
+    {
+      "path": ".nvmrc",
+      "sha256": "f2917caabf6ef6fa0927a589ade3a75d837b548f4b827050ad54491830b23a8c"
+    },
+    {
+      "path": ".env.example",
+      "sha256": "50be6d36043128fc5af0e9b8d7e3734559aeb40694b763ac47aec85f84df7809"
+    },
+    {
+      "path": ".gitignore",
+      "sha256": "b9d8683b34bd3235405d643b420be98444485b4b2e2d5b1e6583f4c216a61df9"
+    },
+    {
+      "path": ".dockerignore",
+      "sha256": "a8366a6fee4fa320d988dcf00a035e89b0c9c7ce3aeb4878258dff77f8e1cbc7"
+    },
+    {
+      "path": "README.md",
+      "sha256": "62f2fc1d05fb82161cbd2ddaa6e4be20a80341b1a456ef9275c172894f812f27"
+    },
+    {
+      "path": "apps/api/package.json",
+      "sha256": "8b96e1253e2f52d56f361138e0947c59b554855f55c1a0d79539337556a1c9fa"
+    },
+    {
+      "path": "apps/api/tsconfig.json",
+      "sha256": "592e22185cd0a84ae7f093488ca9fefeb5a8666205edfb5e579d575b86b2514a"
+    },
+    {
+      "path": "apps/api/Dockerfile",
+      "sha256": "0c17f5b100dea6fa8fa63152aab0a955df42eda70627a75d35f9bc36d8fb0866"
+    },
+    {
+      "path": "apps/api/src/main.ts",
+      "sha256": "693c6d4f99edac937fe8260f8b6b3794d0559dbccfcab55f0fb7f05badaed9d1"
+    },
+    {
+      "path": "apps/api/src/app.module.ts",
+      "sha256": "fa43607f1072c923fc4fa819fd11e047fbe127cb3cd56f1aeace70bea6d24183"
+    },
+    {
+      "path": "apps/api/src/config/env.ts",
+      "sha256": "0b3114b607a9ab277ab01eb050e1b2738fd03798f1cadb5b9c06e830f33cae06"
+    },
+    {
+      "path": "apps/api/src/common/request-id.middleware.ts",
+      "sha256": "3f9cd740c21444d91418581b0163eb559ae24c3af5e184dbf84cd5a8809c5e9c"
+    },
+    {
+      "path": "apps/api/src/health/health.controller.ts",
+      "sha256": "4c33655213194d56a084410d5959119d7b34712daacfafb6f583c66c18750cca"
+    },
+    {
+      "path": "apps/api/test/health.test.ts",
+      "sha256": "2440ad871d46689816b906bd0e1f7e19a6ca54feb4f53bb44b78eedd378dcb9d"
+    },
+    {
+      "path": "apps/api/test/config.test.ts",
+      "sha256": "24a5cb0637210eca7aa5d17bcebf8ba84545a789c615d786340ca07ee58757bf"
+    },
+    {
+      "path": "apps/worker/package.json",
+      "sha256": "d3020090d188966bed3226333ad2396f9ec511b49f5fd571885b274be62c06ea"
+    },
+    {
+      "path": "apps/worker/tsconfig.json",
+      "sha256": "592e22185cd0a84ae7f093488ca9fefeb5a8666205edfb5e579d575b86b2514a"
+    },
+    {
+      "path": "apps/worker/Dockerfile",
+      "sha256": "3c5eefb9e8d92a528e8833a4cd98c70b6ac13c651bd4b69fa9f07fa02e4e73c6"
+    },
+    {
+      "path": "apps/worker/src/main.ts",
+      "sha256": "6e33010b85e8c8e3bea19fc78eda3d53f285b9607c7e374c2718e7483c45612a"
+    },
+    {
+      "path": "apps/worker/src/config/env.ts",
+      "sha256": "690b9a2e7e807399a24cdc6195b7a43a08105b4ee1b2b63b445c2c7601f24bd7"
+    },
+    {
+      "path": "packages/contracts/package.json",
+      "sha256": "bfb154d9a56fb166dadfbf7981416fb6b463673ff106538affe4a1ce8fbd4f5c"
+    },
+    {
+      "path": "packages/contracts/tsconfig.json",
+      "sha256": "c39e691225c5104790f1264178478d7f6842b7f3b9941b187fc20303f2010329"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "766dbb56127cce605b9d8d7561d04baa7815eab9171dbd8aac1d126c4c5b2124"
+    },
+    {
+      "path": "infra/compose.dev.yml",
+      "sha256": "c949cdb76cff91577c709033a4678cd80ab581793866539f9e4df841d25b41cb"
+    },
+    {
+      "path": "infra/ci/eduerp-ci.yml",
+      "sha256": "8a3d47a731187b5544b2fe072a0d4fc88b5c1a9cdb82d119600297489c4dcc13"
+    },
+    {
+      "path": "docs/verification/S03.md",
+      "sha256": "792edff16a50b6e668c490223d8f7c8f3a2f19df3823c0082baa98bc6d052a0b"
+    },
+    {
+      "path": "planning/state/steps/03.01.md",
+      "sha256": "1e8239645dc049564f22f14f0b6434fdcdce705e4202217c00b478e416696cf2"
+    },
+    {
+      "path": "planning/state/steps/03.02.md",
+      "sha256": "b5e097e3a742522658279a12f479408cf7257146f9cf74f185e896c489dfda7a"
+    },
+    {
+      "path": "planning/state/steps/03.03.md",
+      "sha256": "41e566d32515eb7406e69138a600d925771d3084de8c790f155445240a5314e4"
+    },
+    {
+      "path": "planning/state/steps/03.04.md",
+      "sha256": "a96be02bcfac3c26d98447a9dc3bc7566c60b07dd823b49cc14797fe7fbe7c3a"
+    },
+    {
+      "path": "planning/state/steps/03.05.md",
+      "sha256": "c2133e20855a242401423ae2f3866334623d2b150e0bfd4127a996b157bcb301"
+    },
+    {
+      "path": "planning/state/handoffs/S03.md",
+      "sha256": "265c03e81c24f7a22fd4eabe9dff4781778294eb52175d7e8240585ade51a0a1"
+    },
+    {
+      "path": "apps/worker/test/worker.test.ts",
+      "sha256": "4036efc75518f9e35af2a2481cb6d71cafc3997c2ef619dfee30b11c090f057e"
+    }
+  ],
+  "actual_checks": [
+    {
+      "command": "python3 -m py_compile tools/verify_s01_s02.py && python3 tools/verify_s01_s02.py",
+      "result": "PASS",
+      "details": "Verified 11 clean markdown files, 68 scope anchors, 119 traceability rows, 22 CASE classifications with explicit in-memory model oracles (remaining_debt, debt_after_leave, oct_snapshot, excel_version, server_version, send_reminder), 55 OpenAPI operations (4 public bootstrap security: [] + 51 protected), 803 local $refs, 0 legacy OAS3.0 nullable keywords, 15 domain events, 46 canonical data-model entities, 16 operation-inventory rows, and 11/11 negative mutation self-tests (NEG-01..NEG-11)."
+    },
+    {
+      "command": "NODE_PATH=/usr/share/nodejs node (js-yaml parse of infra/compose.dev.yml & infra/ci/eduerp-ci.yml + secret scan)",
+      "result": "PASS",
+      "details": "Verified Compose services [postgres, api, worker], private internal network (eduerp_dev_private_net.internal=true, postgres.ports=null), persistent volume (eduerp_dev_pgdata), CI working-directory=eduerp-v2, and 0 leaked secrets."
+    },
+    {
+      "command": "NODE_PATH=/usr/share/nodejs @babel/core (@babel/preset-typescript) transpile + node --test (Node v18.20.4) on apps/api/test/config.test.ts, apps/api/test/health.test.ts, apps/worker/test/worker.test.ts",
+      "result": "PASS (9/9 tests, 3/3 suites, 0 failures)",
+      "details": "Executed real HTTP server tests for GET /api/v1/health (status OK, no secrets or false DB readiness claims), X-Request-Id validation/correlation/replacement, fail-fast config validation, and worker SIGTERM graceful shutdown."
+    },
+    {
+      "command": "python3 planning/tools/check_plan.py",
+      "result": "PASS",
+      "details": "Verified canonical planning files and registries remain unmodified and valid."
+    }
+  ],
+  "not_run": [
+    {
+      "check": "npm install / package-lock.json generation",
+      "status": "NOT_RUN",
+      "reason": "npm install --offline --no-audit --no-fund failed with ENOTCACHED (no outbound internet on VM and @nestjs/*, typescript@5.3.3 not in local npm cache). Per policy, package-lock.json was not fabricated."
+    },
+    {
+      "check": "npm run lint / npm run typecheck / npm run build (tsc -p tsconfig.json) & full @nestjs/core bootstrap",
+      "status": "NOT_RUN",
+      "reason": "Requires installing typescript@5.3.3, @typescript-eslint/*, and @nestjs/core@10.3.3 from npm registry in networked/CI environment."
+    },
+    {
+      "check": "docker compose -f infra/compose.dev.yml up",
+      "status": "NOT_RUN",
+      "reason": "Docker CLI/daemon is not installed in the sandbox VM (docker: command not found)."
+    },
+    {
+      "check": "GitHub Actions CI workflow execution & live PostgreSQL transaction concurrency tests",
+      "status": "NOT_RUN",
+      "reason": "infra/ci/eduerp-ci.yml is delivered as a project template to be placed at repo-root .github/workflows/eduerp-ci.yml by the manager; DB migrations and transaction lock tests start in Stage 04."
+    }
+  ],
+  "open_issues": [
+    "Networked npm install (to generate canonical package-lock.json), tsc build, and Docker Compose smoke test must be executed in manager/CI networked environment before marking Stage 03 APPROVED.",
+    "Business policy decisions D01-D25 (15 PROPOSED, 9 DECISION_REQUIRED, 1 DEFERRED) and OPEN_RBAC_01..02 / OPEN_CHANNEL_01..02 / OPEN_PRIVACY_01 remain unaccepted by business owner (enforced as DENY_UNTIL_POLICY_CONFIRMED gates)."
+  ]
+}

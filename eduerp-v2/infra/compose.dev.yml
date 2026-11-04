@@ -1,0 +1,96 @@
+# EduERP v2.0 — Local Development Docker Compose Environment (infra/compose.dev.yml)
+# Step 03.03 (T03.03):
+# - PostgreSQL 16 with healthcheck, persistent volume (eduerp_dev_pgdata), and NO public 0.0.0.0:5432 port exposure.
+# - Isolated private DB network (eduerp_dev_private_net, internal: true) + local loopback API binding (127.0.0.1:3000:3000).
+# - All credentials read from .env (populated from secret-free .env.example placeholders).
+# - NOTE: Database schema migrations start in Stage 04; Stage 03 does NOT create application tables yet.
+
+name: eduerp-v2-dev
+
+services:
+  postgres:
+    image: postgres:16.2-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-eduerp_guliston_ilm_dev}
+      POSTGRES_USER: ${POSTGRES_USER:-eduerp_app_dev}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-EXAMPLE_DEV_ONLY_REPLACE_ME_NotARealDbPassword}
+      TZ: UTC
+    volumes:
+      - eduerp_dev_pgdata:/var/lib/postgresql/data
+    networks:
+      - eduerp_dev_private_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-eduerp_app_dev} -d $${POSTGRES_DB:-eduerp_guliston_ilm_dev}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  api:
+    build:
+      context: ..
+      dockerfile: apps/api/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      CENTER_ID: ${CENTER_ID:-11111111-2222-4333-8444-555555555555}
+      CENTER_SLUG: ${CENTER_SLUG:-guliston-ilm}
+      CENTER_TIMEZONE: ${CENTER_TIMEZONE:-Asia/Tashkent}
+      LICENSE_MODE: ${LICENSE_MODE:-ACTIVE}
+      API_HOST: 0.0.0.0
+      API_PORT: 3000
+      DATABASE_URL: ${DATABASE_URL:-postgresql://eduerp_app_dev:EXAMPLE_DEV_ONLY_REPLACE_ME_NotARealDbPassword@postgres:5432/eduerp_guliston_ilm_dev?schema=public}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:-EXAMPLE_DEV_ONLY_JWT_ACCESS_SECRET_REPLACE_ME_0001}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-EXAMPLE_DEV_ONLY_JWT_REFRESH_SECRET_REPLACE_ME_0002}
+      INTERNAL_BOT_HMAC_SECRET: ${INTERNAL_BOT_HMAC_SECRET:-EXAMPLE_DEV_ONLY_INTERNAL_BOT_HMAC_SECRET_REPLACE_03}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-EXAMPLE_DEV_ONLY_TG_WEBHOOK_SECRET_04}
+    ports:
+      - "127.0.0.1:${API_PORT:-3000}:3000"
+    networks:
+      - eduerp_dev_private_net
+      - eduerp_dev_edge_net
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/api/v1/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  worker:
+    build:
+      context: ..
+      dockerfile: apps/worker/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: ${NODE_ENV:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
+      WORKER_ID: ${WORKER_ID:-worker-guliston-ilm-dev-01}
+      CENTER_ID: ${CENTER_ID:-11111111-2222-4333-8444-555555555555}
+      CENTER_SLUG: ${CENTER_SLUG:-guliston-ilm}
+      CENTER_TIMEZONE: ${CENTER_TIMEZONE:-Asia/Tashkent}
+      LICENSE_MODE: ${LICENSE_MODE:-ACTIVE}
+      DATABASE_URL: ${DATABASE_URL:-postgresql://eduerp_app_dev:EXAMPLE_DEV_ONLY_REPLACE_ME_NotARealDbPassword@postgres:5432/eduerp_guliston_ilm_dev?schema=public}
+      WORKER_POLL_INTERVAL_MS: ${WORKER_POLL_INTERVAL_MS:-500}
+      WORKER_SHUTDOWN_TIMEOUT_MS: ${WORKER_SHUTDOWN_TIMEOUT_MS:-5000}
+      BOT_OUTBOUND_ENABLED: ${BOT_OUTBOUND_ENABLED:-false}
+    networks:
+      - eduerp_dev_private_net
+
+networks:
+  eduerp_dev_private_net:
+    driver: bridge
+    internal: true
+  eduerp_dev_edge_net:
+    driver: bridge
+
+volumes:
+  eduerp_dev_pgdata:
+    name: eduerp_dev_pgdata

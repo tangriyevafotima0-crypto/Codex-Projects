@@ -1,0 +1,16 @@
+{
+  "name": "@eduerp/worker",
+  "version": "2.0.0-s03.0",
+  "private": true,
+  "description": "EduERP v2.0 Center Outbox & Scheduler Worker Foundation Skeleton (Stage 03: Typed Config, Startup, and Graceful Shutdown)",
+  "main": "dist/src/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/src/main.js",
+    "test": "node --test dist/test/worker.test.js"
+  },
+  "dependencies": {
+    "@eduerp/contracts": "2.0.0-s03.0"
+  }
+}
