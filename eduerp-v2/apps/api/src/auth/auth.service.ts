@@ -54,6 +54,10 @@ export interface StaffUserResponseDto {
   readonly role: StaffRole;
   readonly status: 'ACTIVE' | 'DEACTIVATED';
   readonly version: number;
+  readonly open_scheduled_lessons_warning_count?: number;
+  readonly affected_active_group_ids?: readonly string[];
+  readonly open_scheduled_lesson_ids?: readonly string[];
+  readonly reassignment_required_warning?: boolean;
 }
 
 export interface StaffLogoutResponseDto {
@@ -62,16 +66,11 @@ export interface StaffLogoutResponseDto {
   readonly revoked_at_utc: string;
 }
 
-interface RateLimitBucket {
-  count: number;
-  windowStartMs: number;
-}
-
-const MAX_IN_MEMORY_FALLBACK_BUCKETS = 1024;
+export const RATE_LIMIT_HELPER_CLEANUP_BATCH_LIMIT = 256;
 
 @Injectable()
 export class AuthService {
-  private readonly fallbackBuckets = new Map<string, RateLimitBucket>();
+  private rateLimitStoreUnavailableForTest = false;
 
   constructor(
     @Inject(API_CONFIG_TOKEN) private readonly config: ApiEnvConfig,
@@ -80,26 +79,34 @@ export class AuthService {
     @Inject(ClockService) private readonly clock: ClockService,
   ) {}
 
-  public async clearRateLimitBucketsForTest(): Promise<void> {
-    this.fallbackBuckets.clear();
-    try {
-      await this.databaseService.query(
-        `DELETE FROM "auth_rate_limit_buckets" WHERE "center_id" = $1::uuid`,
-        [this.config.centerId],
-      );
-    } catch {
-      // Ignore if table not present in an isolated pre-S06 snapshot test
+  public setRateLimitStoreUnavailableForTest(unavailable: boolean): void {
+    if (this.config.nodeEnv !== 'test') {
+      throw new Error('setRateLimitStoreUnavailableForTest is restricted to NODE_ENV=test');
     }
+    this.rateLimitStoreUnavailableForTest = unavailable;
+  }
+
+  public async clearRateLimitBucketsForTest(): Promise<void> {
+    this.rateLimitStoreUnavailableForTest = false;
+    await this.databaseService.query(
+      `DELETE FROM "auth_rate_limit_buckets" WHERE "center_id" = $1::uuid`,
+      [this.config.centerId],
+    );
   }
 
   /**
-   * G02: Persisted, bounded, multi-instance & restart-safe IP/center rate limiter.
-   * Keyed by HMAC-SHA256(internalBotHmacSecret, centerId + ':' + clientIp) so:
-   * 1. Flooding from one IP with unique random usernames cannot bypass the IP rate limit.
-   * 2. Multiple API instances and restarts share the exact same PostgreSQL rate-limit bucket.
-   * 3. Zero raw IP addresses, usernames, phones, or passwords are stored in the table.
+   * G02 & R1: Persisted, bounded, fail-closed multi-instance & restart-safe IP/center rate limiter.
+   * - Keyed by HMAC-SHA256(internalBotHmacSecret, centerId + ':' + clientIp) so:
+   *   1. Flooding from one IP with unique random usernames cannot bypass the IP rate limit.
+   *   2. Multiple API instances and restarts share the exact same PostgreSQL rate-limit bucket.
+   *   3. Zero raw IP addresses, usernames, phones, or passwords are stored in the table.
+   * - R1 Fail-Closed Guarantee: Never silently falls back to a process-local Map when PostgreSQL
+   *   store, schema, or table privilege fails. Any store/permission/schema error surfaces a safe,
+   *   secret-free HTTP 503 DATABASE_UNAVAILABLE response.
+   * - Note: auth_rate_limit_buckets is a short-TTL technical rate-limit helper table with bounded
+   *   window expiry cleanup (not a customer audit or financial retention table).
    */
-  private async checkAndIncrementSharedIpRateLimit(clientIp: string, now: Date): Promise<void> {
+  public async checkAndIncrementSharedIpRateLimit(clientIp: string, now: Date): Promise<void> {
     const windowMs = this.config.authRateLimitWindowSeconds * 1000;
     const maxRequests = this.config.authRateLimitMaxRequests;
     const bucketKey =
@@ -113,11 +120,21 @@ export class AuthService {
     const expiresIso = new Date(now.getTime() + windowMs).toISOString();
 
     try {
+      if (this.rateLimitStoreUnavailableForTest) {
+        throw new Error('INJECTED_RATE_LIMIT_STORE_UNAVAILABLE');
+      }
+
+      // Bounded expiry cleanup of expired technical rate-limit buckets for this center
       await this.databaseService.query(
         `DELETE FROM "auth_rate_limit_buckets"
-          WHERE "center_id" = $1::uuid
-            AND "expires_at" <= $2::timestamptz`,
-        [this.config.centerId, nowIso],
+          WHERE "ctid" IN (
+            SELECT "ctid"
+              FROM "auth_rate_limit_buckets"
+             WHERE "center_id" = $1::uuid
+               AND "expires_at" <= $2::timestamptz
+             LIMIT $3::int
+          )`,
+        [this.config.centerId, nowIso, RATE_LIMIT_HELPER_CLEANUP_BATCH_LIMIT],
       );
 
       const upsertRes = await this.databaseService.query<{
@@ -175,29 +192,12 @@ export class AuthService {
       if (err instanceof ApiHttpException) {
         throw err;
       }
-      // Fallback to bounded in-memory bucket only if auth_rate_limit_buckets is absent
-      const nowMs = now.getTime();
-      if (this.fallbackBuckets.size >= MAX_IN_MEMORY_FALLBACK_BUCKETS) {
-        const oldestKey = this.fallbackBuckets.keys().next().value;
-        if (oldestKey) {
-          this.fallbackBuckets.delete(oldestKey);
-        }
-      }
-      const bucket = this.fallbackBuckets.get(bucketKey);
-      if (!bucket || nowMs - bucket.windowStartMs >= windowMs) {
-        this.fallbackBuckets.set(bucketKey, { count: 1, windowStartMs: nowMs });
-        return;
-      }
-      if (bucket.count >= maxRequests) {
-        const retryAfter = Math.max(1, Math.ceil((bucket.windowStartMs + windowMs - nowMs) / 1000));
-        throw new ApiHttpException({
-          statusCode: 429,
-          errorCode: 'RATE_LIMITED',
-          message: 'Too many login attempts from this network origin; please try again later',
-          retryAfterSeconds: retryAfter,
-        });
-      }
-      bucket.count += 1;
+      // R1: Fail-closed on any shared rate-limit store / permission / schema failure with secret-free 503
+      throw new ApiHttpException({
+        statusCode: 503,
+        errorCode: 'DATABASE_UNAVAILABLE',
+        message: 'Authentication rate limiter store is unavailable; login fails closed',
+      });
     }
   }
 

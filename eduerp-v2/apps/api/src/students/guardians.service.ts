@@ -16,7 +16,7 @@ import { DatabaseService } from '../database/database.service';
 import { computeKeyedFieldDigest, executeIdempotentOperation } from '../database/idempotency';
 import { executeOptimisticUpdate } from '../database/transaction';
 import { API_CONFIG_TOKEN } from '../config/tokens';
-import { normalizePersonName, normalizePhoneE164 } from './normalization';
+import { normalizePersonName, normalizePhoneE164, parseOptionalStrictBoolean } from './normalization';
 
 export type GuardianRelationship = 'MOTHER' | 'FATHER' | 'GUARDIAN' | 'SELF';
 export type TelegramLinkStatus = 'INVITED' | 'ACTIVE' | 'BOT_BLOCKED_403' | 'UNLINKED_REVOKED';
@@ -102,16 +102,16 @@ export class GuardiansService {
       });
     }
     const relationship = relationshipRaw as GuardianRelationship;
-    const isPrimaryPayer =
-      obj.is_primary_payer === undefined ? false : Boolean(obj.is_primary_payer);
-    if (obj.is_primary_payer !== undefined && typeof obj.is_primary_payer !== 'boolean') {
-      throw new ApiHttpException({
-        statusCode: 400,
-        errorCode: 'VALIDATION_ERROR',
-        message: 'is_primary_payer must be a boolean',
-      });
-    }
-    const reuseExistingGuardian = Boolean(obj.reuse_existing_guardian);
+    const isPrimaryPayer = parseOptionalStrictBoolean(
+      obj.is_primary_payer,
+      'is_primary_payer',
+      false,
+    );
+    const reuseExistingGuardian = parseOptionalStrictBoolean(
+      obj.reuse_existing_guardian,
+      'reuse_existing_guardian',
+      false,
+    );
     const requestId = req.requestId ?? resolveRequestId(req.headers['x-request-id']);
     const now = this.clock.now();
 
@@ -549,8 +549,12 @@ export class GuardiansService {
       });
     }
     const expectedVersion = resolveExpectedVersion(req, obj.expected_version);
-    const debugFail =
-      this.config.nodeEnv === 'test' && obj.debug_fail_after_phone_update === true;
+    const debugFailFlag = parseOptionalStrictBoolean(
+      obj.debug_fail_after_phone_update,
+      'debug_fail_after_phone_update',
+      false,
+    );
+    const debugFail = this.config.nodeEnv === 'test' && debugFailFlag;
     const requestId = req.requestId ?? resolveRequestId(req.headers['x-request-id']);
     const now = this.clock.now();
 

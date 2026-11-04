@@ -36,6 +36,8 @@ import {
   normalizePersonName,
   normalizePhoneE164,
   normalizeSearchQueryText,
+  parseOptionalBooleanQueryParam,
+  parseOptionalStrictBoolean,
   validateIsoDate,
 } from './normalization';
 
@@ -357,20 +359,22 @@ export class StudentsService {
       enrolledAtDate = validateIsoDate(obj.enrolled_at_date, 'enrolled_at_date');
     }
 
-    if (
-      obj.confirm_sibling_or_similar_name !== undefined &&
-      typeof obj.confirm_sibling_or_similar_name !== 'boolean'
-    ) {
-      throw new ApiHttpException({
-        statusCode: 400,
-        errorCode: 'VALIDATION_ERROR',
-        message: 'confirm_sibling_or_similar_name must be a boolean',
-      });
-    }
-    const confirmSiblingOrSimilarName = Boolean(obj.confirm_sibling_or_similar_name);
-    const reuseExistingGuardian = Boolean(obj.reuse_existing_guardian);
-    const debugFail =
-      this.config.nodeEnv === 'test' && obj.debug_fail_after_student_insert === true;
+    const confirmSiblingOrSimilarName = parseOptionalStrictBoolean(
+      obj.confirm_sibling_or_similar_name,
+      'confirm_sibling_or_similar_name',
+      false,
+    );
+    const reuseExistingGuardian = parseOptionalStrictBoolean(
+      obj.reuse_existing_guardian,
+      'reuse_existing_guardian',
+      false,
+    );
+    const debugFailFlag = parseOptionalStrictBoolean(
+      obj.debug_fail_after_student_insert,
+      'debug_fail_after_student_insert',
+      false,
+    );
+    const debugFail = this.config.nodeEnv === 'test' && debugFailFlag;
     const requestId = req.requestId ?? resolveRequestId(req.headers['x-request-id']);
     const now = this.clock.now();
 
@@ -438,14 +442,18 @@ export class StudentsService {
           let guardianId: string;
           const existingGuardian = existingGuardianRes.rows[0];
           if (existingGuardian) {
+            // R2: Never auto-reuse an existing guardian merely because sameGuardianName matches!
+            // Caller must pass explicit guardian_id matching existingGuardian.id, reuse_existing_guardian=true,
+            // or confirm_sibling_or_similar_name=true (with matching guardian name or explicit reuse_existing_guardian=true).
             const sameGuardianName =
               normalizePersonName(existingGuardian.full_name).normalizedName ===
               normalizePersonName(guardianFullName).normalizedName;
+            const hasExplicitGuardianIdMatch =
+              explicitGuardianId !== null && explicitGuardianId === existingGuardian.id;
             const authorizedToReuse =
-              (explicitGuardianId !== null && explicitGuardianId === existingGuardian.id) ||
-              reuseExistingGuardian ||
-              confirmSiblingOrSimilarName ||
-              sameGuardianName;
+              hasExplicitGuardianIdMatch ||
+              reuseExistingGuardian === true ||
+              (confirmSiblingOrSimilarName === true && sameGuardianName);
 
             if (
               (explicitGuardianId !== null && explicitGuardianId !== existingGuardian.id) ||
@@ -455,14 +463,23 @@ export class StudentsService {
                 statusCode: 409,
                 errorCode: 'DUPLICATE_STUDENT_DETECTED',
                 message:
-                  'A guardian with this phone_e164 already exists under a different name; pass explicit guardian_id, reuse_existing_guardian=true, or confirm_sibling_or_similar_name=true to link this guardian',
+                  'A guardian with this phone_e164 already exists in this center; pass explicit guardian_id, reuse_existing_guardian=true, or confirm_sibling_or_similar_name=true to link this guardian (R2)',
                 conflictDetails: {
                   conflict_type: 'EXISTING_GUARDIAN_PHONE_REQUIRES_CONFIRMATION',
+                  existing_guardian_id: existingGuardian.id,
                 },
               });
             }
             guardianId = existingGuardian.id;
           } else {
+            if (explicitGuardianId !== null || reuseExistingGuardian === true) {
+              throw new ApiHttpException({
+                statusCode: 404,
+                errorCode: 'NOT_FOUND',
+                message:
+                  'Specified existing guardian_id or reuse_existing_guardian=true target was not found for this phone_e164',
+              });
+            }
             guardianId = explicitGuardianId ?? crypto.randomUUID();
             await tx.query(
               `INSERT INTO "guardians" (
@@ -728,7 +745,7 @@ export class StudentsService {
       });
     }
 
-    const onlyDebtors = query.only_debtors === 'true';
+    const onlyDebtors = parseOptionalBooleanQueryParam(query.only_debtors, 'only_debtors', false);
 
     let searchUuid: string | null = null;
     let searchLikePattern: string | null = null;

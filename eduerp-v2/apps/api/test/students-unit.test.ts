@@ -5,6 +5,8 @@ import {
   normalizePersonName,
   normalizePhoneE164,
   normalizeSearchQueryText,
+  parseOptionalBooleanQueryParam,
+  parseOptionalStrictBoolean,
   validateIsoDate,
 } from '../src/students/normalization';
 
@@ -56,5 +58,23 @@ describe('Stage 06 Students, Guardians & Enrollments Unit Tests (06.01..06.04)',
     assert.throws(() => validateIsoDate('2026-02-29', 'enrolled_at_date'), /not a valid calendar date/);
     assert.throws(() => validateIsoDate('2026-13-01', 'enrolled_at_date'), /out-of-range/);
     assert.throws(() => validateIsoDate('04-11-2026', 'enrolled_at_date'), /YYYY-MM-DD/);
+  });
+
+  it('enforces strict boolean validation and rejects string booleans like "false" (STU-UNIT-04 / R2)', () => {
+    assert.equal(parseOptionalStrictBoolean(undefined, 'reuse_existing_guardian'), false);
+    assert.equal(parseOptionalStrictBoolean(true, 'reuse_existing_guardian'), true);
+    assert.equal(parseOptionalStrictBoolean(false, 'reuse_existing_guardian'), false);
+
+    for (const invalidVal of ['false', 'true', 0, 1, null, {}]) {
+      assert.throws(
+        () => parseOptionalStrictBoolean(invalidVal, 'reuse_existing_guardian'),
+        /strict boolean/,
+      );
+    }
+
+    assert.equal(parseOptionalBooleanQueryParam(undefined, 'include_archived'), false);
+    assert.equal(parseOptionalBooleanQueryParam('true', 'include_archived'), true);
+    assert.equal(parseOptionalBooleanQueryParam('false', 'include_archived'), false);
+    assert.throws(() => parseOptionalBooleanQueryParam('yes', 'include_archived'), /'true' or 'false'/);
   });
 });

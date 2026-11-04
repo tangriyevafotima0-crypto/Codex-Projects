@@ -235,9 +235,11 @@ model CoursePriceHistory {
   groupId          String?  @map("group_id") @db.Uuid
   previousFeeUzs   BigInt   @map("previous_fee_uzs") @db.BigInt
   newFeeUzs        BigInt   @map("new_fee_uzs") @db.BigInt
-  effectiveFrom    DateTime @map("effective_from") @db.Date
-  changedByStaffId String   @map("changed_by_staff_id") @db.Uuid
-  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  effectiveFrom         DateTime @map("effective_from") @db.Date
+  changedByStaffId      String   @map("changed_by_staff_id") @db.Uuid
+  changeReason          String?  @map("change_reason") @db.VarChar(255)
+  targetVersionSnapshot Int      @default(1) @map("target_version_snapshot")
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   course         Course    @relation(fields: [courseId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
   changedByStaff StaffUser @relation("CoursePriceChangedBy", fields: [changedByStaffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
@@ -253,6 +255,9 @@ model CourseGroup {
   name             String   @db.VarChar(100)
   primaryTeacherId String   @map("primary_teacher_id") @db.Uuid
   billingMode      String   @map("billing_mode") @db.VarChar(24)
+  dueDateRule      String   @default("ENROLLMENT_ANNIVERSARY") @map("due_date_rule") @db.VarChar(32)
+  fixedDueDay      Int?     @map("fixed_due_day") @db.SmallInt
+  collectionTiming String   @default("ARREARS") @map("collection_timing") @db.VarChar(16)
   currentFeeUzs    BigInt   @map("current_fee_uzs") @db.BigInt
   lessonsPerCycle  Int      @default(12) @map("lessons_per_cycle")
   scheduleDaysJson Json     @map("schedule_days_json")
@@ -324,6 +329,8 @@ model LessonOccurrence {
   endsAtUtc               DateTime  @map("ends_at_utc") @db.Timestamptz(6)
   status                  String    @db.VarChar(20)
   rescheduledFromLessonId String?   @map("rescheduled_from_lesson_id") @db.Uuid
+  cancellationReason      String?   @map("cancellation_reason") @db.VarChar(255)
+  cancellationSource      String?   @map("cancellation_source") @db.VarChar(32)
   primaryTeacherSnapshotId String   @map("primary_teacher_snapshot_id") @db.Uuid
   payRecipientTeacherId   String    @map("pay_recipient_teacher_id") @db.Uuid
   attendanceSubmittedAt   DateTime? @map("attendance_submitted_at") @db.Timestamptz(6)
@@ -361,6 +368,7 @@ model SubstituteAssignment {
   createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt              DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
   revokedAt              DateTime? @map("revoked_at") @db.Timestamptz(6)
+  revokeReason           String?   @map("revoke_reason") @db.VarChar(255)
 
   lesson            LessonOccurrence @relation(fields: [lessonId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
   originalTeacher   StaffUser        @relation("SubstituteOriginalTeacher", fields: [originalTeacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)

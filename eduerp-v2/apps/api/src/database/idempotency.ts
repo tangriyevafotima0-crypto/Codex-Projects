@@ -57,6 +57,13 @@ export interface IdempotentOperationParams<T> {
   readonly idempotencyKey: string;
   readonly requestPayload: unknown;
   readonly isolationLevel?: TransactionIsolationLevel;
+  /**
+   * I03: Optional transactional pre-replay authorization & row-locking hook.
+   * Executed inside the SAME database transaction BEFORE `client_operation_logs`
+   * is checked or returned. Must lock target domain row(s) (`FOR UPDATE`) and verify
+   * live actor status/role and current object entitlement without bumping `version`.
+   */
+  readonly authorizeBeforeReplayOrExecute?: (tx: TransactionContext) => Promise<void>;
   readonly handler: (tx: TransactionContext) => Promise<IdempotentHandlerResult<T>>;
 }
 
@@ -175,6 +182,10 @@ export async function executeIdempotentOperation<T>(
         lockNamespace,
         clientOperationUuid,
       ]);
+
+      if (params.authorizeBeforeReplayOrExecute) {
+        await params.authorizeBeforeReplayOrExecute(tx);
+      }
 
       const existingRes = await tx.query<{
         request_body_sha256: string;

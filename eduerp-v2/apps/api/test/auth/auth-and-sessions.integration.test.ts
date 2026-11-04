@@ -381,6 +381,37 @@ describe('Stage 05 Staff Auth, G01 No-Replay Credential Check, G02 Atomic Counte
       );
       assert.equal(bucketDump.rows[0]?.dump.includes(floodIp), false);
       assert.equal(bucketDump.rows[0]?.dump.includes('unique.flood.user'), false);
+
+      // R1 Live Privilege Failure Test: revoking table privilege on auth_rate_limit_buckets from API runtime role
+      // causes login to fail closed with 503 DATABASE_UNAVAILABLE (never silently falling back to a local Map!)
+      await env.migratorPoolA.query(`REVOKE ALL ON TABLE "auth_rate_limit_buckets" FROM "${env.roleApiRuntime}"`);
+      try {
+        const failClosedRes = await httpJsonRequest({
+          port,
+          method: 'POST',
+          path: '/api/v1/auth/login',
+          headers: { 'X-Forwarded-For': '198.51.100.42' },
+          body: { username: 'director.demo', password: SYNTHETIC_TEST_ONLY_PASSWORD },
+        });
+        assert.equal(failClosedRes.statusCode, 503);
+        assert.equal(failClosedRes.json.error_code, 'DATABASE_UNAVAILABLE');
+        assert.equal(failClosedRes.rawBody.includes('postgresql://'), false);
+      } finally {
+        await env.migratorPoolA.query(
+          `GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "auth_rate_limit_buckets" TO "${env.roleApiRuntime}"`,
+        );
+      }
+
+      // I01/R1 Recovery Verification: once GRANT on auth_rate_limit_buckets is restored, login succeeds (200 OK)
+      const recoveredLoginRes = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: '/api/v1/auth/login',
+        headers: { 'X-Forwarded-For': '198.51.100.43' },
+        body: { username: 'director.demo', password: SYNTHETIC_TEST_ONLY_PASSWORD },
+      });
+      assert.equal(recoveredLoginRes.statusCode, 200);
+      assert.equal(recoveredLoginRes.json.role, 'DIRECTOR');
     } finally {
       await app2.close();
       await authService.clearRateLimitBucketsForTest();
