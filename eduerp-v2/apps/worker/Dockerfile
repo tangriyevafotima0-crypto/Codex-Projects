@@ -16,7 +16,7 @@ COPY apps/worker ./apps/worker
 COPY docs/architecture/openapi.yaml ./docs/architecture/openapi.yaml
 COPY docs/architecture/operation-inventory.csv ./docs/architecture/operation-inventory.csv
 
-RUN npm --workspace=@eduerp/contracts run build && npm --workspace=@eduerp/worker run build
+RUN npm --workspace=@eduerp/contracts run build && npm --workspace=@eduerp/worker run build && npm prune --omit=dev --ignore-scripts --no-audit --no-fund
 
 FROM node:24.18.1-alpine@sha256:f70403e87646dc51b45295f4b8b70cdad0b63d2297c4c9899119b03f7af7a6b3 AS runner
 WORKDIR /app
@@ -28,8 +28,8 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/packages/contracts/package.json ./packages/contracts/package.json
 COPY --from=builder /app/packages/contracts/dist ./packages/contracts/dist
-COPY --from=builder /app/apps/worker/package.json ./apps/worker/package.json
-COPY --from=builder /app/apps/worker/dist ./apps/worker/dist
+# Preserve workspace-local dependencies as well as hoisted root modules.
+COPY --from=builder /app/apps ./apps
 COPY --from=builder /app/docs/architecture/openapi.yaml ./docs/architecture/openapi.yaml
 COPY --from=builder /app/docs/architecture/operation-inventory.csv ./docs/architecture/operation-inventory.csv
 
