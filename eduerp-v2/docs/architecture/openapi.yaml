@@ -221,6 +221,16 @@
             }
           }
         }
+      },
+      "ServiceUnavailable503": {
+        "description": "503 Service Unavailable — database connection unreachable, superuser role rejected, or required schema/triggers missing (T04.03, T04.05).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -338,7 +348,8 @@
               "FREEZE_CREDIT_CAP_EXCEEDED",
               "LAST_DIRECTOR_CANNOT_BE_DEACTIVATED",
               "POLICY_DECISION_NOT_CONFIRMED",
-              "RATE_LIMITED"
+              "RATE_LIMITED",
+              "DATABASE_UNAVAILABLE"
             ]
           },
           "message": {
@@ -3220,6 +3231,54 @@
             "$ref": "#/components/schemas/UtcTimestamp"
           }
         }
+      },
+      "DatabaseReadinessResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "center_slug",
+          "license_mode",
+          "database_status",
+          "schema_tables_verified",
+          "immutable_triggers_verified",
+          "request_id",
+          "timestamp_utc"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "READY"
+            ]
+          },
+          "center_slug": {
+            "type": "string"
+          },
+          "license_mode": {
+            "$ref": "#/components/schemas/LicenseMode"
+          },
+          "database_status": {
+            "type": "string",
+            "enum": [
+              "READY"
+            ]
+          },
+          "schema_tables_verified": {
+            "type": "integer",
+            "minimum": 46
+          },
+          "immutable_triggers_verified": {
+            "type": "integer",
+            "minimum": 24
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "timestamp_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        }
       }
     }
   },
@@ -3293,6 +3352,49 @@
           "actor_source": "ANONYMOUS_BOOTSTRAP",
           "center_isolation_rule": "Bound to Host center_slug; returns only non-sensitive liveness status, center_slug, license_mode, request_id, timestamp_utc (no DB password or secrets).",
           "object_ownership_rule": "Public read-only liveness check (T03.02).",
+          "conditional_role_policy": "NONE"
+        }
+      }
+    },
+    "/api/v1/ready": {
+      "get": {
+        "tags": [
+          "SystemHealth"
+        ],
+        "operationId": "getDatabaseReadiness",
+        "summary": "Live PostgreSQL connectivity, non-superuser role, and 46-table/21-trigger schema readiness check (T04.03, T04.05)",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Database connection, non-superuser runtime role, and 46 canonical tables + 21 immutability triggers verified.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabaseReadinessResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable503"
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API"
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "PUBLIC_BOOTSTRAP",
+          "center_isolation_rule": "Readiness query executes against the center's isolated PostgreSQL database without exposing credentials, hostnames, or tenant PII.",
+          "object_ownership_rule": "Returns only boolean/count schema readiness metadata (46 tables, 21 triggers) or a redacted 503 ErrorEnvelope.",
           "conditional_role_policy": "NONE"
         }
       }

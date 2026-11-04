@@ -4,6 +4,7 @@ node_modules
 **/node_modules
 dist
 **/dist
+apps/api/src/generated
 coverage
 *.tsbuildinfo
 .env
@@ -24,6 +25,7 @@ docs/verification
 docs/operations
 docs/architecture/*.md
 docs/architecture/traceability.csv
+docs/architecture/schema-coverage.csv
 tests
 demo
 .DS_Store

@@ -1,9 +1,10 @@
 # EduERP v2.0 — GitHub Actions CI Workflow Template (infra/ci/eduerp-ci.yml)
-# IMPORTANT PLACEMENT RULE (03.04 / T03.04):
-# - Git repository root is `Codex-Projects/`, while the project directory is `eduerp-v2/`.
-# - GitHub Actions only executes workflows located under repo-root `.github/workflows/`.
-# - This file is delivered at `eduerp-v2/infra/ci/eduerp-ci.yml` inside the project package and is
-#   placed at `<repo-root>/.github/workflows/eduerp-ci.yml` by the manager upon review.
+# Stage 04 (04.04, 04.05 / T04.04, T04.05):
+# - Verifies S01/S02 contracts and S04 schema/migration/role invariants + secret scan.
+# - Runs Prisma 7 generate, ESLint 9, TypeScript 5.9 strict typecheck, workspace build, and unit/bootstrap tests.
+# - Provisions PostgreSQL 16 service container, verifies Prisma migrate deploy idempotency, applies least-privilege
+#   DB roles, and runs the real PostgreSQL integration test suite (npm run test:db, DB-IT-01..DB-IT-20).
+# - Smoke-tests the Docker Compose dev stack (/api/v1/health and /api/v1/ready).
 
 name: eduerp-v2-ci
 
@@ -30,7 +31,7 @@ permissions:
 
 jobs:
   verify-contracts-and-secrets:
-    name: "S01/S02 Contract Verification & Secret Scan"
+    name: "S01/S02/S04 Contract Verification & Secret Scan"
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,10 +42,11 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Compile and run S01/S02 contract & semantic verifier
+      - name: Compile and run S01/S02 and S04 contract & schema verifiers
         run: |
-          python3 -m py_compile tools/verify_s01_s02.py
+          python3 -m py_compile tools/verify_s01_s02.py tools/verify_s04.py
           python3 tools/verify_s01_s02.py
+          python3 tools/verify_s04.py
 
       - name: Scan tracked files for forbidden secret files and real token patterns
         run: |
@@ -86,9 +88,23 @@ jobs:
           PY
 
   build-lint-typecheck-test:
-    name: "JS Workspace Lint, Typecheck, Build & Executable Tests"
+    name: "JS Workspace Lint, Typecheck, Build, Unit & PostgreSQL Integration Tests"
     runs-on: ubuntu-latest
     needs: verify-contracts-and-secrets
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: eduerp_pg_superuser
+          POSTGRES_PASSWORD: ci_superuser_password_only
+          POSTGRES_DB: eduerp_test_ci_admin
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U eduerp_pg_superuser -d eduerp_test_ci_admin"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -101,27 +117,48 @@ jobs:
       - name: Install locked workspace dependencies
         run: npm ci --ignore-scripts --no-audit --no-fund
 
+      - name: Generate Prisma 7 Client
+        run: npm run prisma:generate
+
       - name: Run ESLint across workspaces
         run: npm run lint
 
       - name: Run TypeScript strict typecheck across workspaces
         run: npm run typecheck
 
-      - name: Build workspaces and execute real API, worker and contract tests
+      - name: Build workspaces and execute unit, contract, and subprocess tests
         run: npm test
 
+      - name: Bootstrap separated PostgreSQL roles and verify Prisma migrate deploy idempotency
+        env:
+          PGPASSWORD: ci_superuser_password_only
+          MIGRATION_DATABASE_URL: postgresql://eduerp_migrator:EXAMPLE_DEV_ONLY_MIGRATOR_PASS@127.0.0.1:5432/eduerp_guliston_ilm_dev?schema=public
+        run: |
+          psql -h 127.0.0.1 -U eduerp_pg_superuser -d eduerp_test_ci_admin -v ON_ERROR_STOP=1 -c "CREATE DATABASE eduerp_guliston_ilm_dev;"
+          psql -h 127.0.0.1 -U eduerp_pg_superuser -d eduerp_guliston_ilm_dev -v ON_ERROR_STOP=1 -f infra/db/01-init-roles-and-databases.sql
+          npm run migrate:deploy
+          npm run migrate:deploy
+          psql -h 127.0.0.1 -U eduerp_pg_superuser -d eduerp_guliston_ilm_dev -v ON_ERROR_STOP=1 -f infra/db/02-apply-runtime-grants.sql
+
+      - name: Run real PostgreSQL integration test suite (DB-IT-01..DB-IT-20)
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:db
+
   docker-dev-smoke:
-    name: "Build and smoke-test the dev Compose stack"
+    name: "Build and smoke-test the dev Compose stack (/health & /ready)"
     runs-on: ubuntu-latest
     needs: build-lint-typecheck-test
     steps:
       - uses: actions/checkout@v4
       - name: Build and start the isolated development stack
         run: docker compose --env-file .env.example -f infra/compose.dev.yml up --build --wait --wait-timeout 180 -d
-      - name: Verify PostgreSQL and actual Nest API
+      - name: Verify PostgreSQL roles, API liveness (/api/v1/health), and DB readiness (/api/v1/ready)
         run: |
-          docker compose --env-file .env.example -f infra/compose.dev.yml exec -T postgres pg_isready -U eduerp_app_dev -d eduerp_guliston_ilm_dev
+          docker compose --env-file .env.example -f infra/compose.dev.yml exec -T postgres pg_isready -U eduerp_api_runtime -d eduerp_guliston_ilm_dev
           curl --fail --silent http://127.0.0.1:3000/api/v1/health
+          curl --fail --silent http://127.0.0.1:3000/api/v1/ready
           docker compose --env-file .env.example -f infra/compose.dev.yml ps --status running --services | sort > /tmp/eduerp-services
           python3 -c 'assert set(open("/tmp/eduerp-services").read().split()) == {"api", "worker", "postgres"}'
       - name: Diagnose a failed development stack

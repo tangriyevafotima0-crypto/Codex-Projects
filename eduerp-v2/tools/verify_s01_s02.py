@@ -35,6 +35,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 PUBLIC_BOOTSTRAP_OPS = {
     "getSystemHealth",
+    "getDatabaseReadiness",
     "loginStaff",
     "refreshStaffSession",
     "loginVendorWithMfa",

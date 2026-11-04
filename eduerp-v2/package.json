@@ -1,8 +1,8 @@
 {
   "name": "eduerp-v2-monorepo",
-  "version": "2.0.0-s03.0",
+  "version": "2.0.0-s04.0",
   "private": true,
-  "description": "EduERP v2.0 B2B Turnkey Platform \u2014 Center Data Plane API, Outbox Worker, and Shared Contracts Workspace (Stage 03 Foundation)",
+  "description": "EduERP v2.0 B2B Turnkey Platform \u2014 Center Data Plane API, Outbox Worker, Shared Contracts, and PostgreSQL/Prisma 7 Foundation (Stage 04)",
   "engines": {
     "node": ">=24.18.1 <25",
     "npm": ">=11 <12"
@@ -13,47 +13,20 @@
     "apps/worker"
   ],
   "scripts": {
+    "prisma:generate": "npm --workspace=@eduerp/api run prisma:generate",
+    "migrate:deploy": "npm --workspace=@eduerp/api run migrate:deploy",
     "build": "npm --workspaces run build",
     "typecheck": "npm --workspaces run typecheck",
     "lint": "eslint \"packages/*/src/**/*.ts\" \"apps/*/src/**/*.ts\" \"apps/*/test/**/*.ts\"",
     "test": "npm run build && npm --workspaces --if-present run test",
-    "verify:docs": "python3 tools/verify_s01_s02.py"
+    "test:db": "npm run build && npm --workspace=@eduerp/api run test:db",
+    "verify:docs": "python3 tools/verify_s01_s02.py && python3 tools/verify_s04.py"
   },
   "devDependencies": {
     "@types/node": "18.18.14",
-    "@typescript-eslint/eslint-plugin": "7.1.1",
-    "@typescript-eslint/parser": "7.1.1",
-    "eslint": "8.57.0",
-    "typescript": "5.3.3"
-  },
-  "eslintConfig": {
-    "root": true,
-    "parser": "@typescript-eslint/parser",
-    "parserOptions": {
-      "ecmaVersion": 2022,
-      "sourceType": "module"
-    },
-    "plugins": [
-      "@typescript-eslint"
-    ],
-    "env": {
-      "node": true,
-      "es2022": true
-    },
-    "rules": {
-      "no-console": "off",
-      "no-eval": "error",
-      "eqeqeq": [
-        "error",
-        "always"
-      ],
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        {
-          "argsIgnorePattern": "^_"
-        }
-      ],
-      "@typescript-eslint/no-explicit-any": "error"
-    }
+    "@typescript-eslint/eslint-plugin": "8.72.1",
+    "@typescript-eslint/parser": "8.72.1",
+    "eslint": "9.39.5",
+    "typescript": "5.9.3"
   }
 }

@@ -17,6 +17,17 @@ export interface HealthResponseContract {
   timestamp_utc: string;
 }
 
+export interface DatabaseReadinessResponseContract {
+  status: 'READY';
+  center_slug: string;
+  license_mode: LicenseMode;
+  database_status: 'READY';
+  schema_tables_verified: number;
+  immutable_triggers_verified: number;
+  request_id: string;
+  timestamp_utc: string;
+}
+
 export type ErrorCodeContract =
   | 'VALIDATION_ERROR'
   | 'UNAUTHORIZED'
@@ -35,7 +46,8 @@ export type ErrorCodeContract =
   | 'FREEZE_CREDIT_CAP_EXCEEDED'
   | 'LAST_DIRECTOR_CANNOT_BE_DEACTIVATED'
   | 'POLICY_DECISION_NOT_CONFIRMED'
-  | 'RATE_LIMITED';
+  | 'RATE_LIMITED'
+  | 'DATABASE_UNAVAILABLE';
 
 export interface ErrorEnvelopeContract {
   error_code: ErrorCodeContract;

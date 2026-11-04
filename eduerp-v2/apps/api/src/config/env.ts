@@ -14,6 +14,10 @@ export interface ApiEnvConfig {
   readonly centerTimezone: string;
   readonly licenseMode: LicenseMode;
   readonly databaseUrl: string;
+  readonly migrationDatabaseUrl?: string;
+  readonly readonlyDatabaseUrl?: string;
+  readonly dbPoolMax: number;
+  readonly dbConnectTimeoutMs: number;
   readonly jwtAccessSecret: string;
   readonly jwtRefreshSecret: string;
   readonly internalBotHmacSecret: string;
@@ -36,28 +40,28 @@ const ALLOWED_NODE_ENVS: ReadonlySet<string> = new Set(['development', 'test', '
 const ALLOWED_LOG_LEVELS: ReadonlySet<string> = new Set(['debug', 'info', 'warn', 'error']);
 const ALLOWED_LICENSE_MODES: ReadonlySet<string> = new Set(['ACTIVE', 'GRACE_PERIOD', 'READ_ONLY']);
 
-function validatePostgresUrl(rawUrl: string | undefined): string | null {
+export function validatePostgresUrl(rawUrl: string | undefined, fieldName: string = 'DATABASE_URL'): string | null {
   if (!rawUrl || rawUrl.trim().length === 0) {
-    return 'DATABASE_URL is required';
+    return `${fieldName} is required`;
   }
   try {
     const parsed = new URL(rawUrl);
     if (parsed.protocol !== 'postgresql:' && parsed.protocol !== 'postgres:') {
-      return 'DATABASE_URL must use postgresql:// or postgres:// protocol';
+      return `${fieldName} must use postgresql:// or postgres:// protocol`;
     }
     if (!parsed.hostname) {
-      return 'DATABASE_URL must specify a database hostname';
+      return `${fieldName} must specify a database hostname`;
     }
     if (!parsed.username || !parsed.password) {
-      return 'DATABASE_URL must include both database username and password';
+      return `${fieldName} must include both database username and password`;
     }
     const dbName = parsed.pathname.replace(/^\//, '').trim();
     if (!dbName) {
-      return 'DATABASE_URL must specify a non-empty database name in path';
+      return `${fieldName} must specify a non-empty database name in path`;
     }
     return null;
   } catch {
-    return 'DATABASE_URL is not a valid URL';
+    return `${fieldName} is not a valid URL`;
   }
 }
 
@@ -119,9 +123,35 @@ export function loadApiEnv(rawEnv: NodeJS.ProcessEnv = process.env): ApiEnvConfi
     recordError('LICENSE_MODE', 'must be one of ACTIVE, GRACE_PERIOD, READ_ONLY');
   }
 
-  const dbError = validatePostgresUrl(rawEnv.DATABASE_URL);
+  const dbError = validatePostgresUrl(rawEnv.DATABASE_URL, 'DATABASE_URL');
   if (dbError) {
     recordError('DATABASE_URL', dbError);
+  }
+
+  const migrationDatabaseUrlRaw = rawEnv.MIGRATION_DATABASE_URL?.trim();
+  if (migrationDatabaseUrlRaw) {
+    const migErr = validatePostgresUrl(migrationDatabaseUrlRaw, 'MIGRATION_DATABASE_URL');
+    if (migErr) {
+      recordError('MIGRATION_DATABASE_URL', migErr);
+    }
+  }
+
+  const readonlyDatabaseUrlRaw = rawEnv.READONLY_DATABASE_URL?.trim();
+  if (readonlyDatabaseUrlRaw) {
+    const roErr = validatePostgresUrl(readonlyDatabaseUrlRaw, 'READONLY_DATABASE_URL');
+    if (roErr) {
+      recordError('READONLY_DATABASE_URL', roErr);
+    }
+  }
+
+  const dbPoolMax = Number((rawEnv.DB_POOL_MAX ?? '10').trim());
+  if (!Number.isInteger(dbPoolMax) || dbPoolMax < 1 || dbPoolMax > 100) {
+    recordError('DB_POOL_MAX', 'must be an integer between 1 and 100');
+  }
+
+  const dbConnectTimeoutMs = Number((rawEnv.DB_CONNECT_TIMEOUT_MS ?? '3000').trim());
+  if (!Number.isInteger(dbConnectTimeoutMs) || dbConnectTimeoutMs < 100 || dbConnectTimeoutMs > 60000) {
+    recordError('DB_CONNECT_TIMEOUT_MS', 'must be an integer between 100 and 60000 ms');
   }
 
   const jwtAccessSecret = (rawEnv.JWT_ACCESS_SECRET ?? '').trim();
@@ -160,6 +190,10 @@ export function loadApiEnv(rawEnv: NodeJS.ProcessEnv = process.env): ApiEnvConfi
     centerTimezone,
     licenseMode: licenseModeRaw as LicenseMode,
     databaseUrl: (rawEnv.DATABASE_URL ?? '').trim(),
+    ...(migrationDatabaseUrlRaw ? { migrationDatabaseUrl: migrationDatabaseUrlRaw } : {}),
+    ...(readonlyDatabaseUrlRaw ? { readonlyDatabaseUrl: readonlyDatabaseUrlRaw } : {}),
+    dbPoolMax,
+    dbConnectTimeoutMs,
     jwtAccessSecret,
     jwtRefreshSecret,
     internalBotHmacSecret,
@@ -178,6 +212,10 @@ export function redactApiConfig(config: ApiEnvConfig): Record<string, unknown> {
     centerTimezone: config.centerTimezone,
     licenseMode: config.licenseMode,
     databaseUrl: '[REDACTED_DATABASE_URL]',
+    ...(config.migrationDatabaseUrl ? { migrationDatabaseUrl: '[REDACTED_DATABASE_URL]' } : {}),
+    ...(config.readonlyDatabaseUrl ? { readonlyDatabaseUrl: '[REDACTED_DATABASE_URL]' } : {}),
+    dbPoolMax: config.dbPoolMax,
+    dbConnectTimeoutMs: config.dbConnectTimeoutMs,
     jwtAccessSecret: '[REDACTED_SECRET]',
     jwtRefreshSecret: '[REDACTED_SECRET]',
     internalBotHmacSecret: '[REDACTED_SECRET]',

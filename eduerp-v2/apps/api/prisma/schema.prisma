@@ -1,0 +1,1120 @@
+// EduERP v2.0 — Canonical 46-Entity Prisma 7 Schema (apps/api/prisma/schema.prisma)
+// Step 04.01 (T04.01):
+// - Maps all 46 canonical entities (25 Mutable + 21 Strictly Append-Only) 1-to-1 to snake_case PostgreSQL tables.
+// - All UZS monetary columns use @db.BigInt (scale=0, 1 integer = 1 UZS so'm; no float or Number precision loss).
+// - All foreign keys enforce OnDelete: Restrict, OnUpdate: Restrict (no cascade delete of financial/audit history).
+// - PostgreSQL CHECK constraints, partial unique indexes, composite tenant FKs, and append-only immutability triggers
+//   are enforced in apps/api/prisma/migrations/20261104000100_initial_foundation/migration.sql.
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model CenterLicense {
+  centerId               String   @id @map("center_id") @db.Uuid
+  centerSlug             String   @unique @map("center_slug") @db.VarChar(64)
+  licenseStatus          String   @map("license_status") @db.VarChar(16)
+  signedJwtToken         String   @map("signed_jwt_token") @db.Text
+  signatureKeyId         String   @map("signature_key_id") @db.VarChar(32)
+  validUntilUtc          DateTime @map("valid_until_utc") @db.Timestamptz(6)
+  graceUntilUtc          DateTime @map("grace_until_utc") @db.Timestamptz(6)
+  lastVerifiedAtUtc      DateTime @map("last_verified_at_utc") @db.Timestamptz(6)
+  updatedByVendorAuditId String?  @map("updated_by_vendor_audit_id") @db.Uuid
+  version                Int      @default(1)
+  updatedAt              DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("center_licenses")
+}
+
+model StaffUser {
+  id                 String    @id @default(uuid()) @db.Uuid
+  centerId           String    @map("center_id") @db.Uuid
+  role               String    @db.VarChar(16)
+  fullName           String    @map("full_name") @db.VarChar(120)
+  loginUsername      String    @map("login_username") @db.VarChar(64)
+  phoneE164          String?   @map("phone_e164") @db.VarChar(20)
+  telegramUserId     BigInt?   @map("telegram_user_id") @db.BigInt
+  passwordHash       String    @map("password_hash") @db.Text
+  mustChangePassword Boolean   @default(true) @map("must_change_password")
+  status             String    @db.VarChar(16)
+  failedLoginCount   Int       @default(0) @map("failed_login_count")
+  lockedUntil        DateTime? @map("locked_until") @db.Timestamptz(6)
+  version            Int       @default(1)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  sessions               StaffSession[]
+  primaryGroups          CourseGroup[]          @relation("GroupPrimaryTeacher")
+  originalSubstitutes    SubstituteAssignment[] @relation("SubstituteOriginalTeacher")
+  substituteAssignments  SubstituteAssignment[] @relation("SubstituteReplacementTeacher")
+  assignedSubstitutes    SubstituteAssignment[] @relation("SubstituteAssignedByAdmin")
+  recordedAttendances    AttendanceRecord[]     @relation("AttendanceRecordedBy")
+  attendanceRevisions    AttendanceRevision[]   @relation("AttendanceRevisionActor")
+  recordedGrades         GradeEntry[]           @relation("GradeRecordedByTeacher")
+  coursePriceChanges     CoursePriceHistory[]   @relation("CoursePriceChangedBy")
+  discountRequests       DiscountRequest[]      @relation("DiscountRequestedByAdmin")
+  discountApprovals      DiscountApproval[]     @relation("DiscountApprovedByDirector")
+  freezeRecords          FreezeRecord[]         @relation("FreezeCreatedByAdmin")
+  openedCashShifts       CashShift[]            @relation("CashShiftOpenedBy")
+  closedCashShifts       CashShift[]            @relation("CashShiftClosedBy")
+  recordedPayments       Payment[]              @relation("PaymentRecordedByAdmin")
+  reversalRequests       ReversalOrRefundRequest[] @relation("ReversalRequestedByAdmin")
+  reversalDecisions      ReversalOrRefundRequest[] @relation("ReversalDecidedByDirector")
+  reversalExecutions     ReversalOrRefundExecution[] @relation("ReversalExecutedByDirector")
+  recordedCashExpenses   CashExpense[]          @relation("CashExpenseRecordedBy")
+  actorLedgerEntries     LedgerEntry[]          @relation("LedgerActorStaff")
+  teacherPayrolls        PayrollSnapshot[]      @relation("PayrollTeacher")
+  closedPayrolls         PayrollSnapshot[]      @relation("PayrollClosedByDirector")
+  teacherPayrollAdjusts  PayrollAdjustment[]    @relation("PayrollAdjustmentTeacher")
+  createdPayrollAdjusts  PayrollAdjustment[]    @relation("PayrollAdjustmentCreatedBy")
+  uploadedImportBatches  ImportBatch[]          @relation("ImportBatchUploadedBy")
+
+  @@unique([id, centerId])
+  @@unique([centerId, loginUsername])
+  @@index([centerId, role, status])
+  @@map("staff_users")
+}
+
+model StaffSession {
+  id               String    @id @default(uuid()) @db.Uuid
+  centerId         String    @map("center_id") @db.Uuid
+  staffId          String    @map("staff_id") @db.Uuid
+  refreshTokenHash String    @unique @map("refresh_token_hash") @db.Char(64)
+  roleSnapshot     String    @map("role_snapshot") @db.VarChar(16)
+  deviceInfo       String?   @map("device_info") @db.VarChar(255)
+  expiresAt        DateTime  @map("expires_at") @db.Timestamptz(6)
+  revokedAt        DateTime? @map("revoked_at") @db.Timestamptz(6)
+  revokeReason     String?   @map("revoke_reason") @db.VarChar(64)
+  version          Int       @default(1)
+  createdAt        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  staff StaffUser @relation(fields: [staffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([staffId, revokedAt])
+  @@map("staff_sessions")
+}
+
+model Student {
+  id             String    @id @default(uuid()) @db.Uuid
+  centerId       String    @map("center_id") @db.Uuid
+  studentCode    String    @map("student_code") @db.VarChar(24)
+  fullName       String    @map("full_name") @db.VarChar(120)
+  normalizedName String    @map("normalized_name") @db.VarChar(120)
+  birthDate      DateTime? @map("birth_date") @db.Date
+  status         String    @db.VarChar(16)
+  notes          String?   @db.Text
+  version        Int       @default(1)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  guardianLinks     GuardianStudent[]
+  enrollments       Enrollment[]
+  attendanceRecords AttendanceRecord[]
+  gradeEntries      GradeEntry[]
+  invoices          Invoice[]
+  discountRequests  DiscountRequest[]
+  creditNotes       CreditNote[]
+  payments          Payment[]
+  unappliedCredits  UnappliedCredit[]
+  receipts          Receipt[]
+  promisesToPay     PromiseToPay[]
+  ledgerEntries     LedgerEntry[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, studentCode])
+  @@index([centerId, normalizedName, status])
+  @@map("students")
+}
+
+model Guardian {
+  id        String   @id @default(uuid()) @db.Uuid
+  centerId  String   @map("center_id") @db.Uuid
+  fullName  String   @map("full_name") @db.VarChar(120)
+  phoneE164 String   @map("phone_e164") @db.VarChar(20)
+  status    String   @db.VarChar(16)
+  version   Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  studentLinks  GuardianStudent[]
+  telegramLinks GuardianTelegramLink[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, phoneE164])
+  @@map("guardians")
+}
+
+model GuardianStudent {
+  id             String    @id @default(uuid()) @db.Uuid
+  centerId       String    @map("center_id") @db.Uuid
+  guardianId     String    @map("guardian_id") @db.Uuid
+  studentId      String    @map("student_id") @db.Uuid
+  relationship   String    @db.VarChar(32)
+  isPrimaryPayer Boolean   @default(true) @map("is_primary_payer")
+  active         Boolean   @default(true)
+  version        Int       @default(1)
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  unlinkedAt     DateTime? @map("unlinked_at") @db.Timestamptz(6)
+
+  guardian Guardian @relation(fields: [guardianId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  student  Student  @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([guardianId, studentId])
+  @@index([studentId, active])
+  @@map("guardian_students")
+}
+
+model GuardianTelegramLink {
+  id                 String    @id @default(uuid()) @db.Uuid
+  centerId           String    @map("center_id") @db.Uuid
+  guardianId         String    @map("guardian_id") @db.Uuid
+  inviteTokenHash    String    @unique @map("invite_token_hash") @db.Char(64)
+  inviteExpiresAt    DateTime  @map("invite_expires_at") @db.Timestamptz(6)
+  inviteUsedAt       DateTime? @map("invite_used_at") @db.Timestamptz(6)
+  telegramUserId     BigInt?   @map("telegram_user_id") @db.BigInt
+  telegramChatId     BigInt?   @map("telegram_chat_id") @db.BigInt
+  linkedPhoneE164    String    @map("linked_phone_e164") @db.VarChar(20)
+  status             String    @db.VarChar(24)
+  lastDeliveryStatus String?   @map("last_delivery_status") @db.VarChar(24)
+  lastErrorAt        DateTime? @map("last_error_at") @db.Timestamptz(6)
+  revokedAt          DateTime? @map("revoked_at") @db.Timestamptz(6)
+  revokeReason       String?   @map("revoke_reason") @db.VarChar(64)
+  version            Int       @default(1)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  guardian Guardian @relation(fields: [guardianId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([centerId, telegramChatId, status])
+  @@map("guardian_telegram_links")
+}
+
+model Course {
+  id                     String   @id @default(uuid()) @db.Uuid
+  centerId               String   @map("center_id") @db.Uuid
+  name                   String   @db.VarChar(100)
+  defaultMonthlyFeeUzs   BigInt   @map("default_monthly_fee_uzs") @db.BigInt
+  defaultLessonsPerCycle Int      @default(12) @map("default_lessons_per_cycle")
+  status                 String   @db.VarChar(16)
+  version                Int      @default(1)
+  createdAt              DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  priceHistory CoursePriceHistory[]
+  groups       CourseGroup[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, name])
+  @@map("courses")
+}
+
+model CoursePriceHistory {
+  id               String   @id @default(uuid()) @db.Uuid
+  centerId         String   @map("center_id") @db.Uuid
+  courseId         String   @map("course_id") @db.Uuid
+  groupId          String?  @map("group_id") @db.Uuid
+  previousFeeUzs   BigInt   @map("previous_fee_uzs") @db.BigInt
+  newFeeUzs        BigInt   @map("new_fee_uzs") @db.BigInt
+  effectiveFrom    DateTime @map("effective_from") @db.Date
+  changedByStaffId String   @map("changed_by_staff_id") @db.Uuid
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  course         Course    @relation(fields: [courseId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  changedByStaff StaffUser @relation("CoursePriceChangedBy", fields: [changedByStaffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([courseId, effectiveFrom])
+  @@map("course_price_history")
+}
+
+model CourseGroup {
+  id               String   @id @default(uuid()) @db.Uuid
+  centerId         String   @map("center_id") @db.Uuid
+  courseId         String   @map("course_id") @db.Uuid
+  name             String   @db.VarChar(100)
+  primaryTeacherId String   @map("primary_teacher_id") @db.Uuid
+  billingMode      String   @map("billing_mode") @db.VarChar(24)
+  currentFeeUzs    BigInt   @map("current_fee_uzs") @db.BigInt
+  lessonsPerCycle  Int      @default(12) @map("lessons_per_cycle")
+  scheduleDaysJson Json     @map("schedule_days_json")
+  startsTime       String   @map("starts_time") @db.VarChar(8)
+  durationMinutes  Int      @map("duration_minutes")
+  timezone         String   @default("Asia/Tashkent") @db.VarChar(64)
+  status           String   @db.VarChar(16)
+  version          Int      @default(1)
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  course            Course             @relation(fields: [courseId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  primaryTeacher    StaffUser          @relation("GroupPrimaryTeacher", fields: [primaryTeacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  enrollments       Enrollment[]
+  lessonOccurrences LessonOccurrence[]
+
+  @@unique([id, centerId])
+  @@index([centerId, primaryTeacherId, status])
+  @@map("course_groups")
+}
+
+model Enrollment {
+  id                       String    @id @default(uuid()) @db.Uuid
+  centerId                 String    @map("center_id") @db.Uuid
+  studentId                String    @map("student_id") @db.Uuid
+  groupId                  String    @map("group_id") @db.Uuid
+  status                   String    @db.VarChar(16)
+  enrolledAtDate           DateTime  @map("enrolled_at_date") @db.Date
+  firstTrialLessonId       String?   @map("first_trial_lesson_id") @db.Uuid
+  firstTrialDate           DateTime? @map("first_trial_date") @db.Date
+  activatedAt              DateTime? @map("activated_at") @db.Timestamptz(6)
+  billingAnchorDay         Int?      @map("billing_anchor_day") @db.SmallInt
+  packageLessonsRemaining  Int?      @map("package_lessons_remaining")
+  leftAtDate               DateTime? @map("left_at_date") @db.Date
+  churnReasonCode          Int?      @map("churn_reason_code") @db.SmallInt
+  churnAttributedTeacherId String?   @map("churn_attributed_teacher_id") @db.Uuid
+  churnNotes               String?   @map("churn_notes") @db.Text
+  version                  Int       @default(1)
+  createdAt                DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  student           Student            @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  group             CourseGroup        @relation(fields: [groupId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  attendanceRecords AttendanceRecord[]
+  gradeEntries      GradeEntry[]
+  trialActivations  TrialActivation[]
+  billingCycles     BillingCycle[]
+  invoices          Invoice[]
+  discountRequests  DiscountRequest[]
+  freezeRecords     FreezeRecord[]
+  freezeLessonLinks FreezeLessonLink[]
+  creditNotes       CreditNote[]
+
+  @@unique([id, centerId])
+  @@index([studentId, status])
+  @@map("enrollments")
+}
+
+model LessonOccurrence {
+  id                      String    @id @default(uuid()) @db.Uuid
+  centerId                String    @map("center_id") @db.Uuid
+  groupId                 String    @map("group_id") @db.Uuid
+  lessonDate              DateTime  @map("lesson_date") @db.Date
+  occurrenceSeq           Int       @default(1) @map("occurrence_seq") @db.SmallInt
+  startsAtUtc             DateTime  @map("starts_at_utc") @db.Timestamptz(6)
+  endsAtUtc               DateTime  @map("ends_at_utc") @db.Timestamptz(6)
+  status                  String    @db.VarChar(20)
+  rescheduledFromLessonId String?   @map("rescheduled_from_lesson_id") @db.Uuid
+  primaryTeacherSnapshotId String   @map("primary_teacher_snapshot_id") @db.Uuid
+  payRecipientTeacherId   String    @map("pay_recipient_teacher_id") @db.Uuid
+  attendanceSubmittedAt   DateTime? @map("attendance_submitted_at") @db.Timestamptz(6)
+  attendanceSubmittedBy   String?   @map("attendance_submitted_by") @db.Uuid
+  teacherPingSentAt       DateTime? @map("teacher_ping_sent_at") @db.Timestamptz(6)
+  adminEscalationSentAt   DateTime? @map("admin_escalation_sent_at") @db.Timestamptz(6)
+  version                 Int       @default(1)
+  createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  group                 CourseGroup            @relation(fields: [groupId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  substituteAssignments SubstituteAssignment[]
+  attendanceRecords     AttendanceRecord[]
+  gradeEntries          GradeEntry[]
+  freezeLessonLinks     FreezeLessonLink[]
+
+  @@unique([id, centerId])
+  @@unique([groupId, lessonDate, occurrenceSeq])
+  @@unique([groupId, startsAtUtc])
+  @@index([centerId, status, startsAtUtc])
+  @@map("lesson_occurrences")
+}
+
+model SubstituteAssignment {
+  id                     String    @id @default(uuid()) @db.Uuid
+  centerId               String    @map("center_id") @db.Uuid
+  lessonId               String    @map("lesson_id") @db.Uuid
+  originalTeacherId      String    @map("original_teacher_id") @db.Uuid
+  substituteTeacherId    String    @map("substitute_teacher_id") @db.Uuid
+  assignedByAdminId      String    @map("assigned_by_admin_id") @db.Uuid
+  reason                 String    @db.VarChar(255)
+  status                 String    @db.VarChar(16)
+  paySharePolicySnapshot String    @map("pay_share_policy_snapshot") @db.VarChar(32)
+  version                Int       @default(1)
+  createdAt              DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt              DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  revokedAt              DateTime? @map("revoked_at") @db.Timestamptz(6)
+
+  lesson            LessonOccurrence @relation(fields: [lessonId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  originalTeacher   StaffUser        @relation("SubstituteOriginalTeacher", fields: [originalTeacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  substituteTeacher StaffUser        @relation("SubstituteReplacementTeacher", fields: [substituteTeacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  assignedByAdmin   StaffUser        @relation("SubstituteAssignedByAdmin", fields: [assignedByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([id, centerId])
+  @@index([lessonId, status])
+  @@map("substitute_assignments")
+}
+
+model AttendanceRecord {
+  id                  String   @id @default(uuid()) @db.Uuid
+  centerId            String   @map("center_id") @db.Uuid
+  lessonId            String   @map("lesson_id") @db.Uuid
+  studentId           String   @map("student_id") @db.Uuid
+  enrollmentId        String   @map("enrollment_id") @db.Uuid
+  status              String   @db.VarChar(16)
+  isExcusedFrozen     Boolean  @default(false) @map("is_excused_frozen")
+  sourceChannel       String   @map("source_channel") @db.VarChar(20)
+  recordedByStaffId   String   @map("recorded_by_staff_id") @db.Uuid
+  overrideReason      String?  @map("override_reason") @db.Text
+  clientOperationUuid String   @map("client_operation_uuid") @db.Uuid
+  version             Int      @default(1)
+  submittedAt         DateTime @default(now()) @map("submitted_at") @db.Timestamptz(6)
+  updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  lesson          LessonOccurrence     @relation(fields: [lessonId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  student         Student              @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  enrollment      Enrollment           @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  recordedByStaff StaffUser            @relation("AttendanceRecordedBy", fields: [recordedByStaffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  revisions       AttendanceRevision[]
+
+  @@unique([id, centerId])
+  @@unique([lessonId, studentId])
+  @@map("attendance_records")
+}
+
+model AttendanceRevision {
+  id                  String   @id @default(uuid()) @db.Uuid
+  centerId            String   @map("center_id") @db.Uuid
+  attendanceRecordId  String   @map("attendance_record_id") @db.Uuid
+  revisionVersion     Int      @map("revision_version")
+  previousStatus      String?  @map("previous_status") @db.VarChar(16)
+  newStatus           String   @map("new_status") @db.VarChar(16)
+  sourceChannel       String   @map("source_channel") @db.VarChar(20)
+  actorStaffId        String   @map("actor_staff_id") @db.Uuid
+  reason              String?  @db.Text
+  clientOperationUuid String   @map("client_operation_uuid") @db.Uuid
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  attendanceRecord AttendanceRecord @relation(fields: [attendanceRecordId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  actorStaff       StaffUser        @relation("AttendanceRevisionActor", fields: [actorStaffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([attendanceRecordId, revisionVersion])
+  @@map("attendance_revisions")
+}
+
+model ClientOperationLog {
+  clientOperationUuid String   @id @map("client_operation_uuid") @db.Uuid
+  centerId            String   @map("center_id") @db.Uuid
+  actorId             String   @map("actor_id") @db.Uuid
+  operationType       String   @map("operation_type") @db.VarChar(48)
+  requestBodySha256   String   @map("request_body_sha256") @db.Char(64)
+  responseStatusCode  Int      @map("response_status_code")
+  responsePayloadJson Json     @map("response_payload_json")
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([centerId, actorId, operationType, clientOperationUuid])
+  @@map("client_operation_logs")
+}
+
+model GradeEntry {
+  id                  String   @id @default(uuid()) @db.Uuid
+  centerId            String   @map("center_id") @db.Uuid
+  lessonId            String   @map("lesson_id") @db.Uuid
+  enrollmentId        String   @map("enrollment_id") @db.Uuid
+  studentId           String   @map("student_id") @db.Uuid
+  score               Decimal  @db.Decimal(5, 2)
+  commentSanitized    String?  @map("comment_sanitized") @db.VarChar(500)
+  recordedByTeacherId String   @map("recorded_by_teacher_id") @db.Uuid
+  version             Int      @default(1)
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  lesson            LessonOccurrence @relation(fields: [lessonId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  enrollment        Enrollment       @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  student           Student          @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  recordedByTeacher StaffUser        @relation("GradeRecordedByTeacher", fields: [recordedByTeacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([lessonId, studentId])
+  @@map("grade_entries")
+}
+
+model BillingPolicyVersion {
+  id                  String   @id @default(uuid()) @db.Uuid
+  centerId            String   @map("center_id") @db.Uuid
+  versionNumber       Int      @map("version_number")
+  billingMode         String   @map("billing_mode") @db.VarChar(24)
+  roundingMode        String   @map("rounding_mode") @db.VarChar(24)
+  discountStackingMode String  @map("discount_stacking_mode") @db.VarChar(24)
+  freezeCreditBasis   String   @map("freeze_credit_basis") @db.VarChar(32)
+  rollingMonthEndMode String   @map("rolling_month_end_mode") @db.VarChar(24)
+  packageCancelMode   String   @map("package_cancel_mode") @db.VarChar(24)
+  refundDebtMode      String   @map("refund_debt_mode") @db.VarChar(24)
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  billingCycles BillingCycle[]
+  invoices      Invoice[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, versionNumber])
+  @@map("billing_policy_versions")
+}
+
+model TrialActivation {
+  id                        String    @id @default(uuid()) @db.Uuid
+  centerId                  String    @map("center_id") @db.Uuid
+  enrollmentId              String    @map("enrollment_id") @db.Uuid
+  trialActivationSeq        Int       @map("trial_activation_seq")
+  firstTrialLessonId        String    @map("first_trial_lesson_id") @db.Uuid
+  secondTriggerLessonId     String    @map("second_trigger_lesson_id") @db.Uuid
+  generatedInvoiceId        String    @map("generated_invoice_id") @db.Uuid
+  status                    String    @db.VarChar(24)
+  compensatedByCreditNoteId String?   @map("compensated_by_credit_note_id") @db.Uuid
+  compensatedReason         String?   @map("compensated_reason") @db.Text
+  version                   Int       @default(1)
+  createdAt                 DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt                 DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+  compensatedAt             DateTime? @map("compensated_at") @db.Timestamptz(6)
+
+  enrollment Enrollment @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([id, centerId])
+  @@unique([enrollmentId, trialActivationSeq])
+  @@map("trial_activations")
+}
+
+model BillingCycle {
+  id              String    @id @default(uuid()) @db.Uuid
+  centerId        String    @map("center_id") @db.Uuid
+  enrollmentId    String    @map("enrollment_id") @db.Uuid
+  cycleType       String    @map("cycle_type") @db.VarChar(24)
+  cycleKey        String    @map("cycle_key") @db.VarChar(64)
+  cycleSeq        Int       @map("cycle_seq")
+  periodStartDate DateTime  @map("period_start_date") @db.Date
+  periodEndDate   DateTime? @map("period_end_date") @db.Date
+  plannedLessons  Int       @map("planned_lessons")
+  billableLessons Int       @map("billable_lessons")
+  policyVersionId String    @map("policy_version_id") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  enrollment    Enrollment           @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  policyVersion BillingPolicyVersion @relation(fields: [policyVersionId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  invoice       Invoice?
+
+  @@unique([id, centerId])
+  @@unique([enrollmentId, cycleType, cycleKey])
+  @@map("billing_cycles")
+}
+
+model Invoice {
+  id                       String   @id @default(uuid()) @db.Uuid
+  centerId                 String   @map("center_id") @db.Uuid
+  invoiceNumber            String   @map("invoice_number") @db.VarChar(32)
+  studentId                String   @map("student_id") @db.Uuid
+  enrollmentId             String   @map("enrollment_id") @db.Uuid
+  billingCycleId           String   @unique @map("billing_cycle_id") @db.Uuid
+  policyVersionId          String   @map("policy_version_id") @db.Uuid
+  currency                 String   @default("UZS") @db.Char(3)
+  tariffSnapshotUzs        BigInt   @map("tariff_snapshot_uzs") @db.BigInt
+  baseProRataChargeUzs     BigInt   @map("base_pro_rata_charge_uzs") @db.BigInt
+  approvedDiscountUzs      BigInt   @default(0) @map("approved_discount_uzs") @db.BigInt
+  creditNoteAdjustmentsUzs BigInt   @default(0) @map("credit_note_adjustments_uzs") @db.BigInt
+  effectiveNetChargeUzs    BigInt   @map("effective_net_charge_uzs") @db.BigInt
+  allocatedPaidUzs         BigInt   @default(0) @map("allocated_paid_uzs") @db.BigInt
+  remainingDebtUzs         BigInt   @map("remaining_debt_uzs") @db.BigInt
+  billedLessons            Int      @map("billed_lessons")
+  frozenCreditedLessons    Int      @default(0) @map("frozen_credited_lessons")
+  status                   String   @db.VarChar(24)
+  dueDate                  DateTime @map("due_date") @db.Date
+  version                  Int      @default(1)
+  issuedAt                 DateTime @default(now()) @map("issued_at") @db.Timestamptz(6)
+  updatedAt                DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  student                 Student                   @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  enrollment              Enrollment                @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  billingCycle            BillingCycle              @relation(fields: [billingCycleId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  policyVersion           BillingPolicyVersion      @relation(fields: [policyVersionId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  lines                   InvoiceLine[]
+  discountRequests        DiscountRequest[]
+  freezeRecords           FreezeRecord[]
+  sourceCreditNotes       CreditNote[]              @relation("CreditNoteSourceInvoice")
+  creditNoteApplications  CreditNoteApplication[]
+  paymentAllocations      PaymentAllocation[]
+  allocationReversals     PaymentAllocationReversal[]
+  promisesToPay           PromiseToPay[]
+  ledgerEntries           LedgerEntry[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, invoiceNumber])
+  @@map("invoices")
+}
+
+model InvoiceLine {
+  id              String   @id @default(uuid()) @db.Uuid
+  centerId        String   @map("center_id") @db.Uuid
+  invoiceId       String   @map("invoice_id") @db.Uuid
+  lineType        String   @map("line_type") @db.VarChar(32)
+  description     String   @db.VarChar(255)
+  amountUzs       BigInt   @map("amount_uzs") @db.BigInt
+  formulaSnapshot String   @map("formula_snapshot") @db.Text
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  invoice Invoice @relation(fields: [invoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([invoiceId])
+  @@map("invoice_lines")
+}
+
+model DiscountRequest {
+  id                 String    @id @default(uuid()) @db.Uuid
+  centerId           String    @map("center_id") @db.Uuid
+  studentId          String    @map("student_id") @db.Uuid
+  enrollmentId       String    @map("enrollment_id") @db.Uuid
+  targetInvoiceId    String?   @map("target_invoice_id") @db.Uuid
+  discountKind       String    @map("discount_kind") @db.VarChar(24)
+  percentValue       Decimal?  @map("percent_value") @db.Decimal(5, 2)
+  fixedAmountUzs     BigInt?   @map("fixed_amount_uzs") @db.BigInt
+  reason             String    @db.Text
+  validFrom          DateTime  @map("valid_from") @db.Date
+  validUntil         DateTime  @map("valid_until") @db.Date
+  requestedByAdminId String    @map("requested_by_admin_id") @db.Uuid
+  status             String    @db.VarChar(24)
+  version            Int       @default(1)
+  createdAt          DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  student          Student           @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  enrollment       Enrollment        @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  targetInvoice    Invoice?          @relation(fields: [targetInvoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  requestedByAdmin StaffUser         @relation("DiscountRequestedByAdmin", fields: [requestedByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  approval         DiscountApproval?
+
+  @@unique([id, centerId])
+  @@map("discount_requests")
+}
+
+model DiscountApproval {
+  id                String   @id @default(uuid()) @db.Uuid
+  centerId          String   @map("center_id") @db.Uuid
+  discountRequestId String   @unique @map("discount_request_id") @db.Uuid
+  decision          String   @db.VarChar(16)
+  directorStaffId   String   @map("director_staff_id") @db.Uuid
+  approvalChannel   String   @map("approval_channel") @db.VarChar(16)
+  appliedAmountUzs  BigInt   @map("applied_amount_uzs") @db.BigInt
+  decisionNote      String?  @map("decision_note") @db.Text
+  decidedAt         DateTime @default(now()) @map("decided_at") @db.Timestamptz(6)
+
+  discountRequest DiscountRequest @relation(fields: [discountRequestId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  directorStaff   StaffUser       @relation("DiscountApprovedByDirector", fields: [directorStaffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([id, centerId])
+  @@map("discount_approvals")
+}
+
+model FreezeRecord {
+  id                    String   @id @default(uuid()) @db.Uuid
+  centerId              String   @map("center_id") @db.Uuid
+  enrollmentId          String   @map("enrollment_id") @db.Uuid
+  sourceInvoiceId       String   @map("source_invoice_id") @db.Uuid
+  freezeStartDate       DateTime @map("freeze_start_date") @db.Date
+  freezeEndDate         DateTime @map("freeze_end_date") @db.Date
+  reasonType            String   @map("reason_type") @db.VarChar(24)
+  reasonDetails         String   @map("reason_details") @db.Text
+  distinctFrozenLessons Int      @map("distinct_frozen_lessons")
+  basisNetChargeUzs     BigInt   @map("basis_net_charge_uzs") @db.BigInt
+  calculatedCreditUzs   BigInt   @map("calculated_credit_uzs") @db.BigInt
+  createdByAdminId      String   @map("created_by_admin_id") @db.Uuid
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  enrollment     Enrollment         @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  sourceInvoice  Invoice            @relation(fields: [sourceInvoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  createdByAdmin StaffUser          @relation("FreezeCreatedByAdmin", fields: [createdByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  lessonLinks    FreezeLessonLink[]
+
+  @@unique([id, centerId])
+  @@map("freeze_records")
+}
+
+model FreezeLessonLink {
+  id                String   @id @default(uuid()) @db.Uuid
+  centerId          String   @map("center_id") @db.Uuid
+  enrollmentId      String   @map("enrollment_id") @db.Uuid
+  lessonId          String   @map("lesson_id") @db.Uuid
+  freezeRecordId    String   @map("freeze_record_id") @db.Uuid
+  creditedAmountUzs BigInt   @map("credited_amount_uzs") @db.BigInt
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  enrollment   Enrollment       @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  lesson       LessonOccurrence @relation(fields: [lessonId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  freezeRecord FreezeRecord     @relation(fields: [freezeRecordId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([enrollmentId, lessonId])
+  @@map("freeze_lesson_links")
+}
+
+model CreditNote {
+  id              String   @id @default(uuid()) @db.Uuid
+  centerId        String   @map("center_id") @db.Uuid
+  studentId       String   @map("student_id") @db.Uuid
+  enrollmentId    String   @map("enrollment_id") @db.Uuid
+  sourceInvoiceId String?  @map("source_invoice_id") @db.Uuid
+  creditReason    String   @map("credit_reason") @db.VarChar(32)
+  amountUzs       BigInt   @map("amount_uzs") @db.BigInt
+  sourceEventKey  String   @unique @map("source_event_key") @db.VarChar(128)
+  actorType       String   @map("actor_type") @db.VarChar(16)
+  actorStaffId    String?  @map("actor_staff_id") @db.Uuid
+  systemJobName   String?  @map("system_job_name") @db.VarChar(64)
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  student            Student                    @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  enrollment         Enrollment                 @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  sourceInvoice      Invoice?                   @relation("CreditNoteSourceInvoice", fields: [sourceInvoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  applications       CreditNoteApplication[]
+  reversalExecutions ReversalOrRefundExecution[]
+  ledgerEntries      LedgerEntry[]
+
+  @@unique([id, centerId])
+  @@map("credit_notes")
+}
+
+model CreditNoteApplication {
+  id                String   @id @default(uuid()) @db.Uuid
+  centerId          String   @map("center_id") @db.Uuid
+  creditNoteId      String?  @map("credit_note_id") @db.Uuid
+  unappliedCreditId String?  @map("unapplied_credit_id") @db.Uuid
+  targetInvoiceId   String   @map("target_invoice_id") @db.Uuid
+  appliedAmountUzs  BigInt   @map("applied_amount_uzs") @db.BigInt
+  actorType         String   @map("actor_type") @db.VarChar(16)
+  actorStaffId      String?  @map("actor_staff_id") @db.Uuid
+  systemJobName     String?  @map("system_job_name") @db.VarChar(64)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  creditNote      CreditNote?      @relation(fields: [creditNoteId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  unappliedCredit UnappliedCredit? @relation(fields: [unappliedCreditId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  targetInvoice   Invoice          @relation(fields: [targetInvoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([targetInvoiceId])
+  @@map("credit_note_applications")
+}
+
+model CashShift {
+  id                     String    @id @default(uuid()) @db.Uuid
+  centerId               String    @map("center_id") @db.Uuid
+  shiftDate              DateTime  @map("shift_date") @db.Date
+  openedByAdminId        String    @map("opened_by_admin_id") @db.Uuid
+  openedAt               DateTime  @default(now()) @map("opened_at") @db.Timestamptz(6)
+  openingCashUzs         BigInt    @default(0) @map("opening_cash_uzs") @db.BigInt
+  cashReceiptsUzs        BigInt    @default(0) @map("cash_receipts_uzs") @db.BigInt
+  nonCashReceiptsUzs     BigInt    @default(0) @map("non_cash_receipts_uzs") @db.BigInt
+  cashRefundsUzs         BigInt    @default(0) @map("cash_refunds_uzs") @db.BigInt
+  nonCashRefundsUzs      BigInt    @default(0) @map("non_cash_refunds_uzs") @db.BigInt
+  cashExpensesUzs        BigInt    @default(0) @map("cash_expenses_uzs") @db.BigInt
+  expectedClosingCashUzs BigInt    @default(0) @map("expected_closing_cash_uzs") @db.BigInt
+  countedClosingCashUzs  BigInt?   @map("counted_closing_cash_uzs") @db.BigInt
+  discrepancyUzs         BigInt?   @map("discrepancy_uzs") @db.BigInt
+  discrepancyReason      String?   @map("discrepancy_reason") @db.Text
+  status                 String    @db.VarChar(16)
+  closedByAdminId        String?   @map("closed_by_admin_id") @db.Uuid
+  closedAt               DateTime? @map("closed_at") @db.Timestamptz(6)
+  version                Int       @default(1)
+  updatedAt              DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  openedByAdmin      StaffUser                   @relation("CashShiftOpenedBy", fields: [openedByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  closedByAdmin      StaffUser?                  @relation("CashShiftClosedBy", fields: [closedByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  payments           Payment[]
+  reversalExecutions ReversalOrRefundExecution[]
+  cashExpenses       CashExpense[]
+
+  @@unique([id, centerId])
+  @@map("cash_shifts")
+}
+
+model Payment {
+  id                String   @id @default(uuid()) @db.Uuid
+  centerId          String   @map("center_id") @db.Uuid
+  studentId         String   @map("student_id") @db.Uuid
+  cashShiftId       String   @map("cash_shift_id") @db.Uuid
+  amountUzs         BigInt   @map("amount_uzs") @db.BigInt
+  currency          String   @default("UZS") @db.Char(3)
+  paymentMethod     String   @map("payment_method") @db.VarChar(16)
+  recordedByAdminId String   @map("recorded_by_admin_id") @db.Uuid
+  idempotencyKey    String   @map("idempotency_key") @db.VarChar(128)
+  requestHash       String   @map("request_hash") @db.Char(64)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  student            Student                     @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  cashShift          CashShift                   @relation(fields: [cashShiftId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  recordedByAdmin    StaffUser                   @relation("PaymentRecordedByAdmin", fields: [recordedByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  allocations        PaymentAllocation[]
+  unappliedCredit    UnappliedCredit?
+  reversalRequests   ReversalOrRefundRequest[]
+  reversalExecutions ReversalOrRefundExecution[]
+  receipt            Receipt?
+  promisesToPay      PromiseToPay[]
+  ledgerEntries      LedgerEntry[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, recordedByAdminId, idempotencyKey])
+  @@map("payments")
+}
+
+model PaymentAllocation {
+  id                 String   @id @default(uuid()) @db.Uuid
+  centerId           String   @map("center_id") @db.Uuid
+  paymentId          String   @map("payment_id") @db.Uuid
+  invoiceId          String   @map("invoice_id") @db.Uuid
+  allocatedAmountUzs BigInt   @map("allocated_amount_uzs") @db.BigInt
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  payment   Payment                     @relation(fields: [paymentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  invoice   Invoice                     @relation(fields: [invoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  reversals PaymentAllocationReversal[]
+
+  @@unique([id, centerId])
+  @@index([invoiceId])
+  @@map("payment_allocations")
+}
+
+model PaymentAllocationReversal {
+  id                   String   @id @default(uuid()) @db.Uuid
+  centerId             String   @map("center_id") @db.Uuid
+  originalAllocationId String   @map("original_allocation_id") @db.Uuid
+  reversalExecutionId  String   @map("reversal_execution_id") @db.Uuid
+  invoiceId            String   @map("invoice_id") @db.Uuid
+  reversedAmountUzs    BigInt   @map("reversed_amount_uzs") @db.BigInt
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  originalAllocation PaymentAllocation         @relation(fields: [originalAllocationId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  reversalExecution  ReversalOrRefundExecution @relation(fields: [reversalExecutionId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  invoice            Invoice                   @relation(fields: [invoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([originalAllocationId])
+  @@map("payment_allocation_reversals")
+}
+
+model UnappliedCredit {
+  id                 String   @id @default(uuid()) @db.Uuid
+  centerId           String   @map("center_id") @db.Uuid
+  studentId          String   @map("student_id") @db.Uuid
+  sourcePaymentId    String   @unique @map("source_payment_id") @db.Uuid
+  initialCreditUzs   BigInt   @map("initial_credit_uzs") @db.BigInt
+  remainingCreditUzs BigInt   @map("remaining_credit_uzs") @db.BigInt
+  version            Int      @default(1)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  student       Student                 @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  sourcePayment Payment                 @relation(fields: [sourcePaymentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  applications  CreditNoteApplication[]
+
+  @@unique([id, centerId])
+  @@map("unapplied_credits")
+}
+
+model ReversalOrRefundRequest {
+  id                   String    @id @default(uuid()) @db.Uuid
+  centerId             String    @map("center_id") @db.Uuid
+  originalPaymentId    String    @map("original_payment_id") @db.Uuid
+  kind                 String    @db.VarChar(24)
+  amountUzs            BigInt    @map("amount_uzs") @db.BigInt
+  refundMethod         String    @map("refund_method") @db.VarChar(16)
+  debtEffectPolicy     String    @map("debt_effect_policy") @db.VarChar(24)
+  reason               String    @db.Text
+  requestedByAdminId   String    @map("requested_by_admin_id") @db.Uuid
+  status               String    @db.VarChar(28)
+  decidedByDirectorId  String?   @map("decided_by_director_id") @db.Uuid
+  decisionNote         String?   @map("decision_note") @db.Text
+  redAlertSentAt       DateTime? @map("red_alert_sent_at") @db.Timestamptz(6)
+  version              Int       @default(1)
+  createdAt            DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt            DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  originalPayment   Payment                    @relation(fields: [originalPaymentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  requestedByAdmin  StaffUser                  @relation("ReversalRequestedByAdmin", fields: [requestedByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  decidedByDirector StaffUser?                 @relation("ReversalDecidedByDirector", fields: [decidedByDirectorId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  execution         ReversalOrRefundExecution?
+
+  @@unique([id, centerId])
+  @@map("reversal_or_refund_requests")
+}
+
+model ReversalOrRefundExecution {
+  id                       String   @id @default(uuid()) @db.Uuid
+  centerId                 String   @map("center_id") @db.Uuid
+  requestId                String   @unique @map("request_id") @db.Uuid
+  originalPaymentId        String   @map("original_payment_id") @db.Uuid
+  cashShiftId              String?  @map("cash_shift_id") @db.Uuid
+  kind                     String   @db.VarChar(24)
+  amountUzs                BigInt   @map("amount_uzs") @db.BigInt
+  refundMethod             String   @map("refund_method") @db.VarChar(16)
+  debtEffectPolicy         String   @map("debt_effect_policy") @db.VarChar(24)
+  approvedByDirectorId     String   @map("approved_by_director_id") @db.Uuid
+  compensationCreditNoteId String?  @map("compensation_credit_note_id") @db.Uuid
+  executedAt               DateTime @default(now()) @map("executed_at") @db.Timestamptz(6)
+
+  request                ReversalOrRefundRequest     @relation(fields: [requestId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  originalPayment        Payment                     @relation(fields: [originalPaymentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  cashShift              CashShift?                  @relation(fields: [cashShiftId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  approvedByDirector     StaffUser                   @relation("ReversalExecutedByDirector", fields: [approvedByDirectorId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  compensationCreditNote CreditNote?                 @relation(fields: [compensationCreditNoteId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  allocationReversals    PaymentAllocationReversal[]
+  ledgerEntries          LedgerEntry[]
+
+  @@unique([id, centerId])
+  @@map("reversal_or_refund_executions")
+}
+
+model Receipt {
+  id                       String    @id @default(uuid()) @db.Uuid
+  centerId                 String    @map("center_id") @db.Uuid
+  receiptNumber            String    @map("receipt_number") @db.VarChar(32)
+  paymentId                String    @unique @map("payment_id") @db.Uuid
+  studentId                String    @map("student_id") @db.Uuid
+  amountUzs                BigInt    @map("amount_uzs") @db.BigInt
+  paymentMethod            String    @map("payment_method") @db.VarChar(16)
+  remainingDebtSnapshotUzs BigInt    @map("remaining_debt_snapshot_uzs") @db.BigInt
+  nextDueDateSnapshot      DateTime? @map("next_due_date_snapshot") @db.Date
+  isFiscalTaxReceipt       Boolean   @default(false) @map("is_fiscal_tax_receipt")
+  issuedAt                 DateTime  @default(now()) @map("issued_at") @db.Timestamptz(6)
+
+  payment Payment @relation(fields: [paymentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  student Student @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([centerId, receiptNumber])
+  @@map("receipts")
+}
+
+model PromiseToPay {
+  id                String    @id @default(uuid()) @db.Uuid
+  centerId          String    @map("center_id") @db.Uuid
+  studentId         String    @map("student_id") @db.Uuid
+  invoiceId         String    @map("invoice_id") @db.Uuid
+  triggerPaymentId  String    @map("trigger_payment_id") @db.Uuid
+  promisedAmountUzs BigInt    @map("promised_amount_uzs") @db.BigInt
+  promiseDate       DateTime  @map("promise_date") @db.Date
+  status            String    @db.VarChar(16)
+  reminderSentAt    DateTime? @map("reminder_sent_at") @db.Timestamptz(6)
+  version           Int       @default(1)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  student        Student @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  invoice        Invoice @relation(fields: [invoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  triggerPayment Payment @relation(fields: [triggerPaymentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([centerId, status, promiseDate])
+  @@map("promises_to_pay")
+}
+
+model CashExpense {
+  id                String   @id @default(uuid()) @db.Uuid
+  centerId          String   @map("center_id") @db.Uuid
+  cashShiftId       String   @map("cash_shift_id") @db.Uuid
+  category          String   @db.VarChar(48)
+  amountUzs         BigInt   @map("amount_uzs") @db.BigInt
+  paymentMethod     String   @map("payment_method") @db.VarChar(16)
+  reasonAndDoc      String   @map("reason_and_doc") @db.VarChar(255)
+  reversesExpenseId String?  @map("reverses_expense_id") @db.Uuid
+  recordedByStaffId String   @map("recorded_by_staff_id") @db.Uuid
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  cashShift       CashShift     @relation(fields: [cashShiftId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  recordedByStaff StaffUser     @relation("CashExpenseRecordedBy", fields: [recordedByStaffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  ledgerEntries   LedgerEntry[]
+
+  @@unique([id, centerId])
+  @@map("cash_expenses")
+}
+
+model LedgerEntry {
+  id                  String   @id @default(uuid()) @db.Uuid
+  centerId            String   @map("center_id") @db.Uuid
+  entrySeq            BigInt   @default(autoincrement()) @map("entry_seq") @db.BigInt
+  entryType           String   @map("entry_type") @db.VarChar(32)
+  studentId           String?  @map("student_id") @db.Uuid
+  invoiceId           String?  @map("invoice_id") @db.Uuid
+  paymentId           String?  @map("payment_id") @db.Uuid
+  reversalExecutionId String?  @map("reversal_execution_id") @db.Uuid
+  creditNoteId        String?  @map("credit_note_id") @db.Uuid
+  cashExpenseId       String?  @map("cash_expense_id") @db.Uuid
+  direction           String   @db.VarChar(6)
+  amountUzs           BigInt   @map("amount_uzs") @db.BigInt
+  paymentMethod       String?  @map("payment_method") @db.VarChar(16)
+  actorType           String   @map("actor_type") @db.VarChar(16)
+  actorStaffId        String?  @map("actor_staff_id") @db.Uuid
+  systemJobName       String?  @map("system_job_name") @db.VarChar(64)
+  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  student           Student?                   @relation(fields: [studentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  invoice           Invoice?                   @relation(fields: [invoiceId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  payment           Payment?                   @relation(fields: [paymentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  reversalExecution ReversalOrRefundExecution? @relation(fields: [reversalExecutionId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  creditNote        CreditNote?                @relation(fields: [creditNoteId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  cashExpense       CashExpense?               @relation(fields: [cashExpenseId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  actorStaff        StaffUser?                 @relation("LedgerActorStaff", fields: [actorStaffId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([centerId, entrySeq])
+  @@map("ledger_entries")
+}
+
+model PayrollSnapshot {
+  id                      String    @id @default(uuid()) @db.Uuid
+  centerId                String    @map("center_id") @db.Uuid
+  periodKey               String    @map("period_key") @db.Char(7)
+  teacherId               String    @map("teacher_id") @db.Uuid
+  payrollModelSnapshot    String    @map("payroll_model_snapshot") @db.VarChar(24)
+  primaryLessonsTaught    Int       @default(0) @map("primary_lessons_taught")
+  substituteLessonsTaught Int       @default(0) @map("substitute_lessons_taught")
+  baseEarnedUzs           BigInt    @map("base_earned_uzs") @db.BigInt
+  substituteEarnedUzs     BigInt    @map("substitute_earned_uzs") @db.BigInt
+  adjustmentsTotalUzs     BigInt    @default(0) @map("adjustments_total_uzs") @db.BigInt
+  netPayableUzs           BigInt    @map("net_payable_uzs") @db.BigInt
+  status                  String    @db.VarChar(16)
+  closedByDirectorId      String?   @map("closed_by_director_id") @db.Uuid
+  closedAt                DateTime? @map("closed_at") @db.Timestamptz(6)
+  version                 Int       @default(1)
+  createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt               DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  teacher          StaffUser           @relation("PayrollTeacher", fields: [teacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  closedByDirector StaffUser?          @relation("PayrollClosedByDirector", fields: [closedByDirectorId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  adjustments      PayrollAdjustment[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, periodKey, teacherId])
+  @@map("payroll_snapshots")
+}
+
+model PayrollAdjustment {
+  id                       String   @id @default(uuid()) @db.Uuid
+  centerId                 String   @map("center_id") @db.Uuid
+  targetCurrentSnapshotId  String   @map("target_current_snapshot_id") @db.Uuid
+  referenceClosedPeriodKey String   @map("reference_closed_period_key") @db.Char(7)
+  teacherId                String   @map("teacher_id") @db.Uuid
+  deltaAmountUzs           BigInt   @map("delta_amount_uzs") @db.BigInt
+  reason                   String   @db.Text
+  createdByDirectorId      String   @map("created_by_director_id") @db.Uuid
+  createdAt                DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  targetCurrentSnapshot PayrollSnapshot @relation(fields: [targetCurrentSnapshotId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  teacher               StaffUser       @relation("PayrollAdjustmentTeacher", fields: [teacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  createdByDirector     StaffUser       @relation("PayrollAdjustmentCreatedBy", fields: [createdByDirectorId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@index([targetCurrentSnapshotId])
+  @@map("payroll_adjustments")
+}
+
+model AuditLog {
+  id                 String   @id @default(uuid()) @db.Uuid
+  centerId           String   @map("center_id") @db.Uuid
+  actorType          String   @map("actor_type") @db.VarChar(16)
+  actorId            String?  @map("actor_id") @db.Uuid
+  actorRole          String?  @map("actor_role") @db.VarChar(16)
+  action             String   @db.VarChar(64)
+  entityType         String   @map("entity_type") @db.VarChar(48)
+  entityId           String   @map("entity_id") @db.Uuid
+  severity           String   @default("INFO") @db.VarChar(16)
+  beforeRedactedJson Json?    @map("before_redacted_json")
+  afterRedactedJson  Json?    @map("after_redacted_json")
+  requestId          String   @map("request_id") @db.VarChar(64)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([centerId, entityType, entityId])
+  @@map("audit_logs")
+}
+
+model OutboxEvent {
+  id               String    @id @default(uuid()) @db.Uuid
+  centerId         String    @map("center_id") @db.Uuid
+  eventName        String    @map("event_name") @db.VarChar(64)
+  schemaVersion    Int       @default(1) @map("schema_version")
+  aggregateType    String    @map("aggregate_type") @db.VarChar(48)
+  aggregateId      String    @map("aggregate_id") @db.Uuid
+  aggregateVersion Int       @map("aggregate_version")
+  dedupKey         String    @unique @map("dedup_key") @db.VarChar(160)
+  payloadJson      Json      @map("payload_json")
+  status           String    @db.VarChar(24)
+  attemptCount     Int       @default(0) @map("attempt_count")
+  leaseToken       BigInt    @default(0) @map("lease_token") @db.BigInt
+  leasedByWorker   String?   @map("leased_by_worker") @db.VarChar(64)
+  leaseUntil       DateTime? @map("lease_until") @db.Timestamptz(6)
+  nextAttemptAt    DateTime  @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  lastError        String?   @map("last_error") @db.Text
+  occurredAtUtc    DateTime  @default(now()) @map("occurred_at_utc") @db.Timestamptz(6)
+  processedAtUtc   DateTime? @map("processed_at_utc") @db.Timestamptz(6)
+  updatedAt        DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  consumerReceipts       OutboxConsumerReceipt[]
+  notificationDeliveries NotificationDelivery[]
+
+  @@unique([id, centerId])
+  @@unique([centerId, aggregateType, aggregateId, aggregateVersion])
+  @@index([centerId, status, nextAttemptAt, occurredAtUtc])
+  @@map("outbox_events")
+}
+
+model OutboxConsumerReceipt {
+  id                 String   @id @default(uuid()) @db.Uuid
+  centerId           String   @map("center_id") @db.Uuid
+  outboxEventId      String   @map("outbox_event_id") @db.Uuid
+  consumerName       String   @map("consumer_name") @db.VarChar(64)
+  consumerReceiptKey String   @map("consumer_receipt_key") @db.VarChar(192)
+  fencingLeaseToken  BigInt   @map("fencing_lease_token") @db.BigInt
+  effectSummaryJson  Json     @map("effect_summary_json")
+  processedAtUtc     DateTime @default(now()) @map("processed_at_utc") @db.Timestamptz(6)
+
+  outboxEvent OutboxEvent @relation(fields: [outboxEventId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([centerId, consumerName, outboxEventId])
+  @@unique([centerId, consumerReceiptKey])
+  @@map("outbox_consumer_receipts")
+}
+
+model NotificationDelivery {
+  id                 String   @id @default(uuid()) @db.Uuid
+  centerId           String   @map("center_id") @db.Uuid
+  outboxEventId      String   @map("outbox_event_id") @db.Uuid
+  recipientType      String   @map("recipient_type") @db.VarChar(16)
+  recipientId        String   @map("recipient_id") @db.Uuid
+  telegramChatId     BigInt?  @map("telegram_chat_id") @db.BigInt
+  deliveryStatus     String   @map("delivery_status") @db.VarChar(24)
+  attemptCount       Int      @default(0) @map("attempt_count")
+  nextAttemptAt      DateTime @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  lastLeaseToken     BigInt   @default(0) @map("last_lease_token") @db.BigInt
+  telegramMessageId  BigInt?  @map("telegram_message_id") @db.BigInt
+  retryAfterSeconds  Int?     @map("retry_after_seconds")
+  version            Int      @default(1)
+  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  outboxEvent OutboxEvent @relation(fields: [outboxEventId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([outboxEventId, recipientType, recipientId])
+  @@map("notification_deliveries")
+}
+
+model ImportBatch {
+  id                String    @id @default(uuid()) @db.Uuid
+  centerId          String    @map("center_id") @db.Uuid
+  templateType      String    @map("template_type") @db.VarChar(24)
+  templateVersion   String    @map("template_version") @db.VarChar(16)
+  uploadSha256      String    @map("upload_sha256") @db.Char(64)
+  previewTokenHash  String    @unique @map("preview_token_hash") @db.Char(64)
+  previewExpiresAt  DateTime  @map("preview_expires_at") @db.Timestamptz(6)
+  totalRows         Int       @map("total_rows")
+  validRows         Int       @map("valid_rows")
+  errorRows         Int       @map("error_rows")
+  previewReportJson Json      @map("preview_report_json")
+  status            String    @db.VarChar(20)
+  uploadedByAdminId String    @map("uploaded_by_admin_id") @db.Uuid
+  committedAt       DateTime? @map("committed_at") @db.Timestamptz(6)
+  version           Int       @default(1)
+  createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  uploadedByAdmin StaffUser @relation("ImportBatchUploadedBy", fields: [uploadedByAdminId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+
+  @@unique([id, centerId])
+  @@map("import_batches")
+}
