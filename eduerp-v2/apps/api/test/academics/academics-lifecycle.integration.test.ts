@@ -86,6 +86,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
   let primaryTeacherToken: string;
   let subTeacherId: string;
   let subTeacherToken: string;
+  let otherTeacherToken: string;
   let otherTeacherId: string;
 
   before(async () => {
@@ -150,7 +151,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
     adminToken = await loginAs('admin.demo');
     primaryTeacherToken = await loginAs('teacher.demo');
     subTeacherToken = await loginAs('teacher.sub.zamena');
-    await loginAs('teacher.other.group');
+    otherTeacherToken = await loginAs('teacher.other.group');
   });
 
   after(async () => {
