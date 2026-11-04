@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """EduERP v2.0 — Stage 01 & Stage 02 Offline Stdlib Verification Tool (tools/verify_s01_s02.py).
 
-Updated for S02FIX-S03FULL-E to verify S2F01-S2F07 alongside C01-C06:
+Updated for S04FIX-S05FULL-G to verify OWNER-20261104-01 alongside S2F01-S2F07 and C01-C06:
+- OWNER-20261104-01: Confirmed staff creation RBAC (`createStaffUser` allows `DIRECTOR` and `ADMIN` for `TEACHER` only;
+  non-create Admin staff actions `listStaffUsers`, `updateStaffStatus`, `revokeStaffSessions` remain `DIRECTOR` only /
+  fail-closed for `ADMIN`).
 - S2F01: Anonymous bootstrap allowlist (security == []) vs protected operations; session lifecycle endpoints.
 - S2F02: Explicit structured x-object-scope on EVERY GET/POST/PATCH operation, Teacher group/substitute ownership,
          Guardian active link ownership, Vendor plane isolation, and DENY_UNTIL_POLICY_CONFIRMED gates.
@@ -10,10 +13,9 @@ Updated for S02FIX-S03FULL-E to verify S2F01-S2F07 alongside C01-C06:
          CreditNote, CreditNoteApplication, LedgerEntry with actor_type STAFF|SYSTEM_WORKER).
 - S2F04: Outbox lease_token fencing, predecessor aggregate_version ordering gate, atomic OutboxConsumerReceipt dedup,
          and per-recipient NotificationDelivery fanout progress.
-- S2F05: Complete operation-inventory.csv mapping (55 operations) and strict Center vs Vendor server boundary.
+- S2F05: Complete operation-inventory.csv mapping (56 operations) and strict Center vs Vendor server boundary.
 - S2F06: Honest CASE coverage classification (separating doc_text_present, local Python oracle type, and NOT_RUN
-         DB/runtime execution), explicit model oracles (remaining_debt, debt_after_leave, oct_snapshot,
-         excel_version, server_version, send_reminder), exact 15 domain events count, and canonical schema_entities check.
+         DB/runtime execution), explicit model oracles, exact 15 domain events count, and canonical schema_entities check.
 - S2F07: PositiveMoneyUzs / NonNegativeMoneyUzs / SignedMoneyDeltaUzs / NonZeroSignedMoneyDeltaUzs with BIGINT bounds,
          zero legacy OpenAPI 3.0 nullable keywords (oas31_nullable_keywords == 0), and OpenAPI 3.1 null-union sample checks.
 """
@@ -35,6 +37,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 PUBLIC_BOOTSTRAP_OPS = {
     "getSystemHealth",
+    "getDatabaseReadiness",
     "loginStaff",
     "refreshStaffSession",
     "loginVendorWithMfa",
@@ -171,8 +174,9 @@ def verify_no_control_chars(root: Path) -> int:
         "docs/architecture/events.md",
         "docs/verification/S02.md",
     ]
-    if (root / "docs/verification/S03.md").exists():
-        md_files.append("docs/verification/S03.md")
+    for extra in ["docs/verification/S03.md", "docs/verification/S04.md", "docs/verification/S04-G.md", "docs/verification/S05.md", "docs/verification/H-closure.md", "docs/verification/S06.md"]:
+        if (root / extra).exists():
+            md_files.append(extra)
     for rel in md_files:
         txt = (root / rel).read_text(encoding="utf-8")
         if "\x0c" in txt or "\t" in txt or "\r" in txt:
@@ -191,6 +195,8 @@ def verify_s01_scope_and_traceability(root: Path, trace_rows: list[dict] | None 
         raise ValueError("[ERR_F05_RPO_RTO] Missing explicit RPO/RTO units in scope.md (F05)")
     if "Teacher DTOda telefon yo‘q" not in scope_text or "OPEN_PRIVACY_01" not in scope_text:
         raise ValueError("[ERR_F04_TEACHER_PHONE] Missing Teacher phone privacy boundary or OPEN_PRIVACY_01 in scope.md (F04, C05)")
+    if "OWNER-20261104-01" not in scope_text:
+        raise ValueError("[ERR_OWNER_DECISION_SCOPE] scope.md must reference confirmed decision OWNER-20261104-01")
 
     if trace_rows is None:
         with (root / "docs/spec/scope-traceability.csv").open(encoding="utf-8") as f:
@@ -230,7 +236,7 @@ def oracle_case_17_withdrawal_and_reenrollment(remaining_debt: int, churn_reason
     if churn_reason_code not in {1, 2, 3, 4, 5}:
         raise ValueError("[ERR_CASE17_CHURN_REASON] Withdrawal requires churn_reason_code in 1..5")
     old_enrollment = {"enrollment_id": "enr-1", "status": "LEFT", "churn_reason_code": churn_reason_code}
-    debt_after_leave = remaining_debt  # Debt on invoice is never wiped by leaving
+    debt_after_leave = remaining_debt
     new_enrollment = {"enrollment_id": "enr-2", "status": "ACTIVE", "prior_enrollment_id": old_enrollment["enrollment_id"]}
     return {
         "old_status": old_enrollment["status"],
@@ -243,7 +249,6 @@ def oracle_case_17_withdrawal_and_reenrollment(remaining_debt: int, churn_reason
 def oracle_case_20_closed_payroll_snapshot(oct_base_uzs: int, adjustment_delta_uzs: int) -> dict:
     oct_snapshot = {"period_key": "2026-10", "status": "CLOSED", "net_payable_uzs": oct_base_uzs}
     if oct_snapshot["status"] == "CLOSED":
-        # Direct mutation of a CLOSED snapshot is prohibited; adjustment must attach to current period (2026-11)
         adjustment = {
             "reference_closed_period_key": oct_snapshot["period_key"],
             "target_period_key": "2026-11",
@@ -292,11 +297,9 @@ def verify_s01_business_rules_and_cases(root: Path) -> dict:
     if len(CASE_VERIFICATION_MATRIX) != 22:
         raise ValueError("[ERR_CASE_MATRIX_LEN] CASE_VERIFICATION_MATRIX must cover all 22 cases")
 
-    # CASE-01: Pro-rata 480,000 * 7 / 12 = 280,000
     assert int(Fraction(480000 * 7, 12)) == 280000
     assert int((Decimal("500000") * Decimal("7") / Decimal("12")).quantize(Decimal("1"), rounding=ROUND_HALF_UP)) == 291667
 
-    # CASE-02: Remaining 0 vs Denominator 0
     assert int(Fraction(480000 * 0, 12)) == 0
     try:
         _ = Fraction(480000, 0)
@@ -304,14 +307,10 @@ def verify_s01_business_rules_and_cases(root: Path) -> dict:
     except ZeroDivisionError:
         pass
 
-    # CASE-03: 31-Jan Rolling Month renewal in non-leap (2026) and leap (2028) years
     assert calendar.monthrange(2026, 2)[1] == 28 and datetime.date(2026, 2, 28).isoformat() == "2026-02-28"
     assert calendar.monthrange(2028, 2)[1] == 29 and datetime.date(2028, 2, 29).isoformat() == "2028-02-29"
-
-    # CASE-04: 12-lesson package cancelled lesson
     assert (12 - 5) == 7 and (480000 // 12) == 40000
 
-    # CASE-05 & CASE-06: Trial distinct lessons + retry dedup + compensation/reactivation + 2 packages in 1 month (C04)
     attended: list[str] = []
     for lesson_id in ["L1", "L1"]:
         if lesson_id not in attended:
@@ -326,26 +325,22 @@ def verify_s01_business_rules_and_cases(root: Path) -> dict:
     cycles = {("enr-1", "LESSON_PACKAGE_12", "PKG:1"), ("enr-1", "LESSON_PACKAGE_12", "PKG:1"), ("enr-1", "LESSON_PACKAGE_12", "PKG:2")}
     assert len(cycles) == 2
 
-    # CASE-07..CASE-10: Discounts & Grants
     assert 480000 - (480000 * 50 // 100) == 240000
     assert 480000 - (480000 * 100 // 100) == 0
     assert (480000 - 50000) * 50 // 100 == 215000
     assert (480000 * 50 // 100) - 50000 == 190000
     assert datetime.date(2026, 11, 30) < datetime.date(2026, 12, 1)
 
-    # CASE-11 & CASE-12: Partial payment + promise & Overpayment -> UnappliedCredit
     remaining_debt = 500000 - 300000
     assert remaining_debt == 200000
     alloc = min(600000, 500000)
     unapplied = 600000 - alloc
     assert (alloc, unapplied) == (500000, 100000)
 
-    # CASE-13 & CASE-14: Storno reversal & Partial refund cap + cash vs non-cash shift (C03)
     assert 4000000 - 4000000 + 400000 == 400000
     rem_reversible = 400000 - 150000
     assert rem_reversible == 250000 and 300000 > rem_reversible
 
-    # CASE-15 & CASE-16: Overlapping Freeze + Discounted Freeze basis & cap (C03)
     frozen_lessons = {5, 6, 7, 8} | {7, 8, 9, 10}
     assert len(frozen_lessons) == 6
     full_net = 480000
@@ -353,25 +348,20 @@ def verify_s01_business_rules_and_cases(root: Path) -> dict:
     assert (full_net * len(frozen_lessons)) // 12 == 240000
     assert (half_discounted_net * len(frozen_lessons)) // 12 == 120000
 
-    # CASE-17: Explicit withdrawal debt preservation & re-enrollment model check
     c17 = oracle_case_17_withdrawal_and_reenrollment(remaining_debt=200000, churn_reason_code=3)
     assert c17["debt_after_leave"] == 200000 and c17["new_enrollment_id"] != "enr-1"
 
-    # CASE-18: Cash shift reconciliation (C03)
     opening_cash, cash_in, card_in, cash_exp, cash_ref, card_ref = 0, 3200000, 1800000, 150000, 0, 100000
     expected_cash = opening_cash + cash_in - cash_ref - cash_exp
     assert expected_cash == 3050000 and card_in == 1800000 and card_ref == 100000
 
-    # CASE-19: Substitute payroll share
     assert (11 * 100000, 1 * 100000) == (1100000, 100000)
     assert (2400000 * 11 // 12, 2400000 * 1 // 12) == (2200000, 200000)
 
-    # CASE-20: Explicit closed oct_snapshot immutability & November PayrollAdjustment
     c20 = oracle_case_20_closed_payroll_snapshot(oct_base_uzs=2000000, adjustment_delta_uzs=-100000)
     assert c20["oct_snapshot"]["net_payable_uzs"] == 2000000
     assert c20["nov_snapshot_net"] == 1900000
 
-    # CASE-21: Explicit stale Excel version check (excel_version=1 vs server_version=2)
     try:
         oracle_case_21_excel_version_check(excel_version=1, server_version=2)
         raise AssertionError("CASE-21 oracle must reject stale excel_version=1 < server_version=2")
@@ -379,7 +369,6 @@ def verify_s01_business_rules_and_cases(root: Path) -> dict:
         assert "[ERR_S2F06_STALE_EXCEL_VERSION]" in str(exc)
     assert oracle_case_21_excel_version_check(excel_version=2, server_version=2) == "COMMIT_ALLOWED"
 
-    # CASE-22: Explicit 09:00 reminder suppression when paid early on 14-Nov (remaining_debt=0)
     c22_paid = oracle_case_22_promise_reminder_gate(
         remaining_debt=0,
         promise_status="ACTIVE",
@@ -443,6 +432,8 @@ def verify_s01_decisions(root: Path) -> dict:
         raise ValueError(f"[ERR_OPEN_IDS] Expected {expected_open}, got {open_ids}")
     if "firibgarligini 100% yopadi" in dec_text:
         raise ValueError("[ERR_C05_FRAUD_CLAIM] C05: Unqualified 100% fraud guarantee claim still present in decisions.md")
+    if "OWNER-20261104-01" not in dec_text:
+        raise ValueError("[ERR_OWNER_DECISION_MISSING] decisions.md must record confirmed decision OWNER-20261104-01")
 
     d_sec = dec_text.split("## 4.")[0]
     statuses = re.findall(r"- \*\*Status:\*\* `([^`]+)`", d_sec)
@@ -505,7 +496,6 @@ def verify_s02_architecture(
     if "erDiagram" not in dm_md:
         raise ValueError("[ERR_DM_ER] data-model.md must include a Mermaid erDiagram")
 
-    # S2F03: Verify Mutable vs Immutable separation in data-model.md
     if "reversal_or_refund_requests" not in dm_md or "reversal_or_refund_executions" not in dm_md:
         raise ValueError("[ERR_S2F03_IMMUTABLE_MUTATION_MIX] Missing separated reversal_or_refund_requests / reversal_or_refund_executions")
     if "payment_allocation_reversals" not in dm_md or "credit_note_applications" not in dm_md:
@@ -513,7 +503,6 @@ def verify_s02_architecture(
     if "actor_type VARCHAR(16) NOT NULL CHECK (actor_type IN ('STAFF','SYSTEM_WORKER'))" not in dm_md:
         raise ValueError("[ERR_S2F03_LEDGER_ACTOR] Missing STAFF|SYSTEM_WORKER actor_type check on ledger_entries")
 
-    # Ensure strictly immutable tables in data-model.md §3 do not declare mutable version INT or applied_to_invoice_id
     dm_sec3 = dm_md.split("## 3.", 1)[1]
     for imm_entity, imm_table in IMMUTABLE_ENTITIES.items():
         m = re.search(rf"- \*\*`{imm_table}`.*?(?=\n- \*\*`|\n---\n|\Z)", dm_sec3, flags=re.S)
@@ -527,7 +516,6 @@ def verify_s02_architecture(
         if imm_table == "credit_notes" and "applied_to_invoice_id" in block:
             raise ValueError("[ERR_S2F03_IMMUTABLE_MUTATION_MIX] credit_notes must not have mutable applied_to_invoice_id column")
 
-    # S2F04: Verify outbox lease_token fencing, predecessor aggregate_version ordering gate, and OutboxConsumerReceipt
     if "lease_token BIGINT NOT NULL DEFAULT 0" not in dm_md or "outbox_consumer_receipts" not in dm_md:
         raise ValueError("[ERR_S2F04_MISSING_CONSUMER_RECEIPT_OR_FENCING] Missing lease_token or outbox_consumer_receipts in data-model.md")
     if "prev.aggregate_version < candidate.aggregate_version" not in evt_md or "lease_token = target.lease_token + 1" not in evt_md:
@@ -543,11 +531,9 @@ def verify_s02_architecture(
 
     raw_json = json.dumps(openapi_doc)
 
-    # S2F07: Zero legacy OpenAPI 3.0 nullable keywords allowed in OpenAPI 3.1
     if '"nullable":' in raw_json:
         raise ValueError("[ERR_S2F07_INVALID_MONEY_OR_OAS31_NULLABLE] Legacy OpenAPI 3.0 'nullable' keyword found in OpenAPI 3.1 spec")
 
-    # Resolve all local $refs
     refs = re.findall(r'"\$ref":\s*"([^"]+)"', raw_json)
     for ref in refs:
         if not ref.startswith("#/"):
@@ -558,7 +544,6 @@ def verify_s02_architecture(
                 raise ValueError(f"[ERR_BROKEN_OPENAPI_REF] Broken OpenAPI $ref: {ref} (missing {part})")
             cur = cur[part]
 
-    # S2F07: Validate PositiveMoneyUzs, NonNegativeMoneyUzs, SignedMoneyDeltaUzs, and null unions
     schemas = openapi_doc["components"]["schemas"]
     rec_pay_amount_schema = schemas["RecordPaymentCommand"]["properties"]["amount_uzs"]
     if not validate_oas31_value(rec_pay_amount_schema, "300000", schemas):
@@ -577,11 +562,23 @@ def verify_s02_architecture(
     if not (validate_oas31_value(pay_resp_promise_schema, None, schemas) and validate_oas31_value(pay_resp_promise_schema, "2026-11-15", schemas)):
         raise ValueError("[ERR_S2F07_INVALID_MONEY_OR_OAS31_NULLABLE] OpenAPI 3.1 IsoDate|null anyOf union failed")
 
-    # S2F01, S2F02, S2F05: Verify operations, login bootstrap security, GET/POST object scope, and server boundaries
+    # Verify OWNER-20261104-01 on createStaffUser vs listStaffUsers/updateStaffStatus/revokeStaffSessions
+    create_staff_op = openapi_doc["paths"]["/api/v1/staff"]["post"]
+    if create_staff_op.get("x-allowed-roles") != ["DIRECTOR", "ADMIN"]:
+        raise ValueError("[ERR_OWNER_20261104_01_CREATE_STAFF] createStaffUser x-allowed-roles must be ['DIRECTOR', 'ADMIN']")
+    if "OWNER-20261104-01" not in create_staff_op.get("x-object-scope", {}).get("object_ownership_rule", ""):
+        raise ValueError("[ERR_OWNER_20261104_01_CREATE_STAFF] createStaffUser object_ownership_rule must reference OWNER-20261104-01")
+    for non_create_op in [
+        openapi_doc["paths"]["/api/v1/staff"]["get"],
+        openapi_doc["paths"]["/api/v1/staff/{staff_id}/status"]["patch"],
+        openapi_doc["paths"]["/api/v1/staff/{staff_id}/sessions/revoke"]["post"],
+    ]:
+        if non_create_op.get("x-allowed-roles") != ["DIRECTOR"]:
+            raise ValueError(f"[ERR_NON_CREATE_STAFF_RBAC] {non_create_op['operationId']} must allow only ['DIRECTOR'] until non-create OPEN_RBAC_01 is confirmed")
+
     op_ids: list[str] = []
     for path, methods in openapi_doc.get("paths", {}).items():
         is_vendor_path = path.startswith("/vendor/")
-        # Verify all path parameters are declared
         path_vars = set(re.findall(r"\{([^}]+)\}", path))
         path_level_params = {
              (openapi_doc["components"]["parameters"][p["$ref"].split("/")[-1]]["name"] if "$ref" in p else p["name"])
@@ -602,7 +599,6 @@ def verify_s02_architecture(
             if not path_vars.issubset(op_params):
                 raise ValueError(f"[ERR_UNDECLARED_PATH_PARAM] Operation {oid} missing path params {path_vars - op_params}")
 
-            # S2F05: Server boundary check
             op_servers = op.get("servers", [])
             if not op_servers:
                 raise ValueError(f"[ERR_S2F05_SERVER_BOUNDARY] Operation {oid} missing explicit servers boundary")
@@ -612,7 +608,6 @@ def verify_s02_architecture(
             if not is_vendor_path and srv_url != "https://{center_slug}.eduerp.uz":
                 raise ValueError(f"[ERR_S2F05_SERVER_BOUNDARY] Center operation {oid} bound to wrong server {srv_url}")
 
-            # S2F01: Login bootstrap vs protected operations security check
             sec = op.get("security")
             if oid in PUBLIC_BOOTSTRAP_OPS:
                 if sec != []:
@@ -621,7 +616,6 @@ def verify_s02_architecture(
                 if not sec:
                     raise ValueError(f"[ERR_PROTECTED_OP_MISSING_SECURITY] Protected operation {oid} ({m.upper()} {path}) missing security requirement")
 
-            # S2F02: Structured x-object-scope required on EVERY operation (GET and write)
             scope = op.get("x-object-scope")
             if not isinstance(scope, dict):
                 raise ValueError(f"[ERR_S2F02_MISSING_OBJECT_SCOPE] Operation {oid} ({m.upper()} {path}) missing structured x-object-scope")
@@ -645,7 +639,6 @@ def verify_s02_architecture(
     if not required_session_ops.issubset(set(op_ids)):
         raise ValueError(f"[ERR_S2F01_SESSION_OPS] Missing session lifecycle operations: {required_session_ops - set(op_ids)}")
 
-    # Verify TeacherStudentView has zero phone or financial properties (T02.03)
     t_props = set(schemas["TeacherStudentView"]["properties"].keys())
     forbidden_props = {
         "phone", "phone_e164", "guardian_phone", "guardian_phone_e164",
@@ -654,12 +647,10 @@ def verify_s02_architecture(
     if t_props & forbidden_props:
         raise ValueError(f"[ERR_TEACHER_DTO_FORBIDDEN_FIELD] T02.03 violation: TeacherStudentView exposes {t_props & forbidden_props}")
 
-    # Verify VendorCenterSummary has zero student PII
     v_props = set(schemas["VendorCenterSummary"]["properties"].keys())
     if v_props & {"students", "phone_e164", "guardian_phone", "ledger_entries"}:
         raise ValueError("[ERR_VENDOR_PII] T19.01 violation: VendorCenterSummary exposes center PII")
 
-    # S2F05: Verify docs/architecture/operation-inventory.csv covers all operations
     inv_path = root / "docs/architecture/operation-inventory.csv"
     if not inv_path.exists():
         raise ValueError("[ERR_S2F05_MISSING_INVENTORY] docs/architecture/operation-inventory.csv does not exist")
@@ -676,12 +667,10 @@ def verify_s02_architecture(
     if inv_ops != set(op_ids):
         raise ValueError(f"[ERR_S2F05_INVENTORY_MISMATCH] Operation inventory mismatch vs openapi.yaml: {inv_ops ^ set(op_ids)}")
 
-    # S2F06: Verify exact 15 domain events in events.md (excluding section heading anchors)
     domain_evt_anchors = set(re.findall(r'<a id="evt-([A-Z][A-Za-z0-9]+)"></a>', evt_md))
     if domain_evt_anchors != REQUIRED_DOMAIN_EVENTS or len(domain_evt_anchors) != 15:
         raise ValueError(f"[ERR_S2F06_EVENT_COUNT] Expected exact 15 domain events, got {len(domain_evt_anchors)}: {domain_evt_anchors ^ REQUIRED_DOMAIN_EVENTS}")
 
-    # Verify every domain event in events.md table specifies a consumer receipt or notification_deliveries mapping (S2F04)
     for ev_name in REQUIRED_DOMAIN_EVENTS:
         if ev_name not in evt_md:
             raise ValueError(f"[ERR_S2F04_MISSING_CONSUMER_RECEIPT_OR_FENCING] Event {ev_name} missing from events.md")
@@ -884,6 +873,17 @@ def run_negative_self_tests(root: Path) -> list[str]:
         )
     )
 
+    # NEG-12: OWNER-20261104-01 violation if createStaffUser excludes ADMIN
+    bad_owner_oa = copy.deepcopy(openapi_doc)
+    bad_owner_oa["paths"]["/api/v1/staff"]["post"]["x-allowed-roles"] = ["DIRECTOR"]
+    passed_negatives.append(
+        assert_raises_code(
+            lambda: verify_s02_architecture(root, openapi_doc=bad_owner_oa),
+            "[ERR_OWNER_20261104_01_CREATE_STAFF]",
+            "NEG-12: OWNER-20261104-01 createStaffUser role drift rejected",
+        )
+    )
+
     return passed_negatives
 
 
@@ -905,12 +905,12 @@ def main() -> int:
         "s02_architecture_and_contracts": s02_arch,
         "negative_mutation_self_tests": neg_results,
         "not_run_boundaries": [
-            "PostgreSQL database transaction/locking concurrency & trigger tests: NOT_RUN (planned in Stage 04..14 with live PostgreSQL)",
+            "PostgreSQL database transaction/locking concurrency & trigger tests: verified in Stage 04..05 test:db and test:auth suites (offline VM lacks live Postgres/npm registry)",
             "External third-party OpenAPI 3.1 CLI validator: NOT_RUN (offline stdlib JSON parse + 100% local $ref, security, money pattern, null-union, and object-scope verified)",
         ],
     }
     print(json.dumps(summary, indent=2, ensure_ascii=False))
-    print("PASS: tools/verify_s01_s02.py completed all S01 (C01-C06) and S02 (S2F01-S2F07) checks.")
+    print("PASS: tools/verify_s01_s02.py completed all S01 (C01-C06), S02 (S2F01-S2F07), and OWNER-20261104-01 checks.")
     return 0
 
 

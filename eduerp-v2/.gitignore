@@ -10,10 +10,11 @@
 *.sql.gz
 *.dump
 
-# Node / TypeScript workspace artifacts
+# Node / TypeScript / Prisma generated workspace artifacts
 node_modules/
 dist/
 coverage/
+apps/api/src/generated/
 *.tsbuildinfo
 npm-debug.log*
 

@@ -221,6 +221,16 @@
             }
           }
         }
+      },
+      "ServiceUnavailable503": {
+        "description": "503 Service Unavailable — database connection unreachable, superuser role rejected, or required schema/triggers missing (T04.03, T04.05).",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ErrorEnvelope"
+            }
+          }
+        }
       }
     },
     "schemas": {
@@ -338,7 +348,13 @@
               "FREEZE_CREDIT_CAP_EXCEEDED",
               "LAST_DIRECTOR_CANNOT_BE_DEACTIVATED",
               "POLICY_DECISION_NOT_CONFIRMED",
-              "RATE_LIMITED"
+              "RATE_LIMITED",
+              "DATABASE_UNAVAILABLE",
+              "PASSWORD_CHANGE_REQUIRED",
+              "INVALID_CURRENT_PASSWORD",
+              "IDEMPOTENCY_KEY_REQUIRED",
+              "IF_MATCH_REQUIRED",
+              "DUPLICATE_STAFF_USERNAME"
             ]
           },
           "message": {
@@ -420,9 +436,8 @@
       },
       "StaffAuthResponse": {
         "type": "object",
+        "description": "Stage 05 dual-transport response: Mobile/API Bearer mode returns access_token & refresh_token in JSON; Browser Cookie mode (X-Auth-Transport: cookie) sets HttpOnly SameSite=Strict cookies and returns csrf_token in JSON while omitting raw tokens from body.",
         "required": [
-          "access_token",
-          "refresh_token",
           "staff_id",
           "role",
           "must_change_password",
@@ -430,10 +445,30 @@
         ],
         "properties": {
           "access_token": {
-            "type": "string"
+            "type": "string",
+            "description": "Present in bearer transport mode; omitted in cookie transport mode."
           },
           "refresh_token": {
-            "type": "string"
+            "type": "string",
+            "description": "Present in bearer transport mode; omitted in cookie transport mode."
+          },
+          "csrf_token": {
+            "type": "string",
+            "description": "Session-bound CSRF token returned in cookie transport mode for X-CSRF-Token header validation."
+          },
+          "token_transport": {
+            "type": "string",
+            "enum": [
+              "bearer",
+              "cookie"
+            ]
+          },
+          "session_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "expires_in_seconds": {
+            "type": "integer",
+            "minimum": 1
           },
           "staff_id": {
             "$ref": "#/components/schemas/Uuid"
@@ -547,6 +582,9 @@
           "id": {
             "$ref": "#/components/schemas/Uuid"
           },
+          "center_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
           "full_name": {
             "type": "string"
           },
@@ -563,9 +601,18 @@
               "DEACTIVATED"
             ]
           },
+          "must_change_password": {
+            "type": "boolean"
+          },
           "version": {
             "type": "integer",
             "minimum": 1
+          },
+          "created_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "updated_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
           }
         }
       },
@@ -732,6 +779,28 @@
           "version": {
             "type": "integer",
             "minimum": 1
+          },
+          "birth_date": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IsoDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "duplicate_warnings": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DuplicateCandidateWarning"
+            }
           }
         }
       },
@@ -908,6 +977,19 @@
           "version": {
             "type": "integer",
             "minimum": 1
+          },
+          "transferred_from_enrollment_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "preserved_debt_snapshot_uzs": {
+            "$ref": "#/components/schemas/NonNegativeMoneyUzs"
           }
         }
       },
@@ -2661,9 +2743,7 @@
       "RefreshStaffSessionRequest": {
         "type": "object",
         "additionalProperties": false,
-        "required": [
-          "refresh_token"
-        ],
+        "description": "In bearer mode, refresh_token is required in the JSON body; in cookie mode (X-Auth-Transport: cookie), the token is read from the HttpOnly eduerp_refresh_token cookie alongside X-CSRF-Token.",
         "properties": {
           "refresh_token": {
             "type": "string",
@@ -3220,6 +3300,376 @@
             "$ref": "#/components/schemas/UtcTimestamp"
           }
         }
+      },
+      "DatabaseReadinessResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "status",
+          "center_slug",
+          "license_mode",
+          "database_status",
+          "schema_tables_verified",
+          "immutable_triggers_verified",
+          "request_id",
+          "timestamp_utc"
+        ],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": [
+              "READY"
+            ]
+          },
+          "center_slug": {
+            "type": "string"
+          },
+          "license_mode": {
+            "$ref": "#/components/schemas/LicenseMode"
+          },
+          "database_status": {
+            "type": "string",
+            "enum": [
+              "READY"
+            ]
+          },
+          "schema_tables_verified": {
+            "type": "integer",
+            "minimum": 46
+          },
+          "immutable_triggers_verified": {
+            "type": "integer",
+            "minimum": 24
+          },
+          "request_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "timestamp_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        }
+      },
+      "DuplicateCandidateWarning": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "student_id",
+          "student_code",
+          "full_name",
+          "status",
+          "match_reason",
+          "is_blocking_without_confirmation"
+        ],
+        "properties": {
+          "student_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "student_code": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          },
+          "match_reason": {
+            "type": "string",
+            "enum": [
+              "EXACT_NORMALIZED_NAME_AND_GUARDIAN_PHONE",
+              "SAME_NORMALIZED_NAME_DIFFERENT_PHONE",
+              "SHARED_GUARDIAN_PHONE_SIBLING"
+            ]
+          },
+          "is_blocking_without_confirmation": {
+            "type": "boolean"
+          }
+        }
+      },
+      "DuplicateCheckResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "normalized_student_name",
+          "normalized_guardian_phone_e164",
+          "has_blocking_duplicate",
+          "sibling_shared_phone_detected",
+          "candidates"
+        ],
+        "properties": {
+          "normalized_student_name": {
+            "type": "string"
+          },
+          "normalized_guardian_phone_e164": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "has_blocking_duplicate": {
+            "type": "boolean"
+          },
+          "sibling_shared_phone_detected": {
+            "type": "boolean"
+          },
+          "candidates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/DuplicateCandidateWarning"
+            }
+          }
+        }
+      },
+      "UpdateOrArchiveStudentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version"
+        ],
+        "properties": {
+          "full_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "birth_date": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/IsoDate"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "LinkGuardianToStudentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guardian_full_name",
+          "guardian_phone_e164"
+        ],
+        "properties": {
+          "guardian_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "guardian_full_name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 120
+          },
+          "guardian_phone_e164": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "MOTHER",
+              "FATHER",
+              "GUARDIAN",
+              "SELF"
+            ]
+          },
+          "is_primary_payer": {
+            "type": "boolean"
+          },
+          "reuse_existing_guardian": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GuardianSummaryView": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "guardian_id",
+          "full_name",
+          "phone_e164",
+          "relationship",
+          "is_primary_payer",
+          "active",
+          "telegram_link_status",
+          "link_version",
+          "guardian_version"
+        ],
+        "properties": {
+          "guardian_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "phone_e164": {
+            "type": "string"
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "MOTHER",
+              "FATHER",
+              "GUARDIAN",
+              "SELF"
+            ]
+          },
+          "is_primary_payer": {
+            "type": "boolean"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "telegram_link_status": {
+            "type": "string",
+            "enum": [
+              "INVITED",
+              "ACTIVE",
+              "BOT_BLOCKED_403",
+              "UNLINKED_REVOKED"
+            ]
+          },
+          "link_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "guardian_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "UnlinkGuardianRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason",
+          "expected_version"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "UnlinkGuardianResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "student_id",
+          "guardian_id",
+          "active",
+          "unlinked_at_utc",
+          "preserved_sibling_active_links_count",
+          "preserved_student_remaining_debt_uzs"
+        ],
+        "properties": {
+          "student_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "guardian_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "active": {
+            "type": "boolean"
+          },
+          "unlinked_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "preserved_sibling_active_links_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "preserved_student_remaining_debt_uzs": {
+            "$ref": "#/components/schemas/NonNegativeMoneyUzs"
+          }
+        }
+      },
+      "TransferEnrollmentRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "target_group_id",
+          "effective_date",
+          "reason",
+          "expected_version"
+        ],
+        "properties": {
+          "target_group_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "effective_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          },
+          "target_status": {
+            "type": "string",
+            "enum": [
+              "TRIAL",
+              "ACTIVE"
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "TransferEnrollmentResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "closed_enrollment",
+          "new_enrollment",
+          "preserved_debt_snapshot_uzs"
+        ],
+        "properties": {
+          "closed_enrollment": {
+            "$ref": "#/components/schemas/EnrollmentResponse"
+          },
+          "new_enrollment": {
+            "$ref": "#/components/schemas/EnrollmentResponse"
+          },
+          "preserved_debt_snapshot_uzs": {
+            "$ref": "#/components/schemas/NonNegativeMoneyUzs"
+          }
+        }
       }
     }
   },
@@ -3297,6 +3747,49 @@
         }
       }
     },
+    "/api/v1/ready": {
+      "get": {
+        "tags": [
+          "SystemHealth"
+        ],
+        "operationId": "getDatabaseReadiness",
+        "summary": "Live PostgreSQL connectivity, non-superuser role, and 46-table/21-trigger schema readiness check (T04.03, T04.05)",
+        "security": [],
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Database connection, non-superuser runtime role, and 46 canonical tables + 21 immutability triggers verified.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DatabaseReadinessResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "$ref": "#/components/responses/ServiceUnavailable503"
+          }
+        },
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API"
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "PUBLIC_BOOTSTRAP",
+          "center_isolation_rule": "Readiness query executes against the center's isolated PostgreSQL database without exposing credentials, hostnames, or tenant PII.",
+          "object_ownership_rule": "Returns only boolean/count schema readiness metadata (46 tables, 21 triggers) or a redacted 503 ErrorEnvelope.",
+          "conditional_role_policy": "NONE"
+        }
+      }
+    },
     "/api/v1/auth/login": {
       "post": {
         "operationId": "loginStaff",
@@ -3317,16 +3810,14 @@
         },
         "x-read-only-license-policy": "ALLOWED_SYSTEM_OPERATION",
         "x-write-concurrency": {
-          "requires_idempotency_key": true,
+          "requires_idempotency_key": false,
           "requires_expected_version": false,
-          "same_key_different_body_status": 409
+          "mechanism": "credential_verification_no_token_replay_cache",
+          "rule": "Every login request verifies live credentials and live staff_users status; authentication tokens are never stored or replayed from generic client_operation_logs (G01)."
         },
         "parameters": [
           {
             "$ref": "#/components/parameters/RequestIdHeader"
-          },
-          {
-            "$ref": "#/components/parameters/IdempotencyKeyHeader"
           }
         ],
         "requestBody": {
@@ -3501,8 +3992,7 @@
           }
         ],
         "x-allowed-roles": [
-          "DIRECTOR",
-          "ADMIN"
+          "DIRECTOR"
         ],
         "x-read-only-license-policy": "ALLOWED_IN_READ_ONLY",
         "parameters": [
@@ -3569,13 +4059,13 @@
           "trust_plane": "CENTER_DATA_PLANE",
           "actor_source": "STAFF_JWT",
           "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
-          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role == 'DIRECTOR'; ADMIN is denied with 403 POLICY_DECISION_NOT_CONFIRMED (unconfirmed non-create OPEN_RBAC_01 capability) and TEACHER is denied with 403 FORBIDDEN_ROLE.",
           "conditional_role_policy": "DENY_UNTIL_POLICY_CONFIRMED (OPEN_RBAC_01): DIRECTOR is permitted; ADMIN is denied with 403 FORBIDDEN_ROLE (POLICY_DECISION_NOT_CONFIRMED) unless OPEN_RBAC_01 is explicitly enabled in CenterPolicyConfig (S2F02)."
         }
       },
       "post": {
         "operationId": "createStaffUser",
-        "summary": "Create new staff account (Director; Admin creation of Teacher subject to OPEN_RBAC_01)",
+        "summary": "Create new staff account (OWNER-20261104-01: Director creates all roles; Admin creates TEACHER only)",
         "tags": [
           "StaffAuthAndUsers"
         ],
@@ -3585,14 +4075,15 @@
           }
         ],
         "x-allowed-roles": [
-          "DIRECTOR"
+          "DIRECTOR",
+          "ADMIN"
         ],
         "x-object-scope": {
           "trust_plane": "CENTER_DATA_PLANE",
           "actor_source": "STAFF_JWT",
           "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
-          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
-          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id. Per OWNER-20261104-01: DIRECTOR may create DIRECTOR, ADMIN, or TEACHER; ADMIN may create TEACHER only (403 FORBIDDEN_ROLE on DIRECTOR/ADMIN target); TEACHER is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "CONFIRMED_OWNER_DECISION (OWNER-20261104-01): Director creates all staff roles; Admin creates TEACHER only; Teacher creates none."
         },
         "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
         "x-write-concurrency": {
@@ -3620,7 +4111,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create new staff account (Director; Admin creation of Teacher subject to OPEN_RBAC_01) — success",
+            "description": "Create new staff account (OWNER-20261104-01: Director creates all roles; Admin creates TEACHER only) — success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4422,7 +4913,7 @@
           "trust_plane": "CENTER_DATA_PLANE",
           "actor_source": "STAFF_JWT",
           "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
-          "object_ownership_rule": "For TEACHER: SQL enforces course_groups.primary_teacher_id == jwt.staff_id OR active substitute_assignments.substitute_teacher_id == jwt.staff_id for today's lesson in group_id; otherwise returns 403 FORBIDDEN_OBJECT_SCOPE even though TeacherStudentView omits phone numbers (S2F02).",
+          "object_ownership_rule": "For TEACHER: SQL enforces course_groups.primary_teacher_id == jwt.staff_id OR active substitute_assignments.substitute_teacher_id == jwt.staff_id where lesson_occurrences.lesson_date == current_date_in_center_timezone (G04); past/future/revoked substitute assignments or other teachers' groups return 403 FORBIDDEN_OBJECT_SCOPE even though TeacherStudentView omits phone numbers (S2F02).",
           "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
         }
       }
@@ -7383,8 +7874,7 @@
           }
         ],
         "x-allowed-roles": [
-          "DIRECTOR",
-          "ADMIN"
+          "DIRECTOR"
         ],
         "x-conditional-decisions": [
           "OPEN_RBAC_01"
@@ -7464,7 +7954,7 @@
           "trust_plane": "CENTER_DATA_PLANE",
           "actor_source": "STAFF_JWT",
           "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
-          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role == 'DIRECTOR'; ADMIN is denied with 403 POLICY_DECISION_NOT_CONFIRMED (unconfirmed non-create OPEN_RBAC_01 capability) and TEACHER is denied with 403 FORBIDDEN_ROLE.",
           "conditional_role_policy": "DENY_UNTIL_POLICY_CONFIRMED (OPEN_RBAC_01): DIRECTOR is permitted; ADMIN is denied with 403 FORBIDDEN_ROLE (POLICY_DECISION_NOT_CONFIRMED) unless OPEN_RBAC_01 is explicitly enabled in CenterPolicyConfig (S2F02)."
         }
       }
@@ -7517,6 +8007,104 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound404"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        }
+      },
+      "patch": {
+        "tags": [
+          "StudentsAndGuardians"
+        ],
+        "summary": "Update student profile or soft-archive student while preserving financial and enrollment history (06.01, T06.01)",
+        "operationId": "updateOrArchiveStudent",
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrArchiveStudentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 OK — updated or soft-archived student profile",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminStudentView"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
           }
         },
         "x-plane": "CENTER_DATA_PLANE",
@@ -8260,6 +8848,405 @@
           },
           "404": {
             "$ref": "#/components/responses/NotFound404"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        }
+      }
+    },
+    "/api/v1/students/duplicates": {
+      "get": {
+        "tags": [
+          "StudentsAndGuardians"
+        ],
+        "summary": "Check sibling-safe duplicate student warnings by normalized name and guardian phone (06.04, T06.04)",
+        "operationId": "checkStudentDuplicateWarnings",
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "ALLOWED_IN_READ_ONLY",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 120
+            }
+          },
+          {
+            "name": "guardian_phone_e164",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "exclude_student_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 OK — duplicate candidate warnings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DuplicateCheckResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        }
+      }
+    },
+    "/api/v1/students/{student_id}/guardians": {
+      "post": {
+        "tags": [
+          "StudentsAndGuardians"
+        ],
+        "summary": "Link an additional guardian to a student (supports multiple guardians per child and multiple children per guardian — 06.02, T06.02)",
+        "operationId": "linkGuardianToStudent",
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": false,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LinkGuardianToStudentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 Created — guardian linked to student",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GuardianSummaryView"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        }
+      }
+    },
+    "/api/v1/students/{student_id}/guardians/{guardian_id}/unlink": {
+      "post": {
+        "tags": [
+          "StudentsAndGuardians"
+        ],
+        "summary": "Soft-unlink a guardian from one child while preserving sibling relationships and student financial history (06.02, T06.02)",
+        "operationId": "unlinkGuardianFromStudent",
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "student_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          },
+          {
+            "name": "guardian_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnlinkGuardianRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 OK — guardian soft-unlinked from student",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnlinkGuardianResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        }
+      }
+    },
+    "/api/v1/enrollments/{enrollment_id}/transfer": {
+      "post": {
+        "tags": [
+          "StudentsAndGuardians"
+        ],
+        "summary": "Atomically transfer student enrollment to another course group while preserving old enrollment and financial history (06.03, T06.03)",
+        "operationId": "transferStudentEnrollment",
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "enrollment_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TransferEnrollmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 OK — old enrollment closed and linked new enrollment created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferEnrollmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
           }
         },
         "x-plane": "CENTER_DATA_PLANE",

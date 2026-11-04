@@ -1,0 +1,349 @@
+{
+  "task_id": "S04S05FIX-S06FULL-H",
+  "base_commit": "a669cab7567acb5587dcc4331ed805181e0c930d",
+  "candidate_input_commit": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
+  "candidate_input_s05_zip_sha256": "36dbb69714256d3b3c9552d64e285925657fcc7c6ed1917e504764fb14b4d127",
+  "package_lock_sha256_preserved": "392316f8fce7ac4e9646d8b9f1b4f2787602d252a1e390c177aa291f9a1d6472",
+  "status": "IN_REVIEW",
+  "scope": [
+    "G01",
+    "G02",
+    "G03",
+    "G04",
+    "G05",
+    "G06",
+    "G07",
+    "06.01",
+    "06.02",
+    "06.03",
+    "06.04",
+    "06.05"
+  ],
+  "needs_manager_dependency_refresh": false,
+  "findings_closed": {
+    "G01": "FIXED_AND_UNIT_PROVEN_PLUS_DB_INTEGRATION_WIRED",
+    "G02": "FIXED_AND_UNIT_PROVEN_PLUS_DB_INTEGRATION_WIRED",
+    "G03": "FIXED_AND_UNIT_PROVEN",
+    "G04": "FIXED_AND_UNIT_PROVEN_PLUS_DB_INTEGRATION_WIRED",
+    "G05": "FIXED_AND_UNIT_PROVEN_PLUS_DB_INTEGRATION_WIRED",
+    "G06": "FIXED_AND_UNIT_PROVEN",
+    "G07": "FIXED_AND_UNIT_PROVEN_PLUS_DB_INTEGRATION_WIRED"
+  },
+  "checks": [
+    {
+      "name": "input_manifest_sha256_verification",
+      "command": "python3 -c '<verify INPUT_MANIFEST.json 343 files>'",
+      "status": "PASS",
+      "details": "All 343 files in INPUT_MANIFEST.json verified with 0 hash mismatches; package-lock.json preserved untouched (392316f8fce7ac4e9646d8b9f1b4f2787602d252a1e390c177aa291f9a1d6472)."
+    },
+    {
+      "name": "s01_s02_contract_and_openapi_verification",
+      "command": "python3 tools/verify_s01_s02.py",
+      "status": "PASS",
+      "details": "61 OpenAPI 3.1.0 operations (5 public bootstrap, 56 protected), 882 local $ref targets, 0 OAS 3.0 nullable keywords, 16 operation-inventory rows, 119 traceability rows, 12 negative self-tests PASS."
+    },
+    {
+      "name": "s04_s05_s06_schema_migration_and_sql_verification",
+      "command": "python3 tools/verify_s04.py",
+      "status": "PASS",
+      "details": "46 Prisma models, 46 SQL tables across 3 migrations, 99 ON DELETE RESTRICT FKs, 24 immutability triggers, 11 lineage triggers, 21 DB-IT + 17 AUTH-IT + 9 STU-IT scenarios, 22 RBAC matrix rows, 116 TS SQL INSERT statements verified."
+    },
+    {
+      "name": "planning_governance_verifiers",
+      "command": "python3 planning/tools/check_plan.py && python3 planning/tools/test_plan.py",
+      "status": "PASS",
+      "details": "Planning integrity and 15 synthetic governance tests PASS; global governance files untouched."
+    },
+    {
+      "name": "node_unit_and_subprocess_tests",
+      "command": "node --test <babel-transpiled config.test.ts, health.test.ts, database-unit.test.ts, auth-unit.test.ts, students-unit.test.ts, worker-lifecycle.test.ts>",
+      "status": "PASS",
+      "details": "17/17 tests PASS (0 failures) covering G01-G07 regressions (real N=131072 dummy scrypt + queue 429, HMAC-SHA256 keyed field digest, permissions guard metadata across all 22 routes, canonical env parity) and S06 unit suites (normalizePhoneE164, duplicate matching, withdrawal reason codes, BigInt debt arithmetic, policy gates, worker SIGTERM)."
+    },
+    {
+      "name": "npm_ci_and_prisma_generate",
+      "command": "npm ci && npm run db:generate",
+      "status": "NOT_RUN",
+      "details": "Sandbox VM has no outbound internet access and no pre-populated node_modules/@prisma/client engine binary."
+    },
+    {
+      "name": "live_postgresql_integration_suites",
+      "command": "npm run test:db && npm run test:auth && npm run test:students",
+      "status": "NOT_RUN",
+      "details": "Sandbox VM has no local PostgreSQL server or Docker daemon; DB-IT-01..21, AUTH-IT-01..17, and STU-IT-01..09 are wired for live PostgreSQL 16 execution in manager/CI runtime."
+    },
+    {
+      "name": "docker_migrator_and_runner_build",
+      "command": "docker build --target migrator -t eduerp-api:migrator -f apps/api/Dockerfile . && docker build --target runner -t eduerp-api:runner -f apps/api/Dockerfile .",
+      "status": "NOT_RUN",
+      "details": "Docker daemon is not installed in the sandbox VM; multi-stage Dockerfile targets migrator and runner are verified structurally and wired into infra/compose.dev.yml and infra/ci/eduerp-ci.yml."
+    }
+  ],
+  "files": [
+    {
+      "path": "eduerp-v2/.env.example",
+      "sha256": "71d6c647a0ec19e47124c2f5954e00fa2e728e15625367dae338443c0b41e40f",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/Dockerfile",
+      "sha256": "8d64e6b71df4887ab86acda75061f05880fbc7e1b919e8dcfee596c8a879225f",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "sha256": "aa5f709c2d89548be77b6cc2514198acce41e7d0037b77fd4b6b019f5f3d0800",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261104000300_s06_auth_fixes_and_student_foundation/migration.sql",
+      "sha256": "df7d6c3e83a75fb3e8b25b5eae7ac92a0f2c0e4dd9ee3f92a11311aa2fa32162",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "866d296a37070ca7a8796a4b15954bee96375dd4df2f42a85cb3fdc47bf0d6dd",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "sha256": "93d5dab262a321b91fa8497582f1495d8ba1c2a908e65f1ac0ca8465e0db14be",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/application.ts",
+      "sha256": "3811d3f72fdb0c73f899a93b9ab77e636ed441ac1b57cf0890e2f97776d1e337",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/auth.controller.ts",
+      "sha256": "99f120dead3720c10789ffecac965adb5debab8f4e380582b18bddfbe89a6dde",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/auth.service.ts",
+      "sha256": "b69d8826ff69a03e55fc8256c96c3c0ac11f0da16e04b296ef838be9b252fbfe",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/password.ts",
+      "sha256": "e9c94857692e1bab4bd71f62604a073d2aa4da07603ca8f344bc4a2a4a8ceace",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/permissions.guard.ts",
+      "sha256": "d523cbb9b508d8394a93625628ec5340bd23edf048ceceb5cdbeaad672271a06",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/staff.service.ts",
+      "sha256": "67917e3b6ea74fa32acc84a9d8901b52cbab3f1e271ce94620c5039d82fd988a",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/auth/validation.ts",
+      "sha256": "27cb329e1cca6c244f99d048eff79880a9684f464fe02a3a388a4923f744e6e1",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/config/env.ts",
+      "sha256": "4de3d1061ed0ec131bb5ab2b3ec6063400707e9fa4fa21ad500edff6f2a55b19",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/database/idempotency.ts",
+      "sha256": "80610308b28012f4501ad59b11f49ca096f49f86fc1d42c0d62d156305f373e3",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/health/health.controller.ts",
+      "sha256": "413d32f1d7eee9846580c6728ceb3dde7ce8844a31b6031985eade3107321f87",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/health/readiness.controller.ts",
+      "sha256": "4667537508d581c6dc04fd415e2fd36766055385751fc4ad8a697a7194e4aa3a",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/duplicates.service.ts",
+      "sha256": "f7812547345d6bbdc601254978417c3f8cd07aeb6692bd18642b84e0a08445e8",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/enrollments.service.ts",
+      "sha256": "c45125fcf87d28b37ac19d5c720d93e80e9d899f4c07a51d41b30af3bbbe9573",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/guardians.service.ts",
+      "sha256": "113c89ac995c7ef73029007d3889802feae6c5e533ec8516826fe5cdea06b11e",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/index.ts",
+      "sha256": "6c9476dc78606f5e15aafdc1cdf33a12b407fcb14424b0c264ef04eb214d1ace",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/normalization.ts",
+      "sha256": "ac12a317bd22268916ea4520f6f3c57be4d0670fc75fd1d2d75cf535d95b5cf4",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/students.controller.ts",
+      "sha256": "0176ab9705b1069ec6c19687710f96ad41c78a8f4e1c86780dba764902296ea5",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/students.module.ts",
+      "sha256": "8e18c298a9e4f86aa4d4b9dc40f9e616570078ffe97d6cce2f973bff3dbbda4d",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/students.service.ts",
+      "sha256": "9db185b0521670a6ba8306007362eefe5c84ecc6ed43fc9c69f2d6a666756f54",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/auth/auth-and-sessions.integration.test.ts",
+      "sha256": "c78670fa21ca4de854cc46bbd9d9384f17595806859ea14b2f5549b12937bf31",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/auth/rbac-staff-and-roster.integration.test.ts",
+      "sha256": "8e6579c2686e65a26f1d4619cdb11fd287371bbbc077aaf11f982519fc564c91",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/auth-unit.test.ts",
+      "sha256": "26e6f4d0822458c6e8ca28aaa38bdef1e592eda6585095dba9735fc224020cd4",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/config.test.ts",
+      "sha256": "96c568e5905db1522e1f18df13d11d21912ca18c16f9a73e541793924b1ca643",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "sha256": "34b50d3e9d8fa57de9deb4c800aead5f1d39505a5e38e436e53e1c3b21e2a0c3",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/students/students-lifecycle.integration.test.ts",
+      "sha256": "ab1c58a16a921febd54ecf3eb236a5e558dfb0ce849dc85c31e74ad028841e8a",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/students-unit.test.ts",
+      "sha256": "0b113ab40fccf8df9d8fa4c9d998ae78313d86fc1368c87460df60fe13aead28",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-005-auth-and-session.md",
+      "sha256": "75d40b5173757f27533d0c4c7959d444e2c64df681f9d9a3eadd91a89d4c2010",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-006-auth-correction-and-student-lifecycle.md",
+      "sha256": "3ae3cd8f77f71213d5463cfb017b2ccdc3e04df2cb44e8aa01cb65dd53dd9b9c",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "sha256": "6b32771eb5aee249a913bc6b773f13a8f1d8d02b04b0d2764b719a7b3a53aa81",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/operation-inventory.csv",
+      "sha256": "253d0e9e4536705c7e696e2ca7c9e3dab45fedb2a50272c3a62c1b8c236e1c11",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "sha256": "54a1adf540bd0d2a35488408e85362d849bc6447961f1d544f7c0d4d55cbe663",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/H-closure.md",
+      "sha256": "7832bf032e453c5dfbe7627da2374c0ad19589f60700ee9735b303a681777c9c",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S06.md",
+      "sha256": "9491889027defb56c7c100d648a87ad7b68e1fa76e178a528c4d923c4b899d75",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "sha256": "1c3d985e2e11eaae1363e6f174a6ff969e38d3d748519e2f1905da8718ec1d87",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/infra/compose.dev.yml",
+      "sha256": "ecc44a5231adc5bbbf08d92d5be4b88f47ae4e7b9a9d93a77526e219be03386e",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "sha256": "78827a56be03ca22922d0cd94477d9ffd10865d2df1395429b4a62622e5f2862",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S05.md",
+      "sha256": "b8093eaf2ac004499beb79814e4186e9ad227fb996971447237d53e3dfb756eb",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S06.md",
+      "sha256": "4dbd4a19d66cf5bfc4b72f8eafe23fb9c4eebb71110b4ee5534ee8fb2642baef",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/06.01.md",
+      "sha256": "0b6f04ab39cdd59a3d2dcd1b21e581687641b16f4c21aeab65515f90bd5f4408",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/06.02.md",
+      "sha256": "94945d58966aedb25519ff4a0f85ae5307950428f3fed425849c03bbc378401d",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/06.03.md",
+      "sha256": "09b01f18819986056a83793f1856df81a5423da877ec4833b336d485279f495e",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/06.04.md",
+      "sha256": "327c9da0c69125b05f9f3ea91ebdb11866d25464cce9f4fd1357152510b5b56f",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/06.05.md",
+      "sha256": "74f5670004aeba48291e709b30d89d487dc1fdb4e2bed99e3a43b46b6d263cb9",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/tools/__pycache__/verify_s01_s02.cpython-311.pyc",
+      "sha256": "7c9ab546a1317d10eacac70cb68338ea9fabe6264323cec7612206e2c3514555",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/tools/__pycache__/verify_s04.cpython-311.pyc",
+      "sha256": "e7289bfa72f219e66a8f6bae55797eee939b16dcba5168970ef798f60c2ef186",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s01_s02.py",
+      "sha256": "9527717ebcc7af54e69fa2a5474024f32d4d686fd1bcfb725b8dac7d1bd1946e",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "e53d881441a6accd7791190bf36b724c5d7ac0b4d46584728d1c2acaeb7ff1b6",
+      "change_type": "MODIFIED"
+    }
+  ]
+}

@@ -1,15 +1,27 @@
 import { DynamicModule, Module } from '@nestjs/common';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthModule } from './auth/auth.module';
+import { PermissionsGuard } from './auth/permissions.guard';
 import { ApiEnvConfig } from './config/env';
-import { API_CONFIG_TOKEN, HealthController } from './health/health.controller';
+import { DatabaseModule } from './database/database.module';
+import { DatabaseService } from './database/database.service';
+import { HealthController } from './health/health.controller';
+import { ReadinessController } from './health/readiness.controller';
+import { StudentsModule } from './students/students.module';
 
 @Module({})
 export class AppModule {
-  static register(config: ApiEnvConfig): DynamicModule {
+  static register(config: ApiEnvConfig, customDatabaseService?: DatabaseService): DynamicModule {
     return {
       module: AppModule,
-      controllers: [HealthController],
-      providers: [{ provide: API_CONFIG_TOKEN, useValue: config }],
-      exports: [API_CONFIG_TOKEN],
+      imports: [DatabaseModule.register(config, customDatabaseService), AuthModule, StudentsModule],
+      controllers: [HealthController, ReadinessController],
+      providers: [
+        {
+          provide: APP_GUARD,
+          useExisting: PermissionsGuard,
+        },
+      ],
     };
   }
 }
