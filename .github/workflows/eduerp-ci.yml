@@ -124,6 +124,9 @@ jobs:
           curl --fail --silent http://127.0.0.1:3000/api/v1/health
           docker compose --env-file .env.example -f infra/compose.dev.yml ps --status running --services | sort > /tmp/eduerp-services
           python3 -c 'assert set(open("/tmp/eduerp-services").read().split()) == {"api", "worker", "postgres"}'
+      - name: Diagnose a failed development stack
+        if: failure()
+        run: docker compose --env-file .env.example -f infra/compose.dev.yml logs --no-color --tail 80
       - name: Stop the ephemeral development stack
         if: always()
         run: docker compose --env-file .env.example -f infra/compose.dev.yml down -v
