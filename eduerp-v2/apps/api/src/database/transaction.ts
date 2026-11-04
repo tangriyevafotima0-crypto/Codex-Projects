@@ -133,7 +133,7 @@ export async function runInTransaction<T>(
         query: <R extends QueryResultRow = QueryResultRow>(
           queryText: string,
           values?: readonly unknown[],
-        ) => client.query<R>(queryText, values),
+        ) => client.query<R>(queryText, values ? [...values] : undefined),
       };
 
       const result = await work(txContext);

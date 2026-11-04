@@ -87,3 +87,5 @@ export function loadOpenApiContractDocument(projectRoot?: string): Record<string
   const raw = fs.readFileSync(contractPath, 'utf-8');
   return JSON.parse(raw) as Record<string, unknown>;
 }
+
+export type BillingMode = 'CALENDAR_PRO_RATA' | 'ROLLING_MONTH' | 'LESSON_PACKAGE_12';

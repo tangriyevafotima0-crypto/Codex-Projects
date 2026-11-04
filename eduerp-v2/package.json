@@ -2,7 +2,7 @@
   "name": "eduerp-v2-monorepo",
   "version": "2.0.0-s05.0",
   "private": true,
-  "description": "EduERP v2.0 B2B Turnkey Platform — Center Data Plane API, Outbox Worker, Shared Contracts, PostgreSQL/Prisma 7 Foundation, and Staff Auth/RBAC (Stages 04–05)",
+  "description": "EduERP v2.0 B2B Turnkey Platform \u2014 Center Data Plane API, Outbox Worker, Shared Contracts, PostgreSQL/Prisma 7 Foundation, and Staff Auth/RBAC (Stages 04\u201305)",
   "engines": {
     "node": ">=24.18.1 <25",
     "npm": ">=11 <12"
@@ -16,7 +16,7 @@
     "prisma:generate": "npm --workspace=@eduerp/api run prisma:generate",
     "migrate:deploy": "npm --workspace=@eduerp/api run migrate:deploy",
     "build": "npm --workspaces run build",
-    "typecheck": "npm --workspaces run typecheck",
+    "typecheck": "npm --workspace=@eduerp/contracts run build && npm --workspaces run typecheck",
     "lint": "eslint \"packages/*/src/**/*.ts\" \"apps/*/src/**/*.ts\" \"apps/*/test/**/*.ts\"",
     "test": "npm run build && npm --workspaces --if-present run test",
     "test:db": "npm run build && npm --workspace=@eduerp/api run test:db",

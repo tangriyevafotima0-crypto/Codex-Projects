@@ -192,7 +192,7 @@ export class DatabaseService implements OnModuleDestroy {
     queryText: string,
     values?: readonly unknown[],
   ): Promise<QueryResult<R>> {
-    return this.getPool().query<R>(queryText, values);
+    return this.getPool().query<R>(queryText, values ? [...values] : undefined);
   }
 
   public async checkReadiness(): Promise<DatabaseReadinessReport> {

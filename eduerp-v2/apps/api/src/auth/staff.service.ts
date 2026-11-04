@@ -5,7 +5,7 @@ import { ApiEnvConfig } from '../config/env';
 import { RequestWithCorrelationId, resolveRequestId } from '../common/request-id.middleware';
 import { DatabaseService } from '../database/database.service';
 import { executeIdempotentOperation } from '../database/idempotency';
-import { executeOptimisticUpdate, runInTransaction } from '../database/transaction';
+import { executeOptimisticUpdate } from '../database/transaction';
 import { API_CONFIG_TOKEN } from '../health/health.controller';
 import { ApiHttpException } from './auth.errors';
 import { ClockService } from './clock.service';
@@ -70,7 +70,7 @@ function mapStaffRowToSafeDto(row: {
 @Injectable()
 export class StaffService {
   constructor(
-    @Inject(API_CONFIG_TOKEN) private readonly config: ApiEnvConfig,
+    @Inject(API_CONFIG_TOKEN) config: ApiEnvConfig,
     @Inject(DatabaseService) private readonly databaseService: DatabaseService,
     @Inject(ClockService) private readonly clock: ClockService,
   ) {}
