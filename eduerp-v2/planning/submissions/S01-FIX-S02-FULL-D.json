@@ -1,0 +1,144 @@
+{
+  "task_id": "S01-FIX-S02-FULL-D",
+  "mode": "DOCUMENT_AND_ARCHITECTURE_DRAFT_OFFLINE",
+  "steps": [
+    "01.01",
+    "01.02",
+    "01.03",
+    "01.04",
+    "01.05",
+    "02.01",
+    "02.02",
+    "02.03",
+    "02.04",
+    "02.05"
+  ],
+  "base_commit": "dbd2a673cf70f915d2812f10d120e496167c5ae7",
+  "project_root": "eduerp-v2",
+  "status": "IN_REVIEW",
+  "closed_review_findings": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06"
+  ],
+  "decision_status_counts": {
+    "ACCEPTED": 0,
+    "PROPOSED": 15,
+    "DECISION_REQUIRED": 9,
+    "DEFERRED": 1,
+    "OPEN_SUPPLEMENTARY_QUESTIONS": 5
+  },
+  "files": [
+    {
+      "path": "docs/spec/scope.md",
+      "sha256": "765025d764b85b39f88ea3e64430592317a51b565d13652cd61faa3be5456d4d"
+    },
+    {
+      "path": "docs/spec/scope-traceability.csv",
+      "sha256": "b24616b3d2ad7096715af1d4d6b40dc018db7167fb88cf4fe5352336e8da53bf"
+    },
+    {
+      "path": "docs/spec/business-rules.md",
+      "sha256": "7be1a237cef19b9766411af655b923728f4473632b3bc3226bd87b037f954d16"
+    },
+    {
+      "path": "docs/spec/acceptance.md",
+      "sha256": "b5584f443b06dc27e8b3244bbedf7b9c8ed3004adb2f512ce8e222fdadcb7639"
+    },
+    {
+      "path": "docs/spec/acceptance.csv",
+      "sha256": "406048a675aab3e7f7bf17cac6c4fdd8a092b5d220019b67a31ccd673048a5bc"
+    },
+    {
+      "path": "docs/spec/decisions.md",
+      "sha256": "bd2bc89172d12bb707c31208833e1dc6a60cf290593acf8fd081fe68728ae731"
+    },
+    {
+      "path": "docs/verification/01.01.md",
+      "sha256": "2dd2092f80a9cc6928d083702150fa387f449d63a87f22997c63bc8759f8e9c7"
+    },
+    {
+      "path": "docs/verification/S01.md",
+      "sha256": "0da89ce025b63dc92e13876db565acdda0274a2872a5421aa2907b948620c2e5"
+    },
+    {
+      "path": "planning/state/steps/01.01.md",
+      "sha256": "30978886df8e82a4936948e5987da6281b10ecfffe4f7d969754290ffdde4559"
+    },
+    {
+      "path": "planning/state/steps/01.02.md",
+      "sha256": "1b35f399abac17d39f2f425010d120b8beab3f883159aad2b62479e3a8240f42"
+    },
+    {
+      "path": "planning/state/steps/01.03.md",
+      "sha256": "38264882f7aa63b7461a9a103282488e9603ff32cb342ae72c237e3aa469f3ff"
+    },
+    {
+      "path": "planning/state/steps/01.04.md",
+      "sha256": "a194f490b03470b459c0b494a7b6c4dee7bba1b88d7497f86f92b2a6ab1809f7"
+    },
+    {
+      "path": "planning/state/steps/01.05.md",
+      "sha256": "f3e61f99ba8ee701548123bc9b19604c3b1598c4978f7e70c48b91f93b8c3e1f"
+    },
+    {
+      "path": "planning/state/handoffs/S01.md",
+      "sha256": "9c91a2fa4a464ea618ce98592c171b8dcdfbd1bd320190f6fe5242f22b2e9959"
+    },
+    {
+      "path": "docs/architecture/system.md",
+      "sha256": "cb9b3485787c47cf018064257ae96ba29bc99bbd1f4b5ba3e2cada8c9bad51e5"
+    },
+    {
+      "path": "docs/architecture/data-model.md",
+      "sha256": "17e516209e3def91bd902c5a4bf8f6ad8f6f2e548252d799e383aac6c7ae6c5f"
+    },
+    {
+      "path": "docs/architecture/openapi.yaml",
+      "sha256": "8d90b8d345f10844c67fe65ee0addd112c0ff4ac3e319a92272b4be7785fb81e"
+    },
+    {
+      "path": "docs/architecture/events.md",
+      "sha256": "ccda8d0a0b6d77664474a86a141148cff1456a2c5ae09f6f385eddf7440b2476"
+    },
+    {
+      "path": "docs/architecture/traceability.csv",
+      "sha256": "4af98ee81c11d9d0a719a435172e91b6392e966637802d2d8a08456bc4a73a72"
+    },
+    {
+      "path": "docs/verification/S02.md",
+      "sha256": "0590ca8c88b0998776f5f7ba06ee19d73c26f4106163f05fdafef223b91081f5"
+    },
+    {
+      "path": "planning/state/steps/02.01.md",
+      "sha256": "57c1be566d58fef0b1c0f2eae83076ef2256ea6fbe4df09f85f1bea3e8589618"
+    },
+    {
+      "path": "planning/state/steps/02.02.md",
+      "sha256": "0c4a07c3d0235524b314efa6289840bcac109dc617de9982cfe2bb714f51172b"
+    },
+    {
+      "path": "planning/state/steps/02.03.md",
+      "sha256": "fe58b60f39ea65f3c8db16d7e721d99f9f79ef9d41b3c0bb6ea3e80d262917e5"
+    },
+    {
+      "path": "planning/state/steps/02.04.md",
+      "sha256": "1b0222703346efc1f710f6e70ddfc594528c111f34b90cdb6afc15b7c28db737"
+    },
+    {
+      "path": "planning/state/steps/02.05.md",
+      "sha256": "8a6f26f6092a0069c4ed92f87883484787f1a0c0f8c62e34c9f5756aa10af159"
+    },
+    {
+      "path": "planning/state/handoffs/S02.md",
+      "sha256": "825604fb92999c34ef45e7e3059fc088007fb32d084d7c2d6b52ff5aac78727d"
+    },
+    {
+      "path": "tools/verify_s01_s02.py",
+      "sha256": "c4f3c750465c7b747c3f7c1d75f2cdb39539ff3ff7fd234636c052279e1dfd2d"
+    }
+  ]
+}
