@@ -5,3 +5,5 @@ S03/03.01–03.05foundationAPPROVEDonlyforrepairedcodecommitbdc229c2e7bacb187141
 Evidence:planning/state/reviews/S02-S03-E.md. NoS04migration/auth/billing/pilotapprovalimplied.
 
 S04FULL-F review: CHANGES_REQUIRED. Original candidate source review branchda, approved main product source S03 holatida. S04 yoki S05 implementation approval yo‘q. OWNER-20261104-01 faqat create_staff biznes ruxsatini tasdiqlaydi.
+
+S04FIX-S05FULL-G:CHANGES_REQUIRED. G1 DB17/17PASS manager-assisted candidate’da; G2 auth6/8PASS va dedicatedcredential replay finding. Docker migration gate ochiq. S04/S05 hech biri global APPROVED emas.

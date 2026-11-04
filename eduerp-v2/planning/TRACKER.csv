@@ -14,16 +14,16 @@ step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
 03.03,03,"Mahalliy PostgreSQL, API va worker servislarini secretsiz sozlash",infra/compose.dev.yml,03.02,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
 03.04,03,"Lint, typecheck, test, build va maxfiy kalitlarni tekshirishni ulash",.github/workflows/ci.yml,03.03,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
 03.05,03,"Review, regressiya va handoff",planning/state/handoffs/S03.md,03.04,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
-04.01,04,"Staff, student, guardian, enrollment, group, lesson, invoice, ledger, audit, outbox jadvallarini yaratish",apps/api/prisma/schema.prisma,03.05,CHANGES_REQUIRED,state/reviews/S04-F.md,9c05b6f4cef907fe21137ea629919037b6d5bdaa
-04.02,04,"FK, unique, check, indekslar va ledger UPDATE/DELETE cheklovlarini yozish",apps/api/prisma/migrations/initial/migration.sql,04.01,CHANGES_REQUIRED,state/reviews/S04-F.md,9c05b6f4cef907fe21137ea629919037b6d5bdaa
-04.03,04,Tranzaksiya chegarasi va parallel yozish xatolarini boshqarish,apps/api/src/database/transaction.ts,04.02,CHANGES_REQUIRED,state/reviews/S04-F.md,9c05b6f4cef907fe21137ea629919037b6d5bdaa
-04.04,04,"Migratsiya, rollarning DB huquqlari, restore-compatible seed va cheklovlarni tekshirish",apps/api/test/database.integration.spec.ts,04.03,CHANGES_REQUIRED,state/reviews/S04-F.md,9c05b6f4cef907fe21137ea629919037b6d5bdaa
-04.05,04,"Review, regressiya va handoff",planning/state/handoffs/S04.md,04.04,CHANGES_REQUIRED,state/reviews/S04-F.md,9c05b6f4cef907fe21137ea629919037b6d5bdaa
-05.01,05,"Parol hash, login limit, session revoke va birinchi kirishda parol almashtirishni yozish",apps/api/src/auth/auth.service.ts,04.05,NOT_STARTED,,
-05.02,05,Director/Admin/Teacher huquqlari va har bir obyekt darajasidagi tekshiruvni yozish,apps/api/src/auth/permissions.guard.ts,05.01,NOT_STARTED,,
-05.03,05,"Xodim yaratish, o‘chirish o‘rniga deaktivatsiya va rol almashtirishni yozish",apps/api/src/auth/staff.controller.ts,05.02,NOT_STARTED,,
-05.04,05,"Teacher boshqa guruhni, telefonni va moliyani ololmasligini sinash",apps/api/src/auth/auth.integration.spec.ts,05.03,NOT_STARTED,,
-05.05,05,"Review, regressiya va handoff",planning/state/handoffs/S05.md,05.04,NOT_STARTED,,
+04.01,04,"Staff, student, guardian, enrollment, group, lesson, invoice, ledger, audit, outbox jadvallarini yaratish",apps/api/prisma/schema.prisma,03.05,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+04.02,04,"FK, unique, check, indekslar va ledger UPDATE/DELETE cheklovlarini yozish",apps/api/prisma/migrations/initial/migration.sql,04.01,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+04.03,04,Tranzaksiya chegarasi va parallel yozish xatolarini boshqarish,apps/api/src/database/transaction.ts,04.02,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+04.04,04,"Migratsiya, rollarning DB huquqlari, restore-compatible seed va cheklovlarni tekshirish",apps/api/test/database.integration.spec.ts,04.03,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+04.05,04,"Review, regressiya va handoff",planning/state/handoffs/S04.md,04.04,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+05.01,05,"Parol hash, login limit, session revoke va birinchi kirishda parol almashtirishni yozish",apps/api/src/auth/auth.service.ts,04.05,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+05.02,05,Director/Admin/Teacher huquqlari va har bir obyekt darajasidagi tekshiruvni yozish,apps/api/src/auth/permissions.guard.ts,05.01,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+05.03,05,"Xodim yaratish, o‘chirish o‘rniga deaktivatsiya va rol almashtirishni yozish",apps/api/src/auth/staff.controller.ts,05.02,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+05.04,05,"Teacher boshqa guruhni, telefonni va moliyani ololmasligini sinash",apps/api/src/auth/auth.integration.spec.ts,05.03,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
+05.05,05,"Review, regressiya va handoff",planning/state/handoffs/S05.md,05.04,CHANGES_REQUIRED,state/reviews/S04-S05-G.md,a1457c2a8021689c87d548ebaa3de05db36dbda9
 06.01,06,"O‘quvchi yaratish, tahrir, archive va UUID asosidagi qidiruvni yozish",apps/api/src/students/students.service.ts,05.05,NOT_STARTED,,
 06.02,06,"Telefon normalizatsiyasi, ko‘p farzand va bir nechta vasiy munosabatini yozish",apps/api/src/students/guardians.service.ts,06.01,NOT_STARTED,,
 06.03,06,Trial/active/frozen/left holatlari va kursga a’zolik tarixini yozish,apps/api/src/students/enrollments.service.ts,06.02,NOT_STARTED,,

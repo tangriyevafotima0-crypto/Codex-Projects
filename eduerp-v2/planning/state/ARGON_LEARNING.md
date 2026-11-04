@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 5 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E va S04FULL-F. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 6 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F va S04FIX-S05FULL-G. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
@@ -38,3 +38,12 @@ L21: idempotency scoped lookup va unscopedUUID PK nomuvofiq, actualsameUUID othe
 L22: DB harness workspace cwd, role-grants overwrite va CLI o‘rniga fake migration history. Next:unmodified workspacecommand,realCLI,distinctcredentials,failedsetupcleanup.
 L05coverage chegarasi:20DB-IT label16case degani20mustaqil acceptance emas; missing financialrollback/driftmutation/upgrade/retrylimit dalillari. Next:test-to-failuremode mapping.
 Sharedtooling: manager S04reference TSupgrade aytib inheritedNode18typesni explicit yangilamagan; Node24typeskeyingipaketga kiritildi. Bular5artifact kuzatuvi, statistik modelbenchmark emas.
+
+## Oltinchi artifact — S04FIX-S05FULL-G
+Old Prisma/Nest/scoped PK/lineage DB ishlari yaxshilandi:manager compile assistsdan keyin G1 realPG17/17PASS,unit/process22/22PASS. Original offline NOT_RUN halol; live auth6/8PASS.
+L23: idempotency hamma operatsiyaga birday qo‘llanib auth secret replay/storage boundary buzilgan. Real wrongpassword+oldkey200 va oldtoken; genericclientlogda rawrefresh. Next:authcredential verification cache’dan oldin va genericsecret-replay storage yo‘q.
+L24: outerFORUPDATE+autonomousconnection innerUPDATE bir-birini kutadi; actualbadpassword500,count0. Next:commit failureoutcome in same tx,throw aftercommit; persisted/shared bounded rate limit.
+L25: Composeconfig nomi kodnomidan farq qiladi; migrator runnerCLIprune bilan kelgan. Next:config contract test+actualtoolingcontainer path.
+L26: “bugungi substitute” hujjatda bor, SQLda date predicate yo‘q. Next:temporal entitlement tests past/today/future center timezone.
+L27: security unit/hash tests login protocol semanticsni yopmaydi; 17AUTHlabel8actualtest. Next:semantic false-positive regression hamda liveHTTP/PG mandatory.
+Manager mechanical compile corrections allaqachon nextinputda:readonlypgbind copy,unused cleanup,BillingModeexport,contractsbuildorder,actual lock. Ularni qayta yozmang. Dataset6artifacts, statistik model benchmark emas.

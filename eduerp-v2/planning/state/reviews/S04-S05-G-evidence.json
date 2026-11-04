@@ -1,0 +1,71 @@
+{
+  "task_id": "S04FIX-S05FULL-G",
+  "decision": "CHANGES_REQUIRED",
+  "original_zip_sha256": "36dbb69714256d3b3c9552d64e285925657fcc7c6ed1917e504764fb14b4d127",
+  "original_commit": "6cfbcd1879be1ce3905dc51036e5037707a3d6d4",
+  "manager_assist_commit": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
+  "original_checks": {
+    "hashes": "PASS",
+    "python_checkers": "PASS",
+    "prisma_generate": "PASS",
+    "lint": "FAIL unused import",
+    "typecheck": "FAIL workspace type dependency, missing BillingMode, unused field and readonly binds"
+  },
+  "manager_compile_assists": [
+    "Drop unused import/property only",
+    "Copy readonly parameter arrays at pg boundary",
+    "Build shared contracts before dependent typecheck",
+    "Export existing canonical BillingMode union",
+    "Actual npm-generated dependency lock"
+  ],
+  "after_compile_assists": {
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "unit_and_process_tests": {
+      "pass": 22,
+      "fail": 0
+    },
+    "G1_real_pg": {
+      "pass": 17,
+      "fail": 0
+    },
+    "G2_real_http_pg": {
+      "pass": 6,
+      "fail": 2,
+      "failures": [
+        "AUTH-IT-01/02/16 bad password 500 instead of401",
+        "AUTH-IT-04 old password500 instead of401"
+      ]
+    }
+  },
+  "ci": {
+    "run_id": 41822041361,
+    "url": "https://github.com/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41822041361",
+    "diagnostic_only": true,
+    "continue_on_error": "G1/G2 diagnostic steps; green job is not approval"
+  },
+  "security_probe": {
+    "good_login_status": 200,
+    "wrong_password_same_key_status": 200,
+    "wrong_password_receives_same_access_token": true,
+    "raw_refresh_persisted_in_idempotency_log": true,
+    "fresh_bad_password_status": 500,
+    "fresh_bad_password_ms": 1563,
+    "failed_login_count": 0
+  },
+  "manager_lock_sha256": "392316f8fce7ac4e9646d8b9f1b4f2787602d252a1e390c177aa291f9a1d6472",
+  "not_run": [
+    "Full corrected Docker deployment gate",
+    "Corrected auth acceptance",
+    "Future S06 runtime"
+  ],
+  "production_only_audit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  }
+}

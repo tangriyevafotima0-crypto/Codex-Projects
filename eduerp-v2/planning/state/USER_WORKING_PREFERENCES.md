@@ -26,3 +26,5 @@ S01, S02 va manager tuzatgan S03 qabul qilindi. Navbatdagi paket S04FULL-F; S04�
 
 ## S04-F reviewdan keyin
 F01–F10 closure va S05 full candidate bitta S04FIX-S05FULL-G paketga birlashtirildi. CriticalDBxatolarAPPROVEDemas; nextscopeexplicitdraft/IN_REVIEW. Main product source approvedS03, candidateS04reviewbranchda. Owner AdminfaqatTeachercreateqarorini bevosita berdi.
+
+G reviewdan keyin navbatdagi katta paket:S04S05FIX-S06FULL-H. G01–G07fix+S06fullcandidate. Mechanicalcompilefixmanagertomonidaninputgaqo‘shilgan;authsemanticfixArgonda. Tasdiqlangan15/120step o‘zgarmagan, G1DB17testsPASS alohida progress sifatida qayd etiladi.
