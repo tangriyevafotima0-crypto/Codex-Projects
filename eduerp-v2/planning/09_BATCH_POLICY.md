@@ -25,4 +25,4 @@ Manager natijani ketma-ket ko‘radi: avval01.01, keyin01.02. Birinchi step o‘
 ## Prompt o‘rganish sikli
 Review finding → origin (executor/manager/shared) → kuzatilgan holat → keyingi promptda qisqa prevention → yangi artifactda recurrence/fix tekshiruvi. Taxminiy xatoni isbotlangan pattern deb yozmang. Fayl/anchor xatosi uchun avtomatik tekshiruv; biznes semantikasi uchun real source/qaror tekshiruvi kerak.
 
-Joriy batch: BATCH-01.01-01.02-B. Eski ARGON-01.01-FIX-01ning faqat to‘xtab topshirish talabi o‘rniga shu batch qo‘llanadi; fix talablari saqlanadi. Argon oldingi fixni allaqachon bajargan bo‘lsa, bor natijani tekshiradi va faqat yetishmagan joyni to‘ldiradi.
+Joriy batch: S01-FULL-C — butun01.01–01.05 hujjat bosqichi. Oldingi BATCH-01.01-01.02-B superseded. Eski ARGON-01.01-FIX-01ning faqat to‘xtab topshirish talabi o‘rniga shu batch qo‘llanadi; fix talablari saqlanadi. Argon oldingi fixni allaqachon bajargan bo‘lsa, bor natijani tekshiradi va faqat yetishmagan joyni to‘ldiradi.

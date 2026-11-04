@@ -1,0 +1,21 @@
+{
+  "task_id": "S01-FULL-C",
+  "document_paths": [
+    "docs/spec/scope.md",
+    "docs/spec/scope-traceability.csv",
+    "docs/spec/business-rules.md",
+    "docs/spec/acceptance.md",
+    "docs/spec/acceptance.csv",
+    "docs/spec/decisions.md",
+    "docs/verification/01.01.md",
+    "docs/verification/S01.md",
+    "planning/state/steps/01.01.md",
+    "planning/state/steps/01.02.md",
+    "planning/state/steps/01.03.md",
+    "planning/state/steps/01.04.md",
+    "planning/state/steps/01.05.md",
+    "planning/state/handoffs/S01.md"
+  ],
+  "transport_path": "SUBMISSION.json",
+  "total_files": 15
+}
