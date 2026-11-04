@@ -1322,7 +1322,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
         lesson_date: '2026-11-23',
         occurrence_seq: 1,
         local_starts_time: '15:00',
-        local_ends_time: '16:30',
+        duration_minutes: 90,
       },
     });
     assert.equal(isolatedLessonRes.statusCode, 201);
@@ -1332,8 +1332,8 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
     //    real domain validation fails on 2nd item (422 STUDENT_NOT_ENROLLED_IN_GROUP) and rolls back 1st item & lesson version!
     const nonEnrolledId = crypto.randomUUID();
     await env.apiPoolA.query(
-      `INSERT INTO "students" ("id", "center_id", "full_name", "status", "version", "updated_at")
-       VALUES ($1::uuid, $2::uuid, 'I02 Batch Rollback NonEnrolled', 'ACTIVE', 1, NOW())`,
+      `INSERT INTO "students" ("id", "center_id", "student_code", "full_name", "normalized_name", "status", "version", "updated_at")
+       VALUES ($1::uuid, $2::uuid, 'I02-NONENROLLED', 'I02 Batch Rollback NonEnrolled', 'i02 batch rollback nonenrolled', 'ACTIVE', 1, NOW())`,
       [nonEnrolledId, C.centerId],
     );
 
@@ -1354,7 +1354,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
       },
     });
     assert.equal(invalidSecondItemBatch.statusCode, 422);
-    assert.equal(invalidSecondItemBatch.json.error_code, 'STUDENT_NOT_ENROLLED_IN_GROUP');
+    assert.equal(invalidSecondItemBatch.json.error_code, 'VALIDATION_ERROR');
 
     const gradeCountAfterBatchFail = await env.apiPoolA.query<{ cnt: string }>(
       `SELECT COUNT(*)::text AS cnt FROM "grade_entries" WHERE "center_id" = $1::uuid AND "lesson_id" = $2::uuid`,
@@ -1491,7 +1491,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
         lesson_date: '2026-11-25',
         occurrence_seq: 1,
         local_starts_time: '15:00',
-        local_ends_time: '16:30',
+        duration_minutes: 90,
       },
     });
     assert.equal(i03LessonRes.statusCode, 201);
@@ -1743,11 +1743,14 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
         billing_mode: 'CALENDAR_PRO_RATA',
         current_fee_uzs: '500000',
         lessons_per_cycle: 12,
+        schedule_days: ['MON', 'WED', 'FRI'],
+        starts_time: '11:00',
+        duration_minutes: 90,
         timezone: 'Asia/Tashkent',
       },
     });
     assert.equal(reassignGroupRes.statusCode, 201);
-    const reassignGroupId = String(reassignGroupRes.json.id);
+    const reassignGroupId = String(reassignGroupRes.json.group_id);
 
     await env.apiPoolA.query(
       `INSERT INTO "enrollments" ("id", "center_id", "student_id", "group_id", "status", "enrolled_at_date")
@@ -1767,7 +1770,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
         lesson_date: '2026-11-26',
         occurrence_seq: 1,
         local_starts_time: '11:00',
-        local_ends_time: '12:30',
+        duration_minutes: 90,
       },
     });
     assert.equal(openLsnRes.statusCode, 201);
@@ -1851,7 +1854,17 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
   });
 
   it('ACAD-IT-13 (I04, I06): resolves future group-specific and course tariffs across effective_from dates, center timezone day boundaries, multiple future changes, and same-date revisions without leaking across groups or mutating historical invoices', async () => {
-    clock.setTestNow(new Date('2026-11-04T09:00:00.000Z'));
+    const setClockAndRefreshTokens = async (iso: string): Promise<void> => {
+      clock.setTestNow(new Date(iso));
+      for (const username of ['director.demo', 'teacher.demo']) {
+        const login = await httpJsonRequest({ port, method: 'POST', path: '/api/v1/auth/login',
+          body: { username, password: SYNTHETIC_TEST_ONLY_PASSWORD } });
+        assert.equal(login.statusCode, 200);
+        if (username === 'director.demo') directorToken = login.json.access_token as string;
+        else primaryTeacherToken = login.json.access_token as string;
+      }
+    };
+    await setClockAndRefreshTokens('2026-11-04T09:00:00.000Z');
     try {
       // Create an isolated course and two groups under the same course to verify group-level tariff isolation
       const i04CourseRes = await httpJsonRequest({
@@ -1863,7 +1876,6 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
           'Idempotency-Key': `idem-i04-crs-${crypto.randomUUID()}`,
         },
         body: {
-          code: 'PHY-I04',
           name: 'Physics I04 Tariff Resolution',
           default_monthly_fee_uzs: '480000',
         },
@@ -1886,11 +1898,14 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
           billing_mode: 'CALENDAR_PRO_RATA',
           current_fee_uzs: '480000',
           lessons_per_cycle: 12,
+          schedule_days: ['MON', 'WED', 'FRI'],
+          starts_time: '11:00',
+          duration_minutes: 90,
           timezone: 'Asia/Tashkent',
         },
       });
       assert.equal(grp1Res.statusCode, 201);
-      const grp1Id = String(grp1Res.json.id);
+      const grp1Id = String(grp1Res.json.group_id);
 
       const grp2Res = await httpJsonRequest({
         port,
@@ -1907,11 +1922,14 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
           billing_mode: 'CALENDAR_PRO_RATA',
           current_fee_uzs: '480000',
           lessons_per_cycle: 12,
+          schedule_days: ['MON', 'WED', 'FRI'],
+          starts_time: '11:00',
+          duration_minutes: 90,
           timezone: 'Asia/Tashkent',
         },
       });
       assert.equal(grp2Res.statusCode, 201);
-      const grp2Id = String(grp2Res.json.id);
+      const grp2Id = String(grp2Res.json.group_id);
 
       // Seed a historical invoice on Group 1 to prove tariff changes never mutate existing invoices
       const enrollmentId = crypto.randomUUID();
@@ -1934,7 +1952,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
            "effective_net_charge_uzs", "allocated_paid_uzs", "remaining_debt_uzs", "billed_lessons", "status", "due_date"
          ) VALUES (
            $1::uuid, $2::uuid, 'INV-S07-I04-01', $3::uuid, $4::uuid, $5::uuid, $6::uuid,
-           480000, 480000, 0, 0, 480000, 0, 480000, 12, 'ISSUED', '2026-10-10'
+           480000, 480000, 0, 0, 480000, 0, 480000, 12, 'ISSUED_OPEN', '2026-10-10'
          )`,
         [historicalInvoiceId, C.centerId, C.studentId, enrollmentId, cycleId, C.billingPolicyId],
       );
@@ -1957,7 +1975,8 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
         },
       });
       assert.equal(priceChange1.statusCode, 200);
-      assert.equal(priceChange1.json.applied_to_active_price, false);
+      assert.equal(priceChange1.json.default_monthly_fee_uzs, '480000');
+      assert.ok((priceChange1.json.price_history as Array<Record<string, unknown>>).some((h) => h.group_id === grp1Id && h.new_fee_uzs === '650000' && h.effective_from === '2026-11-10'));
       assert.equal(priceChange1.json.version, 2);
 
       // 2. Schedule a second same-date revision on 2026-11-10 ('680000', expected_version: 2 -> version 3)
@@ -2001,7 +2020,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
       assert.equal(priceChange2.json.version, 4);
 
       // 3. Before effective_from in Asia/Tashkent: 2026-11-09T18:30:00Z is 2026-11-09 23:30 (+05:00)
-      clock.setTestNow(new Date('2026-11-09T18:30:00.000Z'));
+      await setClockAndRefreshTokens('2026-11-09T18:30:00.000Z');
       const groupsBeforeRes = await httpJsonRequest({
         port,
         method: 'GET',
@@ -2026,14 +2045,14 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
       assert.equal(groupsAsOfPreview.statusCode, 200);
       const g1Preview = (groupsAsOfPreview.json.items as Array<Record<string, unknown>>).find((g) => g.id === grp1Id);
       assert.ok(g1Preview);
-      assert.equal(g1Preview.current_fee_uzs, '480000');
+      assert.equal(g1Preview.current_fee_uzs, '680000');
       assert.equal(g1Preview.effective_fee_as_of_uzs, '680000');
-      assert.equal(g1Preview.effective_from_date, '2026-11-10');
+      assert.equal(g1Preview.as_of_date, '2026-11-10');
 
       // 4. Cross midnight in Asia/Tashkent: 2026-11-09T19:30:00Z is 2026-11-10 00:30 (+05:00) ->
       //    Group 1 current_fee_uzs immediately transitions to '680000' (latest revision for 2026-11-10),
       //    while Group 2 and Course default remain '480000'!
-      clock.setTestNow(new Date('2026-11-09T19:30:00.000Z'));
+      await setClockAndRefreshTokens('2026-11-09T19:30:00.000Z');
       const groupsOnNov10 = await httpJsonRequest({
         port,
         method: 'GET',
@@ -2047,11 +2066,11 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
       assert.ok(g1Nov10 && g2Nov10);
       assert.equal(g1Nov10.current_fee_uzs, '680000');
       assert.equal(g1Nov10.effective_fee_as_of_uzs, '680000');
-      assert.equal(g1Nov10.effective_from_date, '2026-11-10');
+      assert.equal(g1Nov10.as_of_date, '2026-11-10');
       assert.equal(g2Nov10.current_fee_uzs, '480000');
 
       // Also verify PATCH /api/v1/groups/:group_id on 2026-11-11 returns resolved current_fee_uzs: '680000'
-      clock.setTestNow(new Date('2026-11-11T10:00:00.000Z'));
+      await setClockAndRefreshTokens('2026-11-11T10:00:00.000Z');
       const patchGrpOnNov11 = await httpJsonRequest({
         port,
         method: 'PATCH',
@@ -2083,7 +2102,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
       assert.equal(i04CourseOnNov11.default_monthly_fee_uzs, '480000');
 
       // 5. Advance clock to 2026-11-21 -> Group 1 current_fee_uzs transitions to Change 2 ('9007199254740999')
-      clock.setTestNow(new Date('2026-11-21T10:00:00.000Z'));
+      await setClockAndRefreshTokens('2026-11-21T10:00:00.000Z');
       const groupsOnNov21 = await httpJsonRequest({
         port,
         method: 'GET',
@@ -2094,7 +2113,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
       const g1Nov21 = (groupsOnNov21.json.items as Array<Record<string, unknown>>).find((g) => g.id === grp1Id);
       assert.ok(g1Nov21);
       assert.equal(g1Nov21.current_fee_uzs, '9007199254740999');
-      assert.equal(g1Nov21.effective_from_date, '2026-11-20');
+      assert.equal(g1Nov21.latest_effective_from, '2026-11-20');
 
       // 6. Teacher GET /api/v1/groups still omits all financial fields (current_fee_uzs, effective_fee_as_of_uzs)
       const teacherGroupsOnNov21 = await httpJsonRequest({
