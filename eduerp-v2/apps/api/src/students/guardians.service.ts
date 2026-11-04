@@ -15,7 +15,7 @@ import { ApiEnvConfig } from '../config/env';
 import { DatabaseService } from '../database/database.service';
 import { computeKeyedFieldDigest, executeIdempotentOperation } from '../database/idempotency';
 import { executeOptimisticUpdate } from '../database/transaction';
-import { API_CONFIG_TOKEN } from '../health/health.controller';
+import { API_CONFIG_TOKEN } from '../config/tokens';
 import { normalizePersonName, normalizePhoneE164 } from './normalization';
 
 export type GuardianRelationship = 'MOTHER' | 'FATHER' | 'GUARDIAN' | 'SELF';

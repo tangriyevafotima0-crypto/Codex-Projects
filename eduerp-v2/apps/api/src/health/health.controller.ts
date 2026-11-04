@@ -4,7 +4,8 @@ import { PublicBootstrap } from '../auth/permissions.guard';
 import { RequestWithCorrelationId, resolveRequestId } from '../common/request-id.middleware';
 import { ApiEnvConfig } from '../config/env';
 
-export const API_CONFIG_TOKEN = 'EDUERP_API_ENV_CONFIG';
+import { API_CONFIG_TOKEN } from '../config/tokens';
+export { API_CONFIG_TOKEN } from '../config/tokens';
 
 @Controller('api/v1/health')
 export class HealthController {

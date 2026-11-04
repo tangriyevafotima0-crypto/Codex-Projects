@@ -1,3 +1,4 @@
+import ts from 'typescript';
 import 'reflect-metadata';
 import * as assert from 'node:assert/strict';
 import * as fs from 'node:fs';
@@ -80,7 +81,7 @@ describe('Stage 05 Auth, Scrypt Cost Parity (G06), Keyed Idempotency (G01/G05), 
         : '';
     if (actualPasswordSource) {
       assert.equal(
-        actualPasswordSource.includes('seed-contract'),
+        ts.createSourceFile('password.ts', actualPasswordSource, ts.ScriptTarget.Latest, true).statements.some((node) => ts.isImportDeclaration(node) && ts.isStringLiteral(node.moduleSpecifier) && node.moduleSpecifier.text.includes('seed-contract')),
         false,
         'Production password.ts must not import seed-contract (G06)',
       );
@@ -241,10 +242,10 @@ describe('Stage 05 Auth, Scrypt Cost Parity (G06), Keyed Idempotency (G01/G05), 
     const protectedPolicies: RoutePolicyConfig[] = [];
 
     for (const ctrl of controllers) {
-      const proto = ctrl.prototype as Record<string, unknown>;
+      const proto = ctrl.prototype;
       for (const propName of Object.getOwnPropertyNames(proto)) {
         if (propName === 'constructor') continue;
-        const fn = proto[propName];
+        const fn: unknown = Reflect.get(proto, propName);
         if (typeof fn !== 'function') continue;
 
         const pubAction = Reflect.getMetadata(PUBLIC_BOOTSTRAP_ROUTE_METADATA, fn) as

@@ -16,7 +16,7 @@ import { ApiEnvConfig } from '../config/env';
 import { DatabaseService } from '../database/database.service';
 import { computeKeyedFieldDigest, executeIdempotentOperation } from '../database/idempotency';
 import { executeOptimisticUpdate, TransactionContext } from '../database/transaction';
-import { API_CONFIG_TOKEN } from '../health/health.controller';
+import { API_CONFIG_TOKEN } from '../config/tokens';
 import {
   DuplicateCandidateWarningDto,
   DuplicatesService,

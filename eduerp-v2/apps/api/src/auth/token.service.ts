@@ -3,7 +3,7 @@ import type { StaffRole } from '@eduerp/contracts';
 import * as crypto from 'node:crypto';
 import { SignJWT, jwtVerify } from 'jose';
 import { ApiEnvConfig } from '../config/env';
-import { API_CONFIG_TOKEN } from '../health/health.controller';
+import { API_CONFIG_TOKEN } from '../config/tokens';
 import { ApiHttpException } from './auth.errors';
 import { ClockService } from './clock.service';
 

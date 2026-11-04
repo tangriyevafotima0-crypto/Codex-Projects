@@ -1,6 +1,6 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { ApiEnvConfig } from '../config/env';
-import { API_CONFIG_TOKEN } from '../health/health.controller';
+import { API_CONFIG_TOKEN } from '../config/tokens';
 import { DatabaseService } from './database.service';
 
 @Global()

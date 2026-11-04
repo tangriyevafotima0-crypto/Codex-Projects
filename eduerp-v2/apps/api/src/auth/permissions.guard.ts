@@ -9,7 +9,7 @@ import type { LicenseMode, StaffRole } from '@eduerp/contracts';
 import { ApiEnvConfig } from '../config/env';
 import { RequestWithCorrelationId } from '../common/request-id.middleware';
 import { DatabaseService } from '../database/database.service';
-import { API_CONFIG_TOKEN } from '../health/health.controller';
+import { API_CONFIG_TOKEN } from '../config/tokens';
 import { ApiHttpException } from './auth.errors';
 import { ClockService } from './clock.service';
 import { TokenService } from './token.service';

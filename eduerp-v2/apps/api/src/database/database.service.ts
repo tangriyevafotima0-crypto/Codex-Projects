@@ -3,7 +3,7 @@ import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from 'pg
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
 import { ApiEnvConfig } from '../config/env';
-import { API_CONFIG_TOKEN } from '../health/health.controller';
+import { API_CONFIG_TOKEN } from '../config/tokens';
 
 export const CANONICAL_MUTABLE_TABLES: readonly string[] = Object.freeze([
   'staff_users',

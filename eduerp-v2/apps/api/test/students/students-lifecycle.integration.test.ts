@@ -78,7 +78,6 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
   const C = SYNTHETIC_DEMO_CENTER_A;
   const CB = SYNTHETIC_DEMO_CENTER_B;
 
-  let directorToken: string;
   let adminToken: string;
   let teacherToken: string;
 
@@ -126,7 +125,7 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
       return res.json.access_token as string;
     };
 
-    directorToken = await loginAs('director.demo');
+    await loginAs('director.demo');
     adminToken = await loginAs('admin.demo');
     teacherToken = await loginAs('teacher.demo');
   });

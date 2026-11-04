@@ -6,7 +6,7 @@ import { RequestWithCorrelationId, resolveRequestId } from '../common/request-id
 import { DatabaseService } from '../database/database.service';
 import { computeKeyedFieldDigest, executeIdempotentOperation } from '../database/idempotency';
 import { executeOptimisticUpdate } from '../database/transaction';
-import { API_CONFIG_TOKEN } from '../health/health.controller';
+import { API_CONFIG_TOKEN } from '../config/tokens';
 import { ApiHttpException } from './auth.errors';
 import { ClockService } from './clock.service';
 import { hashPassword } from './password';
