@@ -22,7 +22,8 @@
     "test:db": "npm run build && npm --workspace=@eduerp/api run test:db",
     "test:auth": "npm run build && npm --workspace=@eduerp/api run test:auth",
     "test:students": "npm run build && npm --workspace=@eduerp/api run test:students",
-    "verify:docs": "python3 tools/verify_s01_s02.py && python3 tools/verify_s04.py"
+    "verify:docs": "python3 tools/verify_s01_s02.py && python3 tools/verify_s04.py",
+    "test:academics": "npm run build && npm --workspace=@eduerp/api run test:academics"
   },
   "devDependencies": {
     "@types/node": "24.13.6",

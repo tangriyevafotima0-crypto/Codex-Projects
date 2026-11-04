@@ -1,0 +1,201 @@
+{
+  "task_id": "S07FIX-J",
+  "stage_id": "S07",
+  "step_ids": [
+    "07.01",
+    "07.02",
+    "07.03",
+    "07.04",
+    "07.05"
+  ],
+  "review_findings_closed": [
+    "I01",
+    "I02",
+    "I03",
+    "I04",
+    "I05",
+    "I06"
+  ],
+  "base_commit": "337c2a79a0cd20838298bb772a19e121ced84cc1",
+  "candidate_input_commit": "ad56d67c7c08e7c7cb4e80abeccf67c069337bc5",
+  "status": "IN_REVIEW",
+  "needs_manager_dependency_refresh": false,
+  "package_lock_sha256": "392316f8fce7ac4e9646d8b9f1b4f2787602d252a1e390c177aa291f9a1d6472",
+  "summary": {
+    "I01": "Preserved manager mechanical fixes in academics-lifecycle.integration.test.ts and auth-and-sessions.integration.test.ts, and added post-GRANT login recovery (200 OK) verification in AUTH-IT-16.",
+    "I02": "Preserved manager setClauseSql fix in GradesService.submitLessonGrades and added isolated ACAD-IT-11 test covering multi-item batch rollback on 2nd item failure, concurrent grade update conflict (409), idempotency payload mismatch (409), and append-only audit_logs revisions.",
+    "I03": "Added authorizeBeforeReplayOrExecute hook in executeIdempotentOperation and 2-statement post-lock live entitlement verification in AcademicAccessService.assertLessonAccess so revoked/reassigned substitutes and reassigned primary teachers fail closed with 403 FORBIDDEN_OBJECT_SCOPE before any cached client_operation_logs replay is returned, while authorized replays still return 200 OK (ACAD-UNIT-05, ACAD-IT-12).",
+    "I04": "Created shared authoritative tariff resolver (apps/api/src/academics/price-resolver.ts) and wired it across GroupsService, CoursesService, GroupsController (?as_of_date=), and AcademicAccessService so future group-specific and course tariffs take effect automatically on effective_from in the center/group timezone without leaking across groups or mutating historical invoices (ACAD-UNIT-04, ACAD-IT-13).",
+    "I05": "Preserved DB-IT-19 independent transaction fix, CI job/gate timeout bounds in infra/ci/eduerp-ci.yml, and untouched package-lock.json.",
+    "I06": "Added independent failure-mode unit tests (ACAD-UNIT-04, ACAD-UNIT-05) and HTTP/PostgreSQL integration tests (ACAD-IT-11, ACAD-IT-12, ACAD-IT-13) and created docs/verification/S07-J.md."
+  },
+  "verification": {
+    "VERIFY_INPUT_py": "PASS (files=403)",
+    "tools_verify_s01_s02_py": "PASS (67 OpenAPI 3.1.0 operations, 989 $ref targets, 0 nullable keywords, 12 negative self-tests)",
+    "tools_verify_s04_py": "PASS (46 Prisma models, 46 SQL tables across 4 migrations, 21 DB-IT + 17 AUTH-IT + 9 STU-IT + 13 ACAD-IT scenarios, 152 SQL INSERT statements verified)",
+    "planning_check_and_test_plan_py": "PASS",
+    "node_unit_and_subprocess_tests": "PASS (academics-unit.test.ts ACAD-UNIT-01..05, students-unit.test.ts STU-UNIT-01..04, config.test.ts, worker.test.ts, process.test.ts, contracts.test.ts)",
+    "npm_ci_lint_typecheck_build": "NOT_RUN (offline sandbox VM lacks internet access and pre-generated @prisma/client engine binaries)",
+    "live_postgres_integration_gates_G1_to_G4": "NOT_RUN (offline sandbox VM has no running PostgreSQL 16 server or Docker daemon; all gates wired in package.json and infra/ci/eduerp-ci.yml)"
+  },
+  "created_files": [
+    "eduerp-v2/apps/api/src/academics/price-resolver.ts",
+    "eduerp-v2/docs/verification/S07-J.md"
+  ],
+  "modified_files": [
+    "eduerp-v2/apps/api/src/academics/academic-access.service.ts",
+    "eduerp-v2/apps/api/src/academics/courses.service.ts",
+    "eduerp-v2/apps/api/src/academics/grades.service.ts",
+    "eduerp-v2/apps/api/src/academics/groups.controller.ts",
+    "eduerp-v2/apps/api/src/academics/groups.service.ts",
+    "eduerp-v2/apps/api/src/academics/index.ts",
+    "eduerp-v2/apps/api/src/database/idempotency.ts",
+    "eduerp-v2/apps/api/test/academics-unit.test.ts",
+    "eduerp-v2/apps/api/test/academics/academics-lifecycle.integration.test.ts",
+    "eduerp-v2/apps/api/test/auth/auth-and-sessions.integration.test.ts",
+    "eduerp-v2/docs/architecture/adr/ADR-007-academics-and-lesson-entitlements.md",
+    "eduerp-v2/docs/architecture/openapi.yaml",
+    "eduerp-v2/docs/verification/S07.md",
+    "eduerp-v2/planning/state/handoffs/S07.md",
+    "eduerp-v2/planning/state/steps/07.01.md",
+    "eduerp-v2/planning/state/steps/07.02.md",
+    "eduerp-v2/planning/state/steps/07.03.md",
+    "eduerp-v2/planning/state/steps/07.04.md",
+    "eduerp-v2/planning/state/steps/07.05.md",
+    "eduerp-v2/tools/verify_s04.py"
+  ],
+  "files": [
+    {
+      "path": "eduerp-v2/apps/api/src/academics/academic-access.service.ts",
+      "change_type": "modified",
+      "sha256": "3c15efc5a31114068f826e209d18954e37bf1015ff56dd287cf141d45dbe633f",
+      "bytes": 17834
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/courses.service.ts",
+      "change_type": "modified",
+      "sha256": "094a9684ef31c4ad705e75c0f3e6810f07bc5fc6a96a722ddea5d0d3d9492fd6",
+      "bytes": 31489
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/grades.service.ts",
+      "change_type": "modified",
+      "sha256": "bc96b50315b84f96d68b1ccafacce2adc7b202b6edf23424709d93ca32b0722a",
+      "bytes": 26907
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/groups.controller.ts",
+      "change_type": "modified",
+      "sha256": "399410988969def8644df8010046ad6e0efd7ed9d91131aa49ec4db32355e114",
+      "bytes": 2319
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/groups.service.ts",
+      "change_type": "modified",
+      "sha256": "f8bac404f5cc94164fc269924c8206bac328be4fca38b23d4feec430201e2ad3",
+      "bytes": 37999
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/index.ts",
+      "change_type": "modified",
+      "sha256": "81fb4979521ee84e9e844a915d93875d1101dbbbc14d557ebee046f2bfc2cee0",
+      "bytes": 525
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/academics/price-resolver.ts",
+      "change_type": "created",
+      "sha256": "6d43aafda0f7ef1b04ad0cc849041a75b2860098f5d1ec511b56705b1eb11e2c",
+      "bytes": 7876
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/database/idempotency.ts",
+      "change_type": "modified",
+      "sha256": "d4f50ea84f64ad36c8c6a83b793439d00a42a3f990ea7b17e9456c5c24c7191c",
+      "bytes": 8936
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/academics-unit.test.ts",
+      "change_type": "modified",
+      "sha256": "01a1b642f58021cc47e75d93bb866ca2b2ff5cf6aae29cfd13b48ed09ddcee77",
+      "bytes": 12715
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/academics/academics-lifecycle.integration.test.ts",
+      "change_type": "modified",
+      "sha256": "5a88ec2189f14ca3767306629cc295a979729a5e54e775e4c7fe8e2bc92718f7",
+      "bytes": 83892
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/auth/auth-and-sessions.integration.test.ts",
+      "change_type": "modified",
+      "sha256": "5af4faa3e9cb3c66081d1015c65049023693dbe06ed4c718bdff57b5ab39e0c9",
+      "bytes": 33255
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-007-academics-and-lesson-entitlements.md",
+      "change_type": "modified",
+      "sha256": "ab1063a28ad6024049e88facad6114b6e5120c4de793e650a55174c6bab2b09b",
+      "bytes": 10358
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "change_type": "modified",
+      "sha256": "ff01ccae1d96c05b54ea65fe227f8ef0e141b90505a7d67c9608f75218af3726",
+      "bytes": 338658
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S07-J.md",
+      "change_type": "created",
+      "sha256": "9ce5cac117961e2f47a12607f3b4e5cf956469a145d208ae59ec93c6af68b1fe",
+      "bytes": 8855
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S07.md",
+      "change_type": "modified",
+      "sha256": "612927bd8782256662d65cddf08bb1448d981f259a9948ab4557f362ece79332",
+      "bytes": 8265
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S07.md",
+      "change_type": "modified",
+      "sha256": "8c0a5d97dcaf6aaf5494f5bfe32fc0f0fe62c0fa8265c51e8f721f030c7a729d",
+      "bytes": 7025
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.01.md",
+      "change_type": "modified",
+      "sha256": "e96371b0e68249ab1af5e03ba8803e870d86b13a2b16931f7cad280ca2852cee",
+      "bytes": 1734
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.02.md",
+      "change_type": "modified",
+      "sha256": "a8555d929f493a9866264ab2919a4d900e83c4ffb44d50adbb358f7bf811e5ec",
+      "bytes": 1465
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.03.md",
+      "change_type": "modified",
+      "sha256": "781bf8c31ac3149a1a686f3fcd3802f36ec9bae6c36148553135ee8f7bb790d2",
+      "bytes": 1377
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.04.md",
+      "change_type": "modified",
+      "sha256": "189d919352f3db8a5724391eaa584d7b20d28c3a6c81450eb366a28b7cfe0b66",
+      "bytes": 1383
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/07.05.md",
+      "change_type": "modified",
+      "sha256": "1eb24ca87b8484cf1732454c46f4ed15a6a0e2ab59bb92d464129dfdbce8d50f",
+      "bytes": 1563
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "change_type": "modified",
+      "sha256": "3e0c7240d0091f83d9af0eae6a3842b236f9f23e121dde05c38821faf1528407",
+      "bytes": 31080
+    }
+  ]
+}

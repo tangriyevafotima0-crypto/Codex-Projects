@@ -16,7 +16,7 @@ import { DatabaseService } from '../database/database.service';
 import { executeIdempotentOperation } from '../database/idempotency';
 import { executeOptimisticUpdate, TransactionContext } from '../database/transaction';
 import { API_CONFIG_TOKEN } from '../config/tokens';
-import { validateIsoDate } from './normalization';
+import { parseOptionalStrictBoolean, validateIsoDate } from './normalization';
 
 export type EnrollmentStatus = 'TRIAL' | 'ACTIVE' | 'FROZEN' | 'LEFT';
 export type ChurnReasonCode = 1 | 2 | 3 | 4 | 5;
@@ -142,7 +142,7 @@ export class EnrollmentsService {
     const enrolledAtDate = validateIsoDate(obj.enrolled_at_date, 'enrolled_at_date');
 
     // 06.03 Policy Gate: billing/pro-rata invoice calculation belongs to Stage 08 and requires confirmed D01-D04 policy
-    if (obj.auto_issue_pro_rata_invoice === true) {
+    if (parseOptionalStrictBoolean(obj.auto_issue_pro_rata_invoice, 'auto_issue_pro_rata_invoice', false)) {
       throw new ApiHttpException({
         statusCode: 403,
         errorCode: 'POLICY_DECISION_NOT_CONFIRMED',
@@ -365,7 +365,9 @@ export class EnrollmentsService {
     const expectedVersion = resolveExpectedVersion(req, obj.expected_version);
 
     // 06.03 Policy Gate: retroactive invoice pro-rata/refund or automatic debt forgiveness is forbidden
-    if (obj.apply_retroactive_prorata_adjustment === true || obj.forgive_remaining_debt === true) {
+    const applyRetroProrata = parseOptionalStrictBoolean(obj.apply_retroactive_prorata_adjustment, 'apply_retroactive_prorata_adjustment', false);
+    const forgiveDebt = parseOptionalStrictBoolean(obj.forgive_remaining_debt, 'forgive_remaining_debt', false);
+    if (applyRetroProrata || forgiveDebt) {
       throw new ApiHttpException({
         statusCode: 403,
         errorCode: 'POLICY_DECISION_NOT_CONFIRMED',
@@ -560,7 +562,7 @@ export class EnrollmentsService {
     }
     const expectedVersion = resolveExpectedVersion(req, obj.expected_version);
 
-    if (obj.apply_unconfirmed_fee_adjustment === true) {
+    if (parseOptionalStrictBoolean(obj.apply_unconfirmed_fee_adjustment, 'apply_unconfirmed_fee_adjustment', false)) {
       throw new ApiHttpException({
         statusCode: 403,
         errorCode: 'POLICY_DECISION_NOT_CONFIRMED',
@@ -569,8 +571,8 @@ export class EnrollmentsService {
       });
     }
 
-    const debugFail =
-      this.config.nodeEnv === 'test' && obj.debug_fail_after_close_old === true;
+    const debugFailFlag = parseOptionalStrictBoolean(obj.debug_fail_after_close_old, 'debug_fail_after_close_old', false);
+    const debugFail = this.config.nodeEnv === 'test' && debugFailFlag;
     const requestId = req.requestId ?? resolveRequestId(req.headers['x-request-id']);
     const now = this.clock.now();
 

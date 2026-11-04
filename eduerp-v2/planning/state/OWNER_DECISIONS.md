@@ -24,3 +24,14 @@ Holat: **ACCEPTED_REQUIREMENT**, quyidagi aniq scope uchun. Manba: userning shu 
 - 12-dars paketiga nisbatan bu javob qo‘llash/olib tashlash qarori emas; mavjud D21 alohida ochiq.
 - D03/D21/D14/D22 butun qarorini yopmang: yuqoridagi configurable policy va due-date misollari aniq tasdiqlangan, pul formulasi qolgan qismlar bo‘yicha pending.
 - S07 policy konfiguratsiyasi/typed boundaryda buni hisobga oladi; real billing engine va open formula clarification S08da. Hech qanday avtomatik late fee yoki access block shu javobdan kelib chiqmaydi.
+
+
+## OWNER-20261104-03 — birinchi to‘lov, yaxlitlash va qisqa oy
+
+Holat: **ACCEPTED**, faqat quyidagi aniq scope. Manba: userning S07FIX-J review davomida bergan uch javobi.
+
+1. Oy o‘rtasida kelgandagi birinchi to‘lov: **“Har markaz o‘zi tanlasin”**. Center policy qolgan darslarga mutanosib yoki to‘liq abonementni aniq tanlaydi. Ikkalasidan birini global majburiy default qilib olmang; policy tanlanmaganida hisob chiqarish bloklanadi.
+2. Kasr so‘m: **“Eng yaqin butun so‘mga; 0.5 yuqoriga”**. Nonnegative charge uchun rational integer HALF_UP. UZS scale0 saqlanadi, float bilan hisoblanmaydi. Manfiy adjustmentning tie-sign qoidasi bu javob bilan alohida tasdiqlanmagan; adjustment amount nonnegative+differentiated direction yoki kelajak alohida policy.
+3. Oylik sana31 keyingi qisqa oyda yo‘q bo‘lsa: **“Oxirgi kundan davom etsin”**. Anniversary/rolling renewalda Jan31→Feb28(yoki29)→Mar28(yoki29), eski31anchoriga avtomatik qaytmaydi. Chained renewalni original startdan qayta hisoblash bu qarorga zid. Fixed due-day markaz har oy aniq tanlagan sana bo‘lib, anniversary bilan aralashtirilmaydi; invalid fixed-day oyiga oid alohida biznes edgecase noaniq bo‘lsa confirmed policy talab qiling.
+
+Bu uch javob OWNER-20261104-02ga qo‘shimcha. Service period, due-date va collection timing alohida qoladi. Birinchi partial-period proration uchun planned/remaining lesson definition, cancelled lesson policy, 12-dars paket, trial compensation, freeze/discount/refund va penalty/grace shu javoblar bilan to‘liq ACCEPTED bo‘lmadi. S08 aniq variantlarni typed/versioned center policy sifatida implement qiladi; tasdiqlanmagan combinationlarni silent taxmin qilmaydi. Docs/spec/decisions.md’dagi D03/D21ni butunlay ACCEPTED qilib yubormang.

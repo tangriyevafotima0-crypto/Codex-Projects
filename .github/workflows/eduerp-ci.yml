@@ -164,6 +164,13 @@ jobs:
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:students
 
+      - name: Gate G4 — Run real HTTP + PostgreSQL Academics, Schedule, Substitute & Grades integration test suite (ACAD-IT-01..ACAD-IT-10 & R1/R2)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:academics
+
   docker-dev-smoke:
     name: "Build and smoke-test the dev Compose stack (migrator + /health + /ready)"
     runs-on: ubuntu-latest

@@ -686,11 +686,11 @@
       "test_id": "T07.01",
       "acceptance": "Guruh narxi o‘zgarsa oldingi invoice snapshoti o‘zgarmaydi; yangi narx effective sanadan; teacher deaktivatsiyasida ochiq darslar ogohlantiriladi.",
       "prompt": "prompts/S07/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S07-J.md",
+      "reviewed_revision": "ce9b99decf4d70d40f51cf3d42791b5d72b1bec7",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "07.02",
@@ -709,11 +709,11 @@
       "test_id": "T07.02",
       "acceptance": "Bir kun ikki dars alohida lesson ID; reschedule eski IDni saqlaydi yoki aniq replacement relation; cancelled lesson ping/billingni noto‘g‘ri qo‘zg‘atmaydi.",
       "prompt": "prompts/S07/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S07-J.md",
+      "reviewed_revision": "ce9b99decf4d70d40f51cf3d42791b5d72b1bec7",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "07.03",
@@ -732,11 +732,11 @@
       "test_id": "T07.03",
       "acceptance": "Substitute faqat belgilangan lessonni ko‘radi; ruxsat qaytarilganda offline yozuv reauth qilinadi; haq oluvchi assignment tarixda snapshot bo‘ladi.",
       "prompt": "prompts/S07/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S07-J.md",
+      "reviewed_revision": "ce9b99decf4d70d40f51cf3d42791b5d72b1bec7",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "07.04",
@@ -755,11 +755,11 @@
       "test_id": "T07.04",
       "acceptance": "Teacher faqat vakolatli lesson/enrollmentga baho qo‘yadi; diapazondan tashqari ball rad; izohlar XSSdan himoyalanadi; edit version conflict ko‘rinadi.",
       "prompt": "prompts/S07/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S07-J.md",
+      "reviewed_revision": "ce9b99decf4d70d40f51cf3d42791b5d72b1bec7",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "07.05",
@@ -776,11 +776,11 @@
       "test_id": "T07.05",
       "acceptance": "Bir kunda ikki dars to‘qnashmaydi; o‘rindosh huquqi darsdan tashqari amal qilmaydi",
       "prompt": "prompts/S07/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S07-J.md",
+      "reviewed_revision": "ce9b99decf4d70d40f51cf3d42791b5d72b1bec7",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "08.01",

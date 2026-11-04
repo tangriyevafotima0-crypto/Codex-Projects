@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 8 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 9 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
@@ -69,3 +69,12 @@ L35:futuregroup pricehistorywrite bor, effective date o‘tgach groupreadproject
 L36:typed harness property ixtiro qilingan, ACL correct DB identity tekshirilmagan. Prevention:real interface + target DB/role, cleanupgrantfinally. Managerfixed.
 Inherited/shared tooling:oldDB-IT-19 wait-both-before-commit nondeterministic hang. Argonnewregressionimas. ManagerindependentCOMMIT/ROLLBACK+assertonewinner+CIboundsfixqildi. Runtimeprobe ilkfixturesnapshot missing edi, managerfixture correction; Argonxatosi deb hisoblanmaydi.
 L05coverage yana:76existingtestsPASS2adversarialsemanticsni isbotlamadi. PromptJcountquotaemas,failuremodeassertionlarni talabqiladi. Dataset8artifact, statistik modelbenchmark yoki token-efficiency o‘lchovi yo‘q.
+
+
+## To‘qqizinchi artifact — S07FIX-J
+Kuchli:jaryoncacheauthorizationhook va sharedtariffresolver ikkiactualsemanticbugniyopdi;oldkeyafterrevoke403/futurefee650000. Coreproductsource manager semanticrewrite’sizqabulqilindi. Onetestfilemanagerassistsdan keyin81tests+strictCI418528501893/3SUCCESS, S07APPROVED.
+L36repeat:newcases ishlatgan otherTeacherToken DECLARE/initializeyo‘q;actualtsc2304. Oldfixni blindlypreserve qilish yangi reference bilan yetmaydi. Next:readnewtestidentifiers/declarations+strictbuild.
+L37:newfixtures existingDTOga zid local_ends_time/code, requiredschedulefieldsyetishmagan, group_id o‘rniga id, requiredstudentfields yo‘q, nonexistentresponse/errorfields. ActualG4three400cases behaviorga yetmagan. Next:typedfixturebuilder,actualrequest/response/sourcecrosscheck,notimaginedAPI. Testexpectedinvariantsremovedemas;payloadcanonicalized.
+L38:Clockforward kunlarga tokenexpirationreal, eskiJWTbilan futuretarifftest401bo‘lardi;managerrelogin helper. Next:controlledtime +freshcredentials, securityexpirepolicyunchanged.
+I06yaxshilanish:separatecasesfailureisolation;BigInt/as-of/timezone/revokeparallelassertionspositive. OfflineNOT_RUNhalol,ammonode-transpilePASS strictbuild/PGproofemas.
+Dataset9artifact,statistikmodelaccuracy/tokenbenchmarkemas. Managerfixbirtestfileda,productfixlarArgonniki. UserworkingpreferencekattafullstageKsaqlanadi, pendingpolicymutatsiyalargate.

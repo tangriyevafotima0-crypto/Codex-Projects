@@ -1,0 +1,63 @@
+{
+  "task_id": "S07FIX-J",
+  "decision": "REVIEW-PASS_MANAGER_ASSISTED",
+  "code_commit": "ce9b99decf4d70d40f51cf3d42791b5d72b1bec7",
+  "run_id": 41852850189,
+  "conclusion": "success",
+  "jobs": [
+    {
+      "id": 126653485967,
+      "name": "S01/S02/S04/S05 Contract Verification & Secret Scan",
+      "conclusion": "success"
+    },
+    {
+      "id": 126653569282,
+      "name": "JS Workspace Lint, Typecheck, Build, Unit, DB (G1) & Auth/RBAC (G2) Tests",
+      "conclusion": "success"
+    },
+    {
+      "id": 126654855088,
+      "name": "Build and smoke-test the dev Compose stack (migrator + /health + /ready)",
+      "conclusion": "success"
+    }
+  ],
+  "original_commit": "3b15b4dcf1f7de8d775359e89dc7cb3b49d254ee",
+  "submission_sha256": "30914c0a1ee85c8b1bea2d87fde17d58bab0f92758ce02c59d208435033e0b02",
+  "probe_run_id": 41851711255,
+  "probe_commit": "cb5de9238ecae2857d76aff59e39fdb45588243b",
+  "probe_observed": {
+    "initial_grade": 200,
+    "revoke": 200,
+    "revoked_old_key": 403,
+    "revoked_new_key": 403,
+    "future_group_fee": "650000"
+  },
+  "manager_assists": [
+    "newly referenced otherTeacherToken declaration and login binding",
+    "new test fixtures aligned to existing DTO fields/required schedule fields/returned group_id",
+    "synthetic student INSERT required fields; canonical invoice state; existing validation error contract",
+    "as-of projection assertions match existing DTO; actual history/snapshot assertions retained",
+    "clock-advance test refreshes valid JWTs after each simulated date change"
+  ],
+  "approved_steps": 35,
+  "total_steps": 120,
+  "tests": {
+    "unit_runtime": 33,
+    "database": 18,
+    "auth": 14,
+    "students": 6,
+    "academics": 10,
+    "total": 81
+  },
+  "checks": {
+    "prisma_generate": "PASS",
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "openapi_full_validator": "PASS",
+    "python_contracts": "PASS",
+    "plan_tests": "15 PASS",
+    "docker_compose": "PASS"
+  },
+  "remaining_policy_scope": "S08 configurable billing; OWNER-20261104-03 scoped choices; no production financial behavior approved"
+}

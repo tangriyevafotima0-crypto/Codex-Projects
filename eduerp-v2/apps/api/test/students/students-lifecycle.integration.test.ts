@@ -368,8 +368,51 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
     assert.equal(accidentalDoubleEntry.statusCode, 409);
     assert.equal(accidentalDoubleEntry.json.error_code, 'DUPLICATE_STUDENT_DETECTED');
 
-    // 3. Registering a SIBLING ("Madina Toshmatova") with the SAME guardian phone (+998902001101) and same guardian name
-    //    succeeds (201) without being blocked, links both children to the same guardian, and sets family_discount_eligible=true!
+    // 3a. R2 Regression: Passing a string boolean ('false') is rejected with 400 VALIDATION_ERROR (never coerced to true!),
+    //     and registering a sibling with an existing guardian phone WITHOUT explicit reuse_existing_guardian=true / guardian_id
+    //     is rejected with 409 DUPLICATE_STUDENT_DETECTED even if guardian_full_name matches!
+    const stringBooleanAttempt = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/students',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-madina-badbool-${crypto.randomUUID()}`,
+      },
+      body: {
+        student_full_name: 'Madina Toshmatova',
+        guardian_full_name: 'Toshmat Ota 1',
+        guardian_phone_e164: '+998902001101',
+        relationship: 'FATHER',
+        reuse_existing_guardian: 'false',
+      },
+    });
+    assert.equal(stringBooleanAttempt.statusCode, 400);
+    assert.equal(stringBooleanAttempt.json.error_code, 'VALIDATION_ERROR');
+
+    const unconfirmedGuardianReuseAttempt = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/students',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-madina-no-reuse-${crypto.randomUUID()}`,
+      },
+      body: {
+        student_full_name: 'Madina Toshmatova',
+        guardian_full_name: 'Toshmat Ota 1',
+        guardian_phone_e164: '+998902001101',
+        relationship: 'FATHER',
+        group_id: C.groupId,
+        initial_status: 'TRIAL',
+        enrolled_at_date: '2026-11-04',
+      },
+    });
+    assert.equal(unconfirmedGuardianReuseAttempt.statusCode, 409);
+    assert.equal(unconfirmedGuardianReuseAttempt.json.error_code, 'DUPLICATE_STUDENT_DETECTED');
+
+    // 3b. Registering a SIBLING ("Madina Toshmatova") with explicit reuse_existing_guardian: true
+    //     succeeds (201), links both children to the same guardian, and sets family_discount_eligible=true!
     const siblingMadina = await httpJsonRequest({
       port,
       method: 'POST',
@@ -383,6 +426,7 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
         guardian_full_name: 'Toshmat Ota 1',
         guardian_phone_e164: '+998902001101',
         relationship: 'FATHER',
+        reuse_existing_guardian: true,
         group_id: C.groupId,
         initial_status: 'TRIAL',
         enrolled_at_date: '2026-11-04',

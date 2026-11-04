@@ -220,3 +220,47 @@ export async function generateUniqueStudentCode(
   }
   return `STU-${Date.now().toString(36).toUpperCase().slice(-8)}`;
 }
+
+/**
+ * R2: Strict boolean parser for JSON request fields.
+ * Rejects strings like 'false'/'true', numbers like 0/1, or null when a boolean flag is expected,
+ * preventing Boolean('false') === true coercion bugs.
+ */
+export function parseOptionalStrictBoolean(
+  raw: unknown,
+  fieldName: string,
+  defaultValue = false,
+): boolean {
+  if (raw === undefined) {
+    return defaultValue;
+  }
+  if (typeof raw !== 'boolean') {
+    throw new ApiHttpException({
+      statusCode: 400,
+      errorCode: 'VALIDATION_ERROR',
+      message: `${fieldName} must be a strict boolean (true or false)`,
+    });
+  }
+  return raw;
+}
+
+export function parseOptionalBooleanQueryParam(
+  raw: string | undefined,
+  fieldName: string,
+  defaultValue = false,
+): boolean {
+  if (raw === undefined || raw === '') {
+    return defaultValue;
+  }
+  if (raw === 'true') {
+    return true;
+  }
+  if (raw === 'false') {
+    return false;
+  }
+  throw new ApiHttpException({
+    statusCode: 400,
+    errorCode: 'VALIDATION_ERROR',
+    message: `${fieldName} query parameter must be 'true' or 'false'`,
+  });
+}

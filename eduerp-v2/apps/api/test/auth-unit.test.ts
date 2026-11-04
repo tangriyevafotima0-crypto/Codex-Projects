@@ -50,6 +50,12 @@ import {
   computeKeyedFieldDigest,
   executeIdempotentOperation,
 } from '../src/database/idempotency';
+import { CoursesController } from '../src/academics/courses.controller';
+import { GradesController } from '../src/academics/grades.controller';
+import { GroupsController } from '../src/academics/groups.controller';
+import { LessonsController } from '../src/academics/lessons.controller';
+import { SubstitutionsController } from '../src/academics/substitutions.controller';
+import { AuthService } from '../src/auth/auth.service';
 import { HealthController } from '../src/health/health.controller';
 import { ReadinessController } from '../src/health/readiness.controller';
 import { StudentsController } from '../src/students/students.controller';
@@ -237,6 +243,11 @@ describe('Stage 05 Auth, Scrypt Cost Parity (G06), Keyed Idempotency (G01/G05), 
       StaffController,
       RosterController,
       StudentsController,
+      CoursesController,
+      GroupsController,
+      LessonsController,
+      SubstitutionsController,
+      GradesController,
     ];
     const publicActions: string[] = [];
     const protectedPolicies: RoutePolicyConfig[] = [];
@@ -274,6 +285,50 @@ describe('Stage 05 Auth, Scrypt Cost Parity (G06), Keyed Idempotency (G01/G05), 
       'loginStaff',
       'refreshStaffSession',
     ]);
-    assert.equal(protectedPolicies.length, 18);
+    assert.equal(protectedPolicies.length, 33);
+  });
+
+  it('fails closed with 503 DATABASE_UNAVAILABLE and zero secret leakage when shared rate-limit store is unavailable (AUTH-UNIT-04 / R1)', async () => {
+    const config = loadApiEnv({
+      NODE_ENV: 'test',
+      LOG_LEVEL: 'error',
+      API_HOST: '127.0.0.1',
+      API_PORT: '3000',
+      CENTER_ID: '11111111-2222-4333-8444-555555555555',
+      CENTER_SLUG: 'guliston-ilm',
+      CENTER_TIMEZONE: 'Asia/Tashkent',
+      LICENSE_MODE: 'ACTIVE',
+      DATABASE_URL: 'postgresql://eduerp_api:SuperSecretDbPassword_999@127.0.0.1:5432/eduerp_guliston_ilm_dev',
+      JWT_ACCESS_SECRET: 'TestOnly_JwtAccessSecret_AtLeast32CharsLong_01',
+      JWT_REFRESH_SECRET: 'TestOnly_JwtRefreshSecret_AtLeast32CharsLong_02',
+      INTERNAL_BOT_HMAC_SECRET: 'TestOnly_InternalBotHmacSecret_32CharsLong_03',
+      TELEGRAM_WEBHOOK_SECRET: 'TestOnly_TelegramWebhookSecret_24',
+    });
+
+    const failingDbService = {
+      query: async () => {
+        throw new Error(
+          'permission denied for table auth_rate_limit_buckets (postgresql://eduerp_api:SuperSecretDbPassword_999@127.0.0.1:5432/db)',
+        );
+      },
+    };
+    const svc = new AuthService(
+      config,
+      failingDbService as never,
+      {} as never,
+      new ClockService(),
+    );
+
+    await assert.rejects(
+      () => svc.checkAndIncrementSharedIpRateLimit('203.0.113.55', new Date()),
+      (err: unknown) => {
+        assert.ok(err instanceof ApiHttpException);
+        assert.equal(err.statusCode, 503);
+        assert.equal(err.errorCode, 'DATABASE_UNAVAILABLE');
+        assert.equal(err.message.includes('SuperSecretDbPassword_999'), false);
+        assert.equal(err.message.includes('postgresql://'), false);
+        return true;
+      },
+    );
   });
 });

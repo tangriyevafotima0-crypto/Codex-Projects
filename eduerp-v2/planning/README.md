@@ -1,6 +1,6 @@
 # Joriy loyiha holati — 2026-11-04
 
-S01–S06 approved:30/120step,6/24stage (reja sanog‘i25%). S07FULL-I CHANGES_REQUIRED; navbat S07FIX-J. Exact joriy vazifa state/ACTIVE_TASK.md, manager dalili state/reviews/S07-I.md. Repo tangriyevafotima0-crypto/Codex-Projects ichida eduerp-v2/; ushbu katalog eduerp-v2/planning/ bo‘lib, yana planning/planning yaratmang. Product source apps/,packages/,infra/,docs/ loyiha ildizida.
+S01–S07 approved:35/120step,7/24stage (reja sanog‘i29.17%). S07FIX-J manager-assisted REVIEW-PASS; navbat S08FULL-K. Exact joriy vazifa state/ACTIVE_TASK.md, dalil state/reviews/S07-J.md. Repo tangriyevafotima0-crypto/Codex-Projects ichida eduerp-v2/; planning/planning yaratmang. Product source apps/,packages/,infra/,docs/ loyiha ildizida.
 
 Quyidagi v2.1 matni tarixiy boshlang‘ich reja; undagi NOT_STARTED yoki “GitHubga yuklanmagan” bayonotlari joriy holat emas. Joriy source va status uchun execution.json/ACTIVE_TASK/APPROVALS/manager review ustuvor.
 

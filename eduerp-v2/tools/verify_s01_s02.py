@@ -174,7 +174,7 @@ def verify_no_control_chars(root: Path) -> int:
         "docs/architecture/events.md",
         "docs/verification/S02.md",
     ]
-    for extra in ["docs/verification/S03.md", "docs/verification/S04.md", "docs/verification/S04-G.md", "docs/verification/S05.md", "docs/verification/H-closure.md", "docs/verification/S06.md"]:
+    for extra in ["docs/verification/S03.md", "docs/verification/S04.md", "docs/verification/S04-G.md", "docs/verification/S05.md", "docs/verification/H-closure.md", "docs/verification/S06.md", "docs/verification/S07.md"]:
         if (root / extra).exists():
             md_files.append(extra)
     for rel in md_files:

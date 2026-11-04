@@ -29,11 +29,11 @@ step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
 06.03,06,Trial/active/frozen/left holatlari va kursga a’zolik tarixini yozish,apps/api/src/students/enrollments.service.ts,06.02,APPROVED,state/reviews/S04-S06-H.md,ee0c12dfd89c91de3079ce0bb4be51afc4439c37
 06.04,06,Ism va telefon o‘xshashligini ogohlantirish; aka-ukalarni xato bloklamaslikni yozish,apps/api/src/students/duplicates.service.ts,06.03,APPROVED,state/reviews/S04-S06-H.md,ee0c12dfd89c91de3079ce0bb4be51afc4439c37
 06.05,06,"Review, regressiya va handoff",planning/state/handoffs/S06.md,06.04,APPROVED,state/reviews/S04-S06-H.md,ee0c12dfd89c91de3079ce0bb4be51afc4439c37
-07.01,07,"Kurs, narx tarixi, guruh va asosiy o‘qituvchini yaratish",apps/api/src/academics/groups.service.ts,06.05,NOT_STARTED,,
-07.02,07,"Dars occurrence, timezone, bayram, ko‘chirilgan va bekor darsni modellashtirish",apps/api/src/academics/lessons.service.ts,07.01,NOT_STARTED,,
-07.03,07,Faqat bitta dars uchun vaqtinchalik Teacher huquqi va haq egasini yozish,apps/api/src/academics/substitutions.service.ts,07.02,NOT_STARTED,,
-07.04,07,"O‘z guruhida imtihon bali va izohlarni yozish, tarixni saqlash",apps/api/src/academics/grades.service.ts,07.03,NOT_STARTED,,
-07.05,07,"Review, regressiya va handoff",planning/state/handoffs/S07.md,07.04,NOT_STARTED,,
+07.01,07,"Kurs, narx tarixi, guruh va asosiy o‘qituvchini yaratish",apps/api/src/academics/groups.service.ts,06.05,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
+07.02,07,"Dars occurrence, timezone, bayram, ko‘chirilgan va bekor darsni modellashtirish",apps/api/src/academics/lessons.service.ts,07.01,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
+07.03,07,Faqat bitta dars uchun vaqtinchalik Teacher huquqi va haq egasini yozish,apps/api/src/academics/substitutions.service.ts,07.02,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
+07.04,07,"O‘z guruhida imtihon bali va izohlarni yozish, tarixni saqlash",apps/api/src/academics/grades.service.ts,07.03,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
+07.05,07,"Review, regressiya va handoff",planning/state/handoffs/S07.md,07.04,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
 08.01,08,Qolgan/to‘liq rejalashtirilgan dars ulushi bo‘yicha pro-rata va yaxlitlashni yozish,apps/api/src/billing/calendar-proration.ts,07.05,NOT_STARTED,,
 08.02,08,"Kalendar oy, rolling month va 12-dars paketini alohida siyosat sifatida yozish",apps/api/src/billing/subscriptions.ts,08.01,NOT_STARTED,,
 08.03,08,Ikkinchi haqiqiy qatnashuvda birinchi trialdan hisobni bir marta chiqarish,apps/api/src/billing/trial-conversion.ts,08.02,NOT_STARTED,,

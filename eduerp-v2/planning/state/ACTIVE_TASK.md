@@ -1,7 +1,9 @@
 # ACTIVE TASK
 
-- Task: **S07FIX-J**; owner Argon, manager Codex; **READY_TO_ASSIGN**.
-- S01–S06 approved:30/120 steps. S07FULL-I **CHANGES_REQUIRED**; candidate source review branchda, main mahsulot kodi S06 holatida.
-- Scope: I01–I06 closure va 07.01–07.05 acceptance, assignment planning/assignments/S07FIX-J.md.
-- Exact approved main/base va candidate input commit: root TASK_INPUT.json. Input candidate + manager assists ekanini unutmang; main source bilan bir xil emas.
-- Output: S07FIX_J_SUBMISSION.zip changed/new delta+SUBMISSION.json, IN_REVIEW. S08, billing formula, production va Telegram live scopega kirmaydi.
+- Task:**S08FULL-K**; ownerArgon, managerCodex; **READY_TO_ASSIGN**.
+- Scope:**08.01–08.05** completebillingcore:exactproration/rounding,periods/policies,trialconversion,transactionalinvoice,tests/CI/handoff.
+- Approved:S01–S07,35/120steps(29.17%byplancount); exactcode/evidence in state/reviews/S07-J.md.
+- Read:planning/assignments/S08FULL-K.md,OWNER_DECISIONS.md(includingOWNER-20261104-03),S07handoff/ARGON_LEARNING.
+- Exactbasecommit:rootTASK_INPUT.json. Inputcompleteapprovedsnapshot;nooldZIPrequired.
+- Output:S08FULL_K_SUBMISSION.zip changed/newsource+SUBMISSION.json,IN_REVIEW. Globalregistries/ownerapprovalread-only.
+- Stop:S09adjustments/payment/refund/freeze/payroll,productionandliveTelegram. Pendingpolicycombinationsfailclosed;implementconfirmedpaths.
