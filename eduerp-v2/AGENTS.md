@@ -28,4 +28,4 @@ Handoff: task ID, base/head commit, o‘zgargan fayllar, actual test, contract/m
 ## Scope va limit
 Limitga yaqinlashganda yangi vazifani boshlamang; kodni yo‘qotmasdan checkpoint yozing. Build/test bajarilmaganini ochiq ko‘rsating. Keyingi agent checkpointni repo bilan solishtirib oladi. Hech biri boshqasining chatiga avtomatik kirishini taxmin qilmasin.
 
-Production deploy, real Telegram xabari, real student importi va pullik servis faqat user scopeiga muvofiq. SETUP-00 tarixiy read-only tekshiruv edi. Joriy implementatsiya scopei foydalanuvchi vakolati va planning/state/ACTIVE_TASK.md dagi manager topshirig‘idan olinadi; S04FULL-F uchun 04.01–04.05 ruxsat etilgan.
+Production deploy, real Telegram xabari, real student importi va pullik servis faqat user scopeiga muvofiq. SETUP-00 tarixiy read-only tekshiruv edi. Joriy implementatsiya scopei foydalanuvchi vakolati va planning/state/ACTIVE_TASK.md dagi manager topshirig‘idan olinadi; Joriy S04FIX-S05FULL-G uchun S04 tuzatishlari va 05.01–05.05 candidate implementatsiyasi ruxsat etilgan; approval managerda qoladi.

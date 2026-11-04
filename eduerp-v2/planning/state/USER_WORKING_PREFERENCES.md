@@ -23,3 +23,6 @@ S24 real onboarding/pilotdagi1–3 oylik kuzatuvni o‘z ichiga oladi. Uni promp
 
 ## S03 qabulidan keyingi yangilanish — 2026-11-04
 S01, S02 va manager tuzatgan S03 qabul qilindi. Navbatdagi paket S04FULL-F; S04–S24 uchun 21 asosiy stage-paket qoladi. Avvalgi 23 paket hisob-kitobi o‘sha paytdagi holat edi. Hozir ideal 21–23, amaliy 26–33, salbiy 43–63+ almashinuv taxmini; o‘lchangan kafolat emas. Real pilot muddati va tashqi dependencylar saqlanadi.
+
+## S04-F reviewdan keyin
+F01–F10 closure va S05 full candidate bitta S04FIX-S05FULL-G paketga birlashtirildi. CriticalDBxatolarAPPROVEDemas; nextscopeexplicitdraft/IN_REVIEW. Main product source approvedS03, candidateS04reviewbranchda. Owner AdminfaqatTeachercreateqarorini bevosita berdi.

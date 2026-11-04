@@ -347,11 +347,11 @@
       "test_id": "T04.01",
       "acceptance": "DB modelda barcha invariant FK/unique bilan ifodalangan; student archive ledgerni cascade delete qilmaydi; guardian unlink qarzni o‘chirmaydi.",
       "prompt": "prompts/S04/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S04-F.md",
+      "reviewed_revision": "9c05b6f4cef907fe21137ea629919037b6d5bdaa",
+      "review_result": "FAIL",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "04.02",
@@ -370,11 +370,11 @@
       "test_id": "T04.02",
       "acceptance": "Runtime user ledger UPDATE/DELETE qila olmaydi; migrator user alohida. Invoice period va attendance lesson/student duplicate DB darajasida rad.",
       "prompt": "prompts/S04/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S04-F.md",
+      "reviewed_revision": "9c05b6f4cef907fe21137ea629919037b6d5bdaa",
+      "review_result": "FAIL",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "04.03",
@@ -393,11 +393,11 @@
       "test_id": "T04.03",
       "acceptance": "Payment transactionning o‘rtasida fault kiritilganda payment/allocation/audit/outboxning hammasi rollback; deadlock retry cheklangan va idempotent.",
       "prompt": "prompts/S04/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S04-F.md",
+      "reviewed_revision": "9c05b6f4cef907fe21137ea629919037b6d5bdaa",
+      "review_result": "FAIL",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "04.04",
@@ -416,11 +416,11 @@
       "test_id": "T04.04",
       "acceptance": "Bo‘sh DBga barcha migration, oldingi snapshotga yangi migration ishlaydi; schema drift aniqlanadi. Restore faylining format/version kontrakti qayd etilgan.",
       "prompt": "prompts/S04/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S04-F.md",
+      "reviewed_revision": "9c05b6f4cef907fe21137ea629919037b6d5bdaa",
+      "review_result": "FAIL",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "04.05",
@@ -437,11 +437,11 @@
       "test_id": "T04.05",
       "acceptance": "Bo‘sh bazada migratsiya o‘tadi; runtime DB roli ledgerni o‘chira olmaydi",
       "prompt": "prompts/S04/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S04-F.md",
+      "reviewed_revision": "9c05b6f4cef907fe21137ea629919037b6d5bdaa",
+      "review_result": "FAIL",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "05.01",

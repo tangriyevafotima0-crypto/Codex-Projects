@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 4 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D va S02FIX-S03FULL-E. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 5 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E va S04FULL-F. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
@@ -26,3 +26,15 @@ L14:copyingonlyhoistednode_moduleslosesworkspace-localdependencies;dockerignoreh
 L15:availableVMruntimeisnotprojectsupportedtarget;Node18EOLwaschosenfromVM. Prevention:preserveNode24target,explicitverifiedversions,offlineNOT_RUNratherthandowngrade.
 L16:blanket.sqlignore/secretfilebanblockslegitimatemigrations. Prevention:allowtrustedsourcepaths,forbidrealDBdumps/keys.
 Managerclosedthesefixesinthisturn;donotaskArgontorecreateorrevertcorrectbaseline. Dataset4artifacts,notamodelbenchmark.
+
+## Beshinchi artifact — S04FULL-F
+Kuchli jihat:49 source hash mos, keng46model/SQL/CI draft, offlineNOT_RUN va lockfile chegarasi halol. Pythoncheckerlari actualPASS. Manager install+lintPASS, lekin actualgenerate/typecheck/bootFAIL.
+L17: schema modeli count/ref tekshiruvi Prisma relation validator o‘rnini bosmaydi; next:real validate/generate.
+L18: nomi PrismaClient bo‘lgan cast oddiy obyektni ORM qilmaydi, ambient adapter declaration mismatchni yashiradi; next:official types+actual ORM roundtrip.
+L13 takrorlandi: parent config child DBModulega ko‘rinmagan va duplicate provider actualNestbootni buzdi. Next:single provider+real bootstrap.
+L19: tenant centerFK borligi same-center student/enrollment lineage to‘g‘riligini isbotlamaydi. ActualPG wrong attendance insertni qabul qildi; next:negative wrong-lineage DB tests.
+L20: sequential COUNT last-director himoyasi race-safe emas; actual2transactiondan keyin0activeDirector. Next:stable shared serialization+concurrentDBtest.
+L21: idempotency scoped lookup va unscopedUUID PK nomuvofiq, actualsameUUID otheroperation23505. Next:storage/lock/lookup identity bir xil.
+L22: DB harness workspace cwd, role-grants overwrite va CLI o‘rniga fake migration history. Next:unmodified workspacecommand,realCLI,distinctcredentials,failedsetupcleanup.
+L05coverage chegarasi:20DB-IT label16case degani20mustaqil acceptance emas; missing financialrollback/driftmutation/upgrade/retrylimit dalillari. Next:test-to-failuremode mapping.
+Sharedtooling: manager S04reference TSupgrade aytib inheritedNode18typesni explicit yangilamagan; Node24typeskeyingipaketga kiritildi. Bular5artifact kuzatuvi, statistik modelbenchmark emas.

@@ -1,0 +1,72 @@
+{
+  "task_id": "S04FULL-F",
+  "decision": "CHANGES_REQUIRED",
+  "original_zip_sha256": "1e910fa4d94ca3a500288f80261131b21a021720944a1289468bdeec419ff45d",
+  "original_commit": "9c05b6f4cef907fe21137ea629919037b6d5bdaa",
+  "source_files_verified": 49,
+  "zip_entries": 50,
+  "checks": {
+    "transport_and_hashes": "PASS",
+    "python_s01_s02": "PASS",
+    "python_s04": "PASS",
+    "npm_install": "PASS",
+    "npm_ci_on_github": "PASS",
+    "lint": "PASS",
+    "prisma_generate": "FAIL P1012 five defining composite one-to-one relation uniqueness errors",
+    "typecheck": "FAIL TS2366 and TS2345",
+    "build": "FAIL",
+    "standard_npm_test": "FAIL before unit test phase",
+    "emitted_js_api_diagnostic": {
+      "pass": 6,
+      "fail": 3,
+      "acceptance": false
+    },
+    "live_pg_original": {
+      "pass": 0,
+      "cancelled": 16,
+      "error": "ENOENT workspace-relative migration path"
+    },
+    "live_pg_diagnostic_path_bypass": {
+      "pass": 12,
+      "fail": 1,
+      "cancelled": 2,
+      "acceptance": false,
+      "errors": [
+        "Center B same role overwritten by readonly grant",
+        "real Nest DatabaseModule config token unavailable"
+      ]
+    },
+    "production_audit": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 0,
+      "critical": 0,
+      "total": 0
+    }
+  },
+  "diagnostic_runs": [
+    {
+      "id": 41812009912,
+      "url": "https://github.com/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41812009912"
+    },
+    {
+      "id": 41812368723,
+      "code_commit": "a47413c84d474af4bac4eaf6e2ccf02e32bf79fb",
+      "url": "https://github.com/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41812368723"
+    }
+  ],
+  "diagnostic_warning": "Workflow continue-on-error intentionally records failures; green job status is NOT acceptance. Emitted JS and migration path bypass are diagnostic only.",
+  "extra_live_pg_results": {
+    "attendance_wrong_student_enrollment": "INCORRECTLY_ACCEPTED",
+    "idempotency_PROBE_A": "SUCCESS",
+    "idempotency_PROBE_B": "23505",
+    "active_directors_after_concurrent_deactivation": 0
+  },
+  "manager_generated_lock_sha256": "da6721ef0e0521b850b210617675c2bde378707cd00509bcbbe6835702652927",
+  "not_run": [
+    "Full corrected G1 database gate",
+    "S04 full Docker Compose acceptance",
+    "Future S05 authentication runtime"
+  ]
+}

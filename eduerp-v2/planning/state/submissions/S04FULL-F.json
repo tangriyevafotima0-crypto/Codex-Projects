@@ -1,0 +1,354 @@
+{
+  "task_id": "S04FULL-F",
+  "base_commit": "a3fdc23a6e6fe1f76b28381e80b844699425d8d8",
+  "code_baseline_commit": "bdc229c2e7bacb18714183c3c1d54d7cfbbb886b",
+  "status": "IN_REVIEW",
+  "completed_steps": [
+    "04.01",
+    "04.02",
+    "04.03",
+    "04.04",
+    "04.05"
+  ],
+  "needs_manager_dependency_refresh": true,
+  "dependency_refresh_notes": "Sandbox VM has no outbound internet access, so package-lock.json and generated Prisma client files were intentionally not fabricated offline. Please run `npm install && npm run prisma:generate` on Node 24.18.1 / npm 11 to refresh package-lock.json for prisma@7.10.1, @prisma/client@7.10.1, @prisma/adapter-pg@7.10.1, pg@8.23.1, typescript@5.9.3, eslint@9.39.5, and @typescript-eslint/*@8.72.1.",
+  "deleted_paths": [],
+  "files": [
+    {
+      "path": ".dockerignore",
+      "status": "MODIFIED",
+      "sha256": "7f660afe429e79c3fb2b8d77502033e350f1ec285801a21a739d8515dc36e362",
+      "bytes": 410
+    },
+    {
+      "path": ".env.example",
+      "status": "MODIFIED",
+      "sha256": "df71800cf94dc7a63dc4fd3dda0eb15776164d28c0b37bf891202670d48735e6",
+      "bytes": 2002
+    },
+    {
+      "path": ".gitignore",
+      "status": "MODIFIED",
+      "sha256": "bba5d9ec97f8a5871470ff24cf1fe11faa6128baf7ac104ea19f70e4727dd08a",
+      "bytes": 473
+    },
+    {
+      "path": "README.md",
+      "status": "MODIFIED",
+      "sha256": "2e77244e09ac9bbfad42daa21b7e51735c14427b4a5b64934e5da0e58fc07979",
+      "bytes": 5619
+    },
+    {
+      "path": "apps/api/Dockerfile",
+      "status": "MODIFIED",
+      "sha256": "fa0e20ba9cf1f4254fe290b6cb9158109f00cabd0b7199027ff1a5a8551b4d21",
+      "bytes": 1858
+    },
+    {
+      "path": "apps/api/package.json",
+      "status": "MODIFIED",
+      "sha256": "5f35a21dea4fa672fcf0dd2daa59c1cd453123bd84812083132c8f6de75136d8",
+      "bytes": 983
+    },
+    {
+      "path": "apps/api/prisma.config.ts",
+      "status": "NEW",
+      "sha256": "9ee5b5e5039bfc5e1955d884e95bab68cf294c73cd8ae7224c25826146d3c006",
+      "bytes": 437
+    },
+    {
+      "path": "apps/api/prisma/migrations/20261104000100_initial_foundation/migration.sql",
+      "status": "NEW",
+      "sha256": "3028a2e6e38eaecc85adf2a1e5da9582ab242145912ea0013c0ac1abaae26490",
+      "bytes": 67447
+    },
+    {
+      "path": "apps/api/prisma/migrations/migration_lock.toml",
+      "status": "NEW",
+      "sha256": "99836963713b4f5b269ad49af0ed3d7b0b2e336115c2f92dc9ac683d139d0900",
+      "bytes": 128
+    },
+    {
+      "path": "apps/api/prisma/schema.prisma",
+      "status": "NEW",
+      "sha256": "18009d73d90ac330e088c6221dd443522a5e93e69727916a7b51496282869842",
+      "bytes": 63649
+    },
+    {
+      "path": "apps/api/src/app.module.ts",
+      "status": "MODIFIED",
+      "sha256": "c88e896992328c0b5a7c89e6deceda130ec1759b0ec5f64c87a30eedc61b5372",
+      "bytes": 928
+    },
+    {
+      "path": "apps/api/src/config/env.ts",
+      "status": "MODIFIED",
+      "sha256": "213b527fe0af697a319606b98dae6d3f46c2558b0854e354212ea0c20893d28b",
+      "bytes": 8387
+    },
+    {
+      "path": "apps/api/src/database/database.module.ts",
+      "status": "NEW",
+      "sha256": "ec729b7258e50263e0d30cfeeb8f4b235120e5901045b4170061e9590ed56c88",
+      "bytes": 220
+    },
+    {
+      "path": "apps/api/src/database/database.service.ts",
+      "status": "NEW",
+      "sha256": "a0710fb0443189d0d2fc809924afb9e644a948487b4c855680e06c7136169bae",
+      "bytes": 11398
+    },
+    {
+      "path": "apps/api/src/database/idempotency.ts",
+      "status": "NEW",
+      "sha256": "2910597a4bad53b8856706fe2f947080cd1ddf87b7ed7c923f0dfd0b1f57c5d6",
+      "bytes": 6225
+    },
+    {
+      "path": "apps/api/src/database/index.ts",
+      "status": "NEW",
+      "sha256": "c96da24133818ddc9a133a535550e5ae2428e0797943520b43104aefc8501ab4",
+      "bytes": 191
+    },
+    {
+      "path": "apps/api/src/database/money.ts",
+      "status": "NEW",
+      "sha256": "2687b423b2e12a9db7e62b838a9434bc720dd3dd4d2c438d54d4cd09bc994b51",
+      "bytes": 5470
+    },
+    {
+      "path": "apps/api/src/database/seed-contract.ts",
+      "status": "NEW",
+      "sha256": "332eb10ea5355e935c179596bd47a9fa823f0a9387dc71bf8dc00d01ec11b1eb",
+      "bytes": 8263
+    },
+    {
+      "path": "apps/api/src/database/transaction.ts",
+      "status": "NEW",
+      "sha256": "0bd1e2cab50065efff45e1fce93d8de6175e3e4bbc87bc334606f639b6a83793",
+      "bytes": 5634
+    },
+    {
+      "path": "apps/api/src/health/readiness.controller.ts",
+      "status": "NEW",
+      "sha256": "0ad88907b203ded1a9c9784272788b4746a3e9896ffba3e588d8402c6c3f256d",
+      "bytes": 2412
+    },
+    {
+      "path": "apps/api/src/types/pg.d.ts",
+      "status": "NEW",
+      "sha256": "d60c6abd4314c5c81d88a08752192d2b9f148483037848749f1c9ec3fb67a7fa",
+      "bytes": 2014
+    },
+    {
+      "path": "apps/api/test/database-unit.test.ts",
+      "status": "NEW",
+      "sha256": "cc8809f49633e06cdaef1c5a062d524be8755f3379ec83c5f5da948ad3071a8c",
+      "bytes": 8091
+    },
+    {
+      "path": "apps/api/test/database/domain-constraints.integration.test.ts",
+      "status": "NEW",
+      "sha256": "0a8aec792427b4aeb9a5954e039ad5eb3e4097e53e74ae0f0c4e533a70b02963",
+      "bytes": 21549
+    },
+    {
+      "path": "apps/api/test/database/harness.ts",
+      "status": "NEW",
+      "sha256": "47b75dae69aa2054e4a8bf9dbfbbbf0ca76141881798970d60ec2f138b422a12",
+      "bytes": 11755
+    },
+    {
+      "path": "apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "status": "NEW",
+      "sha256": "e2d95df62ddfa2dca768d18c86d35b741615722438cf9caffde4635388a3af52",
+      "bytes": 4633
+    },
+    {
+      "path": "apps/api/test/database/roles-and-isolation.integration.test.ts",
+      "status": "NEW",
+      "sha256": "9c119b4c963de77209e14fe20cee55df438d4cbbaab21439c0405dc14c1f80c4",
+      "bytes": 4611
+    },
+    {
+      "path": "apps/api/test/database/transactions-and-readiness.integration.test.ts",
+      "status": "NEW",
+      "sha256": "e68018aa93549c75306e2425e371bdcbbd9f69fbf01fb79423b6acfdff338fb7",
+      "bytes": 11880
+    },
+    {
+      "path": "apps/api/tsconfig.json",
+      "status": "MODIFIED",
+      "sha256": "4d3389676349623e526da484b3549491849886cfd75570459b1f8661f64283ba",
+      "bytes": 245
+    },
+    {
+      "path": "docs/architecture/adr/ADR-004-database-foundation.md",
+      "status": "NEW",
+      "sha256": "fb82a7d5472e85bbc7663e1be30d1afa401d4393f3029671f47fe5248d0e0b2e",
+      "bytes": 6837
+    },
+    {
+      "path": "docs/architecture/openapi.yaml",
+      "status": "MODIFIED",
+      "sha256": "8ec07389134492a16cbf8950660731b37f894130d3efdb3ebb8ab79fde420cd0",
+      "bytes": 272653
+    },
+    {
+      "path": "docs/architecture/operation-inventory.csv",
+      "status": "MODIFIED",
+      "sha256": "f84dd51ac7b822d87a26caa7333df6a0f42c6141f03d98a6f3ce4903b99be2d7",
+      "bytes": 7476
+    },
+    {
+      "path": "docs/architecture/schema-coverage.csv",
+      "status": "NEW",
+      "sha256": "66a5b7416ac8b57ce2df083177ff35278f7cb2fb44ee36e84b674b8b8e594630",
+      "bytes": 20675
+    },
+    {
+      "path": "docs/verification/S04.md",
+      "status": "NEW",
+      "sha256": "d48b1b562f130dc7458dd74b850cd80d75c922686cc4fac3849546f993eff72b",
+      "bytes": 8938
+    },
+    {
+      "path": "eslint.config.cjs",
+      "status": "NEW",
+      "sha256": "f2f62b47cf508dc42cc717a89382051bbe223bf3d7adf66433e7ad059f6a8968",
+      "bytes": 856
+    },
+    {
+      "path": "infra/ci/eduerp-ci.yml",
+      "status": "MODIFIED",
+      "sha256": "54b49d3a4e8ffa5879048eebca052d8a5e8fb7be4013ff7cf9fd36afe3585c4d",
+      "bytes": 7224
+    },
+    {
+      "path": "infra/compose.dev.yml",
+      "status": "MODIFIED",
+      "sha256": "10b665541210aadf0beca7ac926ae07f7f7aa964ef15c05271b06c78672db472",
+      "bytes": 4602
+    },
+    {
+      "path": "infra/db/00-docker-init.sh",
+      "status": "NEW",
+      "sha256": "5d78262204c6232305f6ee7bf5269674df11714f721cdb0b760a2b0b78ecf4a6",
+      "bytes": 1673
+    },
+    {
+      "path": "infra/db/01-init-roles-and-databases.sql",
+      "status": "NEW",
+      "sha256": "695cc6a8f7035ed880940e38971973acd1c5ca9f79e46d10a3d7acb1276dfe1f",
+      "bytes": 3110
+    },
+    {
+      "path": "infra/db/02-apply-runtime-grants.sql",
+      "status": "NEW",
+      "sha256": "1b8e63fee3403a28b53dd8432844a40cad5ce9978261d8a0921d2f9cbe0c3d7e",
+      "bytes": 597
+    },
+    {
+      "path": "package.json",
+      "status": "MODIFIED",
+      "sha256": "68757b345fcad3b86fa4b25ba63036fc7bea21d136fe0bc1623438c29483aef2",
+      "bytes": 1186
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "status": "MODIFIED",
+      "sha256": "f46b8d2b22572d0a68247455a0cfc3f2c0a07b96169b3b9c4bc781c3e515dad1",
+      "bytes": 2737
+    },
+    {
+      "path": "planning/state/handoffs/S04.md",
+      "status": "NEW",
+      "sha256": "0901e13e7cdccb9acca8adcca0c6dd1313bc97bef34d845a7388202dff5ba027",
+      "bytes": 4585
+    },
+    {
+      "path": "planning/state/steps/04.01.md",
+      "status": "NEW",
+      "sha256": "5b78da0558a1414cd669b1e2e8ae9fbdc25e0dcffb75520b759acd59d1f01117",
+      "bytes": 1108
+    },
+    {
+      "path": "planning/state/steps/04.02.md",
+      "status": "NEW",
+      "sha256": "adf5b908b16552356598b5c1409842b1dd1bada0f26ccd1e5dff9554a97abb87",
+      "bytes": 1175
+    },
+    {
+      "path": "planning/state/steps/04.03.md",
+      "status": "NEW",
+      "sha256": "671136379f7d9acf7bfc88a2226b204643f8ccbb7ebc17c55b41e737cee7df12",
+      "bytes": 1167
+    },
+    {
+      "path": "planning/state/steps/04.04.md",
+      "status": "NEW",
+      "sha256": "a8379da632dc891e56b928021242e864f349273b50a750af6cac49e17ff2881b",
+      "bytes": 1345
+    },
+    {
+      "path": "planning/state/steps/04.05.md",
+      "status": "NEW",
+      "sha256": "507747a5e670f8bde0af813f0bd1ce6454c7e476100366127ef2223228955826",
+      "bytes": 919
+    },
+    {
+      "path": "tools/verify_s01_s02.py",
+      "status": "MODIFIED",
+      "sha256": "e164acd3634aabf90d17d497b6ec906f7b00508b36ed15ac3a1240b2d496daf8",
+      "bytes": 49160
+    },
+    {
+      "path": "tools/verify_s04.py",
+      "status": "NEW",
+      "sha256": "24fc0c994342e42b51a33cd994e4cf261e5936884ddb4fe43d59e37efeb6dbb0",
+      "bytes": 20221
+    }
+  ],
+  "executed_checks": [
+    {
+      "command": "python3 -m py_compile tools/verify_s01_s02.py tools/verify_s04.py",
+      "status": "PASS",
+      "details": "Both verification scripts compiled with zero syntax errors."
+    },
+    {
+      "command": "python3 tools/verify_s01_s02.py",
+      "status": "PASS",
+      "details": "Verified all S01 (C01-C06) and S02 (S2F01-S2F07) invariants including 56 OpenAPI operations (added GET /api/v1/ready getDatabaseReadiness), 810 local $refs, 0 legacy nullable keywords, 16 operation-inventory rows, 119 architecture traceability rows, and 11/11 negative mutation self-tests."
+    },
+    {
+      "command": "python3 tools/verify_s04.py",
+      "status": "PASS",
+      "details": "Verified 46 Prisma 7 models (25 mutable + 21 append-only), 46 schema-coverage.csv rows, 46 SQL CREATE TABLE statements, 99 ON DELETE RESTRICT foreign keys (0 CASCADE), 9 named CHECK constraints, 5 partial unique indexes, 24 immutability triggers, 5 separated DB roles, 20 DB-IT-* scenarios, 36 TypeScript SQL INSERT column cross-checks against migration.sql, and 4/4 negative self-tests."
+    },
+    {
+      "command": "python3 planning/tools/check_plan.py && python3 planning/tools/test_plan.py",
+      "status": "PASS",
+      "details": "Verified planning structure and all 15 unit tests in test_plan.py; zero global registries modified."
+    }
+  ],
+  "not_run_checks": [
+    {
+      "command": "npm install && npm run prisma:generate && npm run lint && npm run typecheck && npm test",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox VM has no outbound internet access and no pre-installed node_modules for Prisma 7.10.1, pg 8.23.1, NestJS 12.3.2, TypeScript 5.9.3, or ESLint 9.39.5."
+    },
+    {
+      "command": "npm run migrate:deploy && npm run test:db",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox VM does not have a local PostgreSQL 16 server binary (`postgres`/`psql` not installed)."
+    },
+    {
+      "command": "docker compose --env-file .env.example -f infra/compose.dev.yml up --build --wait",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox VM does not have Docker CLI or daemon installed."
+    }
+  ],
+  "open_questions": [
+    "9 unconfirmed business policy decisions (D03, D11, D13, D14, D21, D22, OPEN_RBAC_01, OPEN_RBAC_02, OPEN_PRIVACY_01) remain explicitly DECISION_REQUIRED for downstream domain stages (S05..S18)."
+  ]
+}
