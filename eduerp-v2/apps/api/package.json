@@ -1,0 +1,21 @@
+{
+  "name": "@eduerp/api",
+  "version": "2.0.0-s03.0",
+  "private": true,
+  "description": "EduERP v2.0 Center Data Plane NestJS API Foundation (Stage 03: Typed Config, Request ID Correlation, and Liveness Health)",
+  "main": "dist/src/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "start": "node dist/src/main.js",
+    "test": "node --test dist/test/*.test.js"
+  },
+  "dependencies": {
+    "@eduerp/contracts": "2.0.0-s03.0",
+    "@nestjs/common": "12.3.2",
+    "@nestjs/core": "12.3.2",
+    "@nestjs/platform-express": "12.3.2",
+    "reflect-metadata": "0.2.2",
+    "rxjs": "7.8.2"
+  }
+}

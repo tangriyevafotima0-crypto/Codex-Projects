@@ -1,0 +1,129 @@
+# EduERP v2.0 — GitHub Actions CI Workflow Template (infra/ci/eduerp-ci.yml)
+# IMPORTANT PLACEMENT RULE (03.04 / T03.04):
+# - Git repository root is `Codex-Projects/`, while the project directory is `eduerp-v2/`.
+# - GitHub Actions only executes workflows located under repo-root `.github/workflows/`.
+# - This file is delivered at `eduerp-v2/infra/ci/eduerp-ci.yml` inside the project package and is
+#   placed at `<repo-root>/.github/workflows/eduerp-ci.yml` by the manager upon review.
+
+name: eduerp-v2-ci
+
+on:
+  push:
+    branches:
+      - main
+      - "codex/**"
+      - "argon/**"
+    paths:
+      - "eduerp-v2/**"
+      - ".github/workflows/eduerp-ci.yml"
+  pull_request:
+    paths:
+      - "eduerp-v2/**"
+      - ".github/workflows/eduerp-ci.yml"
+
+defaults:
+  run:
+    working-directory: eduerp-v2
+
+permissions:
+  contents: read
+
+jobs:
+  verify-contracts-and-secrets:
+    name: "S01/S02 Contract Verification & Secret Scan"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Compile and run S01/S02 contract & semantic verifier
+        run: |
+          python3 -m py_compile tools/verify_s01_s02.py
+          python3 tools/verify_s01_s02.py
+
+      - name: Scan tracked files for forbidden secret files and real token patterns
+        run: |
+          python3 - << 'PY'
+          import pathlib, re, subprocess, sys
+
+          root = pathlib.Path(".").resolve()
+          tracked = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
+
+          forbidden_names = {".env", ".env.local", ".env.production"}
+          secret_patterns = [
+              ("PRIVATE_KEY_BLOCK", re.compile(r"-----BEGIN (?:RSA |EC |OPENSSH |PRIVATE )?KEY-----")),
+              ("GITHUB_PAT", re.compile(r"\bgh[pousr]_[A-Za-z0-9_]{36,}\b")),
+              ("AWS_ACCESS_KEY", re.compile(r"\bAKIA[0-9A-Z]{16}\b")),
+              ("TELEGRAM_BOT_TOKEN", re.compile(r"\b[0-9]{8,10}:AA[A-Za-z0-9_-]{33}\b")),
+          ]
+
+          for rel in tracked:
+              p = root / rel
+              if p.name in forbidden_names:
+                  print(f"FAIL: Forbidden environment file tracked in git: {rel}", file=sys.stderr)
+                  sys.exit(1)
+              if p.suffix in {".pem", ".key", ".dump"}:
+                  print(f"FAIL: Forbidden key/dump file tracked in git: {rel}", file=sys.stderr)
+                  sys.exit(1)
+              if not p.is_file():
+                  continue
+              text = p.read_text(encoding="utf-8", errors="ignore")
+              for label, pat in secret_patterns:
+                  if pat.search(text):
+                      print(f"FAIL: Detected {label} pattern in {rel}", file=sys.stderr)
+                      sys.exit(1)
+
+          env_example = (root / ".env.example").read_text(encoding="utf-8")
+          if "EXAMPLE_DEV_ONLY_" not in env_example:
+              print("FAIL: .env.example must use explicit EXAMPLE_DEV_ONLY_ placeholders", file=sys.stderr)
+              sys.exit(1)
+          print(f"PASS: Secret scan verified {len(tracked)} tracked files in eduerp-v2.")
+          PY
+
+  build-lint-typecheck-test:
+    name: "JS Workspace Lint, Typecheck, Build & Executable Tests"
+    runs-on: ubuntu-latest
+    needs: verify-contracts-and-secrets
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js from eduerp-v2/.nvmrc
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: "eduerp-v2/.nvmrc"
+
+      - name: Install locked workspace dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+
+      - name: Run ESLint across workspaces
+        run: npm run lint
+
+      - name: Run TypeScript strict typecheck across workspaces
+        run: npm run typecheck
+
+      - name: Build workspaces and execute real API, worker and contract tests
+        run: npm test
+
+  docker-dev-smoke:
+    name: "Build and smoke-test the dev Compose stack"
+    runs-on: ubuntu-latest
+    needs: build-lint-typecheck-test
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start the isolated development stack
+        run: docker compose --env-file .env.example -f infra/compose.dev.yml up --build --wait --wait-timeout 180 -d
+      - name: Verify PostgreSQL and actual Nest API
+        run: |
+          docker compose --env-file .env.example -f infra/compose.dev.yml exec -T postgres pg_isready -U eduerp_app_dev -d eduerp_guliston_ilm_dev
+          curl --fail --silent http://127.0.0.1:3000/api/v1/health
+          docker compose --env-file .env.example -f infra/compose.dev.yml ps --status running --services | sort > /tmp/eduerp-services
+          python3 -c 'assert set(open("/tmp/eduerp-services").read().split()) == {"api", "worker", "postgres"}'
+      - name: Stop the ephemeral development stack
+        if: always()
+        run: docker compose --env-file .env.example -f infra/compose.dev.yml down -v
