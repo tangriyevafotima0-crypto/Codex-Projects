@@ -42,7 +42,8 @@ export interface GuardianSummaryViewDto {
 
 export interface GuardianInviteResponseDto {
   readonly guardian_id: string;
-  readonly single_use_invite_deeplink: string;
+  readonly single_use_invite_deeplink: string | null;
+  readonly relink_required: true;
   readonly expires_at_utc: string;
   readonly revoked_old_links_count: number;
   readonly version: number;
@@ -229,7 +230,7 @@ export class GuardiansService {
                  "linked_phone_e164", "status", "version", "created_at", "updated_at"
                ) VALUES (
                  $1::uuid, $2::uuid, $3::uuid, $4, $5::timestamptz,
-                 $6, 'INVITED', 1, $7::timestamptz, $7::timestamptz
+                 $6, 'UNLINKED_REVOKED', 1, $7::timestamptz, $7::timestamptz, $7::timestamptz, 'RELINK_REQUIRED'
                )`,
               [
                 inviteLinkId,
@@ -703,19 +704,19 @@ export class GuardiansService {
             );
           }
 
-          // Issue a new INVITED guardian_telegram_links record for the updated phone
+          // Record a revoked relink placeholder. Real invite issuance is deferred to S14; no fake bearer URL is returned or cached.
           const newLinkId = crypto.randomUUID();
-          const rawInviteReference = `inv_${guardianId.slice(0, 8)}_${newLinkId.slice(0, 8)}`;
-          const inviteTokenHash = hashOpaqueToken(`${rawInviteReference}:${crypto.randomUUID()}`);
+          const rawInviteReference = crypto.randomBytes(32).toString('base64url');
+          const inviteTokenHash = hashOpaqueToken(rawInviteReference);
           const expiresAtIso = new Date(now.getTime() + 7 * 86400 * 1000).toISOString();
 
           await tx.query(
             `INSERT INTO "guardian_telegram_links" (
                "id", "center_id", "guardian_id", "invite_token_hash", "invite_expires_at",
-               "linked_phone_e164", "status", "version", "created_at", "updated_at"
+               "linked_phone_e164", "status", "version", "created_at", "updated_at", "revoked_at", "revoke_reason"
              ) VALUES (
                $1::uuid, $2::uuid, $3::uuid, $4, $5::timestamptz,
-               $6, 'INVITED', 1, $7::timestamptz, $7::timestamptz
+               $6, 'UNLINKED_REVOKED', 1, $7::timestamptz, $7::timestamptz, $7::timestamptz, 'RELINK_REQUIRED'
              )`,
             [
               newLinkId,
@@ -806,7 +807,8 @@ export class GuardiansService {
             statusCode: 200,
             body: Object.freeze({
               guardian_id: guardianId,
-              single_use_invite_deeplink: `https://t.me/eduerp_${principal.centerSlug.replace(/-/g, '_')}_bot?start=${rawInviteReference}`,
+              single_use_invite_deeplink: null,
+              relink_required: true,
               expires_at_utc: expiresAtIso,
               revoked_old_links_count: revokedCount,
               version: Number(updatedGuardian.version),

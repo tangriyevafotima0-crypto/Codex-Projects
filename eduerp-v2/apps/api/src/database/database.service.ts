@@ -1,5 +1,5 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
-import { Pool, type PoolClient, type QueryResult, type QueryResultRow } from 'pg';
+import { types as pgTypes, Pool, type PoolClient, type QueryResult, type QueryResultRow } from 'pg';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
 import { ApiEnvConfig } from '../config/env';
@@ -159,6 +159,13 @@ export class DatabaseService implements OnModuleDestroy {
     if (!this.pool) {
       this.pool = new Pool({
         connectionString: this.config.databaseUrl,
+        types: {
+          getTypeParser: (oid, format) => {
+            if (format === 'binary') return pgTypes.getTypeParser(oid, 'binary');
+            if (oid === 1082) return (value: string) => value;
+            return pgTypes.getTypeParser(oid, 'text');
+          },
+        },
         max: this.config.dbPoolMax,
         connectionTimeoutMillis: this.config.dbConnectTimeoutMs,
         idleTimeoutMillis: 10000,

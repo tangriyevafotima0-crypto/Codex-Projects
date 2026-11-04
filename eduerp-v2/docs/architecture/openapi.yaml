@@ -894,14 +894,19 @@
           "guardian_id",
           "single_use_invite_deeplink",
           "expires_at_utc",
-          "revoked_old_links_count"
+          "revoked_old_links_count",
+          "relink_required"
         ],
         "properties": {
           "guardian_id": {
             "$ref": "#/components/schemas/Uuid"
           },
           "single_use_invite_deeplink": {
-            "type": "string"
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Null until a real invitation is issued by the Stage14 linking integration; never a fabricated bot URL."
           },
           "expires_at_utc": {
             "$ref": "#/components/schemas/UtcTimestamp"
@@ -909,6 +914,10 @@
           "revoked_old_links_count": {
             "type": "integer",
             "minimum": 0
+          },
+          "relink_required": {
+            "type": "boolean",
+            "const": true
           }
         }
       },

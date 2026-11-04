@@ -517,6 +517,13 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
       },
     });
     assert.equal(validPhoneUpdate.statusCode, 200);
+    assert.equal(validPhoneUpdate.json.single_use_invite_deeplink, null);
+    assert.equal(validPhoneUpdate.json.relink_required, true);
+    const cachedPhoneResponse = await env.apiPoolA.query<{ response_payload_json: unknown }>(`SELECT response_payload_json FROM client_operation_logs WHERE operation_type = 'UPDATE_GUARDIAN_PHONE_AND_REVOKE_BOT'`);
+    assert.equal(cachedPhoneResponse.rows.length, 1);
+    for (const row of cachedPhoneResponse.rows) {
+      assert.equal(JSON.stringify(row.response_payload_json).includes('t.me/'), false, 'No bearer invitation URL belongs in generic idempotency storage');
+    }
     assert.equal(validPhoneUpdate.json.guardian_id, C.guardianId);
     assert.equal(Number(validPhoneUpdate.json.revoked_old_links_count) >= 1, true);
 
