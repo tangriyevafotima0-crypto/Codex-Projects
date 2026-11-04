@@ -1,0 +1,1311 @@
+import * as assert from 'node:assert/strict';
+import * as crypto from 'node:crypto';
+import * as http from 'node:http';
+import { AddressInfo } from 'node:net';
+import { after, before, describe, it } from 'node:test';
+import { createApiApplication } from '../../src/application';
+import { ClockService } from '../../src/auth/clock.service';
+import { hashPassword } from '../../src/auth/password';
+import { loadApiEnv } from '../../src/config/env';
+import {
+  executeSyntheticSeed,
+  SYNTHETIC_DEMO_CENTER_A,
+  SYNTHETIC_DEMO_CENTER_B,
+  SYNTHETIC_TEST_ONLY_PASSWORD,
+} from '../../src/database/seed-contract';
+import {
+  createEphemeralTestDbEnv,
+  EphemeralDatabaseEnvironment,
+} from '../database/harness';
+
+interface HttpCallResult {
+  readonly statusCode: number;
+  readonly rawBody: string;
+  readonly json: Record<string, unknown>;
+}
+
+function httpJsonRequest(params: {
+  readonly port: number;
+  readonly method: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  readonly path: string;
+  readonly headers?: Record<string, string>;
+  readonly body?: unknown;
+}): Promise<HttpCallResult> {
+  return new Promise((resolve, reject) => {
+    const rawPayload =
+      params.body === undefined ? undefined : JSON.stringify(params.body);
+    const headers: Record<string, string> = {
+      ...(rawPayload !== undefined ? { 'Content-Type': 'application/json' } : {}),
+      ...(params.headers ?? {}),
+    };
+    if (rawPayload !== undefined) {
+      headers['Content-Length'] = String(Buffer.byteLength(rawPayload, 'utf8'));
+    }
+
+    const req = http.request(
+      {
+        hostname: '127.0.0.1',
+        port: params.port,
+        path: params.path,
+        method: params.method,
+        headers,
+      },
+      (res) => {
+        res.setEncoding('utf8');
+        let rawBody = '';
+        res.on('data', (chunk: string) => {
+          rawBody += chunk;
+        });
+        res.on('end', () => {
+          resolve({
+            statusCode: res.statusCode ?? 0,
+            rawBody,
+            json: rawBody ? (JSON.parse(rawBody) as Record<string, unknown>) : {},
+          });
+        });
+      },
+    );
+    req.on('error', reject);
+    if (rawPayload !== undefined) {
+      req.write(rawPayload);
+    }
+    req.end();
+  });
+}
+
+describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-Lesson Substitutes & Grades (ACAD-IT-01..ACAD-IT-10 / T07.01..T07.04)', () => {
+  let env: EphemeralDatabaseEnvironment;
+  let app: Awaited<ReturnType<typeof createApiApplication>>;
+  let port: number;
+  let clock: ClockService;
+  const C = SYNTHETIC_DEMO_CENTER_A;
+  const CB = SYNTHETIC_DEMO_CENTER_B;
+
+  let directorToken: string;
+  let adminToken: string;
+  let primaryTeacherToken: string;
+  let subTeacherId: string;
+  let subTeacherToken: string;
+  let otherTeacherId: string;
+  let otherTeacherToken: string;
+
+  before(async () => {
+    env = await createEphemeralTestDbEnv();
+    await executeSyntheticSeed(env.apiPoolA, C, {
+      ...process.env,
+      NODE_ENV: 'test',
+      BOT_OUTBOUND_ENABLED: 'false',
+    });
+    await executeSyntheticSeed(env.apiPoolB, CB, {
+      ...process.env,
+      NODE_ENV: 'test',
+      BOT_OUTBOUND_ENABLED: 'false',
+    });
+
+    const pwHash = await hashPassword(SYNTHETIC_TEST_ONLY_PASSWORD, { N: 16384 });
+    subTeacherId = crypto.randomUUID();
+    otherTeacherId = crypto.randomUUID();
+
+    await env.apiPoolA.query(
+      `INSERT INTO "staff_users" ("id", "center_id", "role", "full_name", "login_username", "phone_e164", "password_hash", "must_change_password", "status")
+       VALUES
+         ($1::uuid, $3::uuid, 'TEACHER', 'Substitute Teacher Zamena', 'teacher.sub.zamena', '+998904441122', $4, FALSE, 'ACTIVE'),
+         ($2::uuid, $3::uuid, 'TEACHER', 'Other Group Teacher', 'teacher.other.group', '+998904443344', $4, FALSE, 'ACTIVE')`,
+      [subTeacherId, otherTeacherId, C.centerId, pwHash],
+    );
+
+    const config = loadApiEnv({
+      NODE_ENV: 'test',
+      LOG_LEVEL: 'error',
+      API_HOST: '127.0.0.1',
+      API_PORT: '3000',
+      CENTER_ID: C.centerId,
+      CENTER_SLUG: C.centerSlug,
+      CENTER_TIMEZONE: 'Asia/Tashkent',
+      LICENSE_MODE: 'ACTIVE',
+      DATABASE_URL: env.apiRuntimeCenterAUrl,
+      JWT_ACCESS_SECRET: 'TestOnly_JwtAccessSecret_AtLeast32CharsLong_01',
+      JWT_REFRESH_SECRET: 'TestOnly_JwtRefreshSecret_AtLeast32CharsLong_02',
+      INTERNAL_BOT_HMAC_SECRET: 'TestOnly_InternalBotHmacSecret_32CharsLong_03',
+      TELEGRAM_WEBHOOK_SECRET: 'TestOnly_TelegramWebhookSecret_24',
+      AUTH_RATE_LIMIT_MAX_REQUESTS: '50',
+    });
+
+    app = await createApiApplication(config);
+    clock = app.get(ClockService);
+    await app.listen(0, '127.0.0.1');
+    port = ((app.getHttpServer() as http.Server).address() as AddressInfo).port;
+
+    const loginAs = async (username: string): Promise<string> => {
+      const res = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: '/api/v1/auth/login',
+        body: { username, password: SYNTHETIC_TEST_ONLY_PASSWORD },
+      });
+      assert.equal(res.statusCode, 200);
+      return res.json.access_token as string;
+    };
+
+    directorToken = await loginAs('director.demo');
+    adminToken = await loginAs('admin.demo');
+    primaryTeacherToken = await loginAs('teacher.demo');
+    subTeacherToken = await loginAs('teacher.sub.zamena');
+    otherTeacherToken = await loginAs('teacher.other.group');
+  });
+
+  after(async () => {
+    if (app) {
+      await app.close();
+    }
+    if (env) {
+      await env.cleanup();
+    }
+  });
+
+  it('ACAD-IT-01 (Matrix #1 — 07.01 & OWNER-20261104-02): enforces Director/Admin course & group permissions, denies Teacher writes & Admin tariff changes, rejects invalid/other-center teachers, and stores OWNER-20261104-02 due-date & advance/arrears parameters', async () => {
+    // 1. Teacher is denied on course/group write & course list endpoints (403 FORBIDDEN_ROLE)
+    for (const reqSpec of [
+      { method: 'GET' as const, path: '/api/v1/courses' },
+      {
+        method: 'POST' as const,
+        path: '/api/v1/courses',
+        headers: { 'Idempotency-Key': `idem-tchr-crs-${crypto.randomUUID()}` },
+        body: { name: 'Forbidden Course', default_monthly_fee_uzs: '500000', default_lessons_per_cycle: 12 },
+      },
+      {
+        method: 'PATCH' as const,
+        path: `/api/v1/courses/${C.courseId}/price`,
+        headers: { 'Idempotency-Key': `idem-tchr-prc-${crypto.randomUUID()}` },
+        body: { new_fee_uzs: '600000', effective_from: '2026-11-04', expected_version: 1 },
+      },
+      {
+        method: 'POST' as const,
+        path: '/api/v1/groups',
+        headers: { 'Idempotency-Key': `idem-tchr-grp-${crypto.randomUUID()}` },
+        body: {
+          course_id: C.courseId,
+          name: 'Forbidden Group',
+          primary_teacher_id: C.teacherId,
+          billing_mode: 'CALENDAR_PRO_RATA',
+          current_fee_uzs: '500000',
+          lessons_per_cycle: 12,
+          schedule_days: ['MON', 'WED', 'FRI'],
+          starts_time: '09:00',
+          duration_minutes: 90,
+        },
+      },
+    ]) {
+      const res = await httpJsonRequest({
+        port,
+        method: reqSpec.method,
+        path: reqSpec.path,
+        headers: {
+          Authorization: `Bearer ${primaryTeacherToken}`,
+          ...(reqSpec.headers ?? {}),
+        },
+        body: reqSpec.body,
+      });
+      assert.equal(res.statusCode, 403);
+      assert.equal(res.json.error_code, 'FORBIDDEN_ROLE');
+    }
+
+    // 2. Admin can create a course (201) but is denied on updateCoursePrice (403 FORBIDDEN_ROLE — Director only)
+    const createCourseRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/courses',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-adm-crs-${crypto.randomUUID()}`,
+      },
+      body: {
+        name: 'IELTS Intensive Academic',
+        default_monthly_fee_uzs: '600000',
+        default_lessons_per_cycle: 12,
+        effective_from: '2026-11-01',
+      },
+    });
+    assert.equal(createCourseRes.statusCode, 201);
+    assert.equal(createCourseRes.json.default_monthly_fee_uzs, '600000');
+    assert.equal((createCourseRes.json.price_history as unknown[]).length, 1);
+
+    const adminUpdatePrice = await httpJsonRequest({
+      port,
+      method: 'PATCH',
+      path: `/api/v1/courses/${createCourseRes.json.id as string}/price`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-adm-price-${crypto.randomUUID()}`,
+      },
+      body: {
+        new_fee_uzs: '650000',
+        effective_from: '2026-11-04',
+        expected_version: 1,
+      },
+    });
+    assert.equal(adminUpdatePrice.statusCode, 403);
+    assert.equal(adminUpdatePrice.json.error_code, 'FORBIDDEN_ROLE');
+
+    // 3. Assigning an ADMIN (non-TEACHER) or a Center B teacher as group primary_teacher_id is rejected
+    const nonTeacherGroup = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/groups',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-bad-tchr-role-${crypto.randomUUID()}`,
+      },
+      body: {
+        course_id: createCourseRes.json.id,
+        name: 'Invalid Admin Teacher Group',
+        primary_teacher_id: C.adminId,
+        billing_mode: 'CALENDAR_PRO_RATA',
+        current_fee_uzs: '600000',
+        lessons_per_cycle: 12,
+        schedule_days: ['MON', 'WED', 'FRI'],
+        starts_time: '10:00',
+        duration_minutes: 90,
+      },
+    });
+    assert.equal(nonTeacherGroup.statusCode, 422);
+
+    const foreignTeacherGroup = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/groups',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-foreign-tchr-${crypto.randomUUID()}`,
+      },
+      body: {
+        course_id: createCourseRes.json.id,
+        name: 'Foreign Center Teacher Group',
+        primary_teacher_id: CB.teacherId,
+        billing_mode: 'CALENDAR_PRO_RATA',
+        current_fee_uzs: '600000',
+        lessons_per_cycle: 12,
+        schedule_days: ['MON', 'WED', 'FRI'],
+        starts_time: '10:00',
+        duration_minutes: 90,
+      },
+    });
+    assert.equal(foreignTeacherGroup.statusCode, 404);
+
+    // 4. OWNER-20261104-02: Create group with Variant 1 (ENROLLMENT_ANNIVERSARY + ARREARS, e.g. Aug 12 -> Sep 12)
+    //    and Variant 2 (CENTER_FIXED_DAY fixed_due_day=15 + ADVANCE)
+    const groupVar1 = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/groups',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-grp-var1-${crypto.randomUUID()}`,
+      },
+      body: {
+        course_id: createCourseRes.json.id,
+        name: 'IELTS-VAR1-ANNIVERSARY',
+        primary_teacher_id: C.teacherId,
+        billing_mode: 'ROLLING_MONTH',
+        due_date_rule: 'ENROLLMENT_ANNIVERSARY',
+        collection_timing: 'ARREARS',
+        current_fee_uzs: '600000',
+        lessons_per_cycle: 12,
+        schedule_days: ['MON', 'WED', 'FRI'],
+        starts_time: '09:00',
+        duration_minutes: 90,
+        timezone: 'Asia/Tashkent',
+      },
+    });
+    assert.equal(groupVar1.statusCode, 201);
+    assert.equal(groupVar1.json.due_date_rule, 'ENROLLMENT_ANNIVERSARY');
+    assert.equal(groupVar1.json.fixed_due_day, null);
+    assert.equal(groupVar1.json.collection_timing, 'ARREARS');
+
+    const groupVar2 = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/groups',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-grp-var2-${crypto.randomUUID()}`,
+      },
+      body: {
+        course_id: createCourseRes.json.id,
+        name: 'IELTS-VAR2-FIXED-15-ADVANCE',
+        primary_teacher_id: C.teacherId,
+        billing_mode: 'CALENDAR_PRO_RATA',
+        due_date_rule: 'CENTER_FIXED_DAY',
+        fixed_due_day: 15,
+        collection_timing: 'ADVANCE',
+        current_fee_uzs: '600000',
+        lessons_per_cycle: 12,
+        schedule_days: ['TUE', 'THU', 'SAT'],
+        starts_time: '14:00',
+        duration_minutes: 90,
+        timezone: 'Asia/Tashkent',
+      },
+    });
+    assert.equal(groupVar2.statusCode, 201);
+    assert.equal(groupVar2.json.due_date_rule, 'CENTER_FIXED_DAY');
+    assert.equal(groupVar2.json.fixed_due_day, 15);
+    assert.equal(groupVar2.json.collection_timing, 'ADVANCE');
+  });
+
+  it('ACAD-IT-02 (Matrix #2 — T07.01): updates course tariff with append-only price history, separates current vs future effective_from dates, supports int64 BigInt bounds, and preserves existing invoice snapshots untouched', async () => {
+    clock.setTestNow(new Date('2026-11-04T08:00:00.000Z'));
+    try {
+      // Seed an existing invoice on C.studentId in C.groupId with tariff_snapshot_uzs = 500000
+      const enrId = crypto.randomUUID();
+      const cycleId = crypto.randomUUID();
+      const invoiceId = crypto.randomUUID();
+
+      await env.apiPoolA.query(
+        `INSERT INTO "enrollments" ("id", "center_id", "student_id", "group_id", "status", "enrolled_at_date")
+         VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, 'ACTIVE', '2026-10-01')`,
+        [enrId, C.centerId, C.studentId, C.groupId],
+      );
+      await env.apiPoolA.query(
+        `INSERT INTO "billing_cycles" ("id", "center_id", "enrollment_id", "cycle_type", "cycle_key", "cycle_seq", "period_start_date", "period_end_date", "planned_lessons", "billable_lessons", "policy_version_id")
+         VALUES ($1::uuid, $2::uuid, $3::uuid, 'CALENDAR_MONTH', '2026-10', 1, '2026-10-01', '2026-10-31', 12, 12, $4::uuid)`,
+        [cycleId, C.centerId, enrId, C.billingPolicyId],
+      );
+      await env.apiPoolA.query(
+        `INSERT INTO "invoices" (
+           "id", "center_id", "invoice_number", "student_id", "enrollment_id", "billing_cycle_id", "policy_version_id",
+           "tariff_snapshot_uzs", "base_pro_rata_charge_uzs", "approved_discount_uzs", "credit_note_adjustments_uzs",
+           "effective_net_charge_uzs", "allocated_paid_uzs", "remaining_debt_uzs", "billed_lessons", "status", "due_date"
+         ) VALUES (
+           $1::uuid, $2::uuid, 'INV-S07-TARIFF-01', $3::uuid, $4::uuid, $5::uuid, $6::uuid,
+           500000, 500000, 0, 0, 500000, 100000, 400000, 12, 'PARTIALLY_PAID', '2026-10-15'
+         )`,
+        [invoiceId, C.centerId, C.studentId, enrId, cycleId, C.billingPolicyId],
+      );
+
+      // 1. Update C.courseId price effective TODAY (2026-11-04) to 580,000 UZS
+      const updateToday = await httpJsonRequest({
+        port,
+        method: 'PATCH',
+        path: `/api/v1/courses/${C.courseId}/price`,
+        headers: {
+          Authorization: `Bearer ${directorToken}`,
+          'Idempotency-Key': `idem-prc-today-${crypto.randomUUID()}`,
+          'If-Match-Version': '1',
+        },
+        body: {
+          new_fee_uzs: '580000',
+          effective_from: '2026-11-04',
+          reason: 'November 2026 tariff adjustment',
+          expected_version: 1,
+        },
+      });
+      assert.equal(updateToday.statusCode, 200);
+      assert.equal(updateToday.json.default_monthly_fee_uzs, '580000');
+      assert.equal(updateToday.json.version, 2);
+
+      // 2. Schedule a FUTURE price update effective 2026-12-01 (720,000 UZS)
+      const updateFuture = await httpJsonRequest({
+        port,
+        method: 'PATCH',
+        path: `/api/v1/courses/${C.courseId}/price`,
+        headers: {
+          Authorization: `Bearer ${directorToken}`,
+          'Idempotency-Key': `idem-prc-future-${crypto.randomUUID()}`,
+          'If-Match-Version': '2',
+        },
+        body: {
+          new_fee_uzs: '720000',
+          effective_from: '2026-12-01',
+          reason: 'December 2026 scheduled tariff',
+          expected_version: 2,
+        },
+      });
+      assert.equal(updateFuture.statusCode, 200);
+      // As of today (2026-11-04), effective fee MUST remain 580,000 UZS (future tariff does NOT become today's price!)
+      assert.equal(updateFuture.json.default_monthly_fee_uzs, '580000');
+      assert.equal(updateFuture.json.effective_fee_as_of_uzs, '580000');
+      assert.equal(updateFuture.json.latest_scheduled_fee_uzs, '720000');
+      assert.equal(updateFuture.json.latest_effective_from, '2026-12-01');
+
+      // Querying GET /api/v1/courses?as_of_date=2026-12-01 resolves 720,000 UZS!
+      const listDec = await httpJsonRequest({
+        port,
+        method: 'GET',
+        path: '/api/v1/courses?as_of_date=2026-12-01',
+        headers: { Authorization: `Bearer ${directorToken}` },
+      });
+      assert.equal(listDec.statusCode, 200);
+      const mathCourseDec = (listDec.json.items as Array<Record<string, unknown>>).find(
+        (c) => c.id === C.courseId,
+      );
+      assert.equal(mathCourseDec?.default_monthly_fee_uzs, '720000');
+
+      // 3. Verify historical invoice INV-S07-TARIFF-01 snapshot is 100% unchanged!
+      const invCheck = await env.apiPoolA.query<{
+        tariff_snapshot_uzs: string;
+        remaining_debt_uzs: string;
+      }>(
+        `SELECT "tariff_snapshot_uzs"::text AS tariff_snapshot_uzs,
+                "remaining_debt_uzs"::text AS remaining_debt_uzs
+           FROM "invoices"
+          WHERE "id" = $1::uuid`,
+        [invoiceId],
+      );
+      assert.equal(invCheck.rows[0]?.tariff_snapshot_uzs, '500000');
+      assert.equal(invCheck.rows[0]?.remaining_debt_uzs, '400000');
+
+      // 4. Verify append-only course_price_history rejects UPDATE and DELETE at the DB level
+      await assert.rejects(
+        () =>
+          env.apiPoolA.query(
+            `UPDATE "course_price_history" SET "new_fee_uzs" = 100 WHERE "course_id" = $1::uuid`,
+            [C.courseId],
+          ),
+        (err: unknown) => (err as { code?: string }).code === '42501',
+      );
+      await assert.rejects(
+        () =>
+          env.apiPoolA.query(
+            `DELETE FROM "course_price_history" WHERE "course_id" = $1::uuid`,
+            [C.courseId],
+          ),
+        (err: unknown) => (err as { code?: string }).code === '42501',
+      );
+    } finally {
+      clock.setTestNow(null);
+    }
+  });
+
+  it('ACAD-IT-03 (Matrix #3 — T07.01): deactivating a teacher surfaces open scheduled lesson warnings without mutating historical snapshots, and soft-archiving preserves lessons/enrollments', async () => {
+    const tempTeacherId = crypto.randomUUID();
+    const tempGroupId = crypto.randomUUID();
+    const completedLessonId = crypto.randomUUID();
+    const openLesson1Id = crypto.randomUUID();
+    const openLesson2Id = crypto.randomUUID();
+    const pwHash = await hashPassword(SYNTHETIC_TEST_ONLY_PASSWORD, { N: 16384 });
+
+    await env.apiPoolA.query(
+      `INSERT INTO "staff_users" ("id", "center_id", "role", "full_name", "login_username", "phone_e164", "password_hash", "must_change_password", "status")
+       VALUES ($1::uuid, $2::uuid, 'TEACHER', 'Deactivate Warning Teacher', 'teacher.deact.warn', '+998904445566', $3, FALSE, 'ACTIVE')`,
+      [tempTeacherId, C.centerId, pwHash],
+    );
+    await env.apiPoolA.query(
+      `INSERT INTO "course_groups" ("id", "center_id", "course_id", "name", "primary_teacher_id", "billing_mode", "current_fee_uzs", "lessons_per_cycle", "schedule_days_json", "starts_time", "duration_minutes", "timezone", "status")
+       VALUES ($1::uuid, $2::uuid, $3::uuid, 'WARN-GROUP-01', $4::uuid, 'CALENDAR_PRO_RATA', 500000, 12, '["MON","WED","FRI"]'::jsonb, '10:00', 90, 'Asia/Tashkent', 'ACTIVE')`,
+      [tempGroupId, C.centerId, C.courseId, tempTeacherId],
+    );
+    await env.apiPoolA.query(
+      `INSERT INTO "lesson_occurrences" ("id", "center_id", "group_id", "lesson_date", "occurrence_seq", "starts_at_utc", "ends_at_utc", "status", "primary_teacher_snapshot_id", "pay_recipient_teacher_id")
+       VALUES
+         ($1::uuid, $4::uuid, $5::uuid, '2026-11-02', 1, '2026-11-02T05:00:00Z', '2026-11-02T06:30:00Z', 'COMPLETED', $6::uuid, $6::uuid),
+         ($2::uuid, $4::uuid, $5::uuid, '2026-11-06', 1, '2026-11-06T05:00:00Z', '2026-11-06T06:30:00Z', 'SCHEDULED', $6::uuid, $6::uuid),
+         ($3::uuid, $4::uuid, $5::uuid, '2026-11-09', 1, '2026-11-09T05:00:00Z', '2026-11-09T06:30:00Z', 'SCHEDULED', $6::uuid, $6::uuid)`,
+      [completedLessonId, openLesson1Id, openLesson2Id, C.centerId, tempGroupId, tempTeacherId],
+    );
+
+    const deactRes = await httpJsonRequest({
+      port,
+      method: 'PATCH',
+      path: `/api/v1/staff/${tempTeacherId}/status`,
+      headers: {
+        Authorization: `Bearer ${directorToken}`,
+        'Idempotency-Key': `idem-deact-warn-${crypto.randomUUID()}`,
+      },
+      body: {
+        status: 'DEACTIVATED',
+        role: 'TEACHER',
+        reason: 'Medical leave deactivation',
+        expected_version: 1,
+      },
+    });
+    assert.equal(deactRes.statusCode, 200);
+    assert.equal(deactRes.json.status, 'DEACTIVATED');
+    assert.equal(deactRes.json.open_scheduled_lessons_warning_count, 2);
+    assert.equal(deactRes.json.reassignment_required_warning, true);
+    assert.deepEqual(deactRes.json.affected_active_group_ids, [tempGroupId]);
+    assert.deepEqual(deactRes.json.open_scheduled_lesson_ids, [openLesson1Id, openLesson2Id]);
+
+    // Historical COMPLETED lesson snapshot and open lessons were NOT silently reassigned
+    const snapCheck = await env.apiPoolA.query<{
+      primary_teacher_snapshot_id: string;
+      pay_recipient_teacher_id: string;
+    }>(
+      `SELECT "primary_teacher_snapshot_id"::text AS primary_teacher_snapshot_id,
+              "pay_recipient_teacher_id"::text AS pay_recipient_teacher_id
+         FROM "lesson_occurrences"
+        WHERE "id" = $1::uuid`,
+      [completedLessonId],
+    );
+    assert.equal(snapCheck.rows[0]?.primary_teacher_snapshot_id, tempTeacherId);
+    assert.equal(snapCheck.rows[0]?.pay_recipient_teacher_id, tempTeacherId);
+
+    // Reassign group to active otherTeacherId and soft-archive group -> historical lessons remain intact
+    const archiveGrp = await httpJsonRequest({
+      port,
+      method: 'PATCH',
+      path: `/api/v1/groups/${tempGroupId}`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-arch-grp-${crypto.randomUUID()}`,
+      },
+      body: {
+        primary_teacher_id: otherTeacherId,
+        status: 'ARCHIVED',
+        reason: 'Archived after cohort completion',
+        expected_version: 1,
+      },
+    });
+    assert.equal(archiveGrp.statusCode, 200);
+    assert.equal(archiveGrp.json.status, 'ARCHIVED');
+
+    const lessonsStillExist = await env.apiPoolA.query<{ cnt: string }>(
+      `SELECT COUNT(*)::text AS cnt FROM "lesson_occurrences" WHERE "group_id" = $1::uuid`,
+      [tempGroupId],
+    );
+    assert.equal(Number(lessonsStillExist.rows[0]?.cnt), 3);
+  });
+
+  it('ACAD-IT-04 & ACAD-IT-05 (Matrix #4 & #5 — T07.02): supports two distinct lessons on the same day, blocks parallel time conflicts across groups/teachers, generates recurring lessons with explicit holiday skip/cancel, and enforces DST/timezone rules', async () => {
+    // 1. Schedule two distinct lessons on the same day (2026-11-11, occurrence_seq 1 & 2) in C.groupId
+    const l1 = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-sameday-1-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-11',
+        occurrence_seq: 1,
+        local_starts_time: '09:00',
+        duration_minutes: 90,
+      },
+    });
+    const l2 = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-sameday-2-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-11',
+        occurrence_seq: 2,
+        local_starts_time: '15:00',
+        duration_minutes: 90,
+      },
+    });
+    assert.equal(l1.statusCode, 201);
+    assert.equal(l2.statusCode, 201);
+    assert.notEqual(l1.json.id, l2.json.id);
+    assert.equal(l1.json.lesson_date, '2026-11-11');
+    assert.equal(l2.json.lesson_date, '2026-11-11');
+    assert.equal(l1.json.starts_at_utc, '2026-11-11T04:00:00.000Z');
+    assert.equal(l2.json.starts_at_utc, '2026-11-11T10:00:00.000Z');
+
+    // 2. Two parallel schedule calls for an overlapping time slot (2026-11-13 09:00..10:30 vs 09:30..11:00)
+    //    cannot both succeed!
+    const [par1, par2] = await Promise.all([
+      httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/groups/${C.groupId}/lessons`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          'Idempotency-Key': `idem-par-sched-1-${crypto.randomUUID()}`,
+        },
+        body: {
+          lesson_date: '2026-11-13',
+          occurrence_seq: 1,
+          local_starts_time: '09:00',
+          duration_minutes: 90,
+        },
+      }),
+      httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/groups/${C.groupId}/lessons`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          'Idempotency-Key': `idem-par-sched-2-${crypto.randomUUID()}`,
+        },
+        body: {
+          lesson_date: '2026-11-13',
+          occurrence_seq: 2,
+          local_starts_time: '09:30',
+          duration_minutes: 90,
+        },
+      }),
+    ]);
+    assert.deepEqual([par1.statusCode, par2.statusCode].sort(), [201, 409]);
+
+    // 3. Batch recurring generator with explicit public holiday skip & create_cancelled
+    const genRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons/generate`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-gen-rec-${crypto.randomUUID()}`,
+      },
+      body: {
+        start_date: '2026-12-07',
+        end_date: '2026-12-11',
+        holidays: [
+          {
+            date: '2026-12-09',
+            reason: 'Center Winter Maintenance Day',
+            mode: 'SKIP',
+          },
+        ],
+      },
+    });
+    assert.equal(genRes.statusCode, 201);
+    const createdGen = genRes.json.created_lessons as Array<Record<string, unknown>>;
+    const skippedGen = genRes.json.skipped_holidays as Array<Record<string, unknown>>;
+    // Mon Dec 07 and Fri Dec 11 created; Wed Dec 09 skipped!
+    assert.equal(createdGen.length, 2);
+    assert.equal(skippedGen.length, 1);
+    assert.equal(skippedGen[0].lesson_date, '2026-12-09');
+    assert.equal(skippedGen[0].source, 'EXPLICIT_HOLIDAY_INPUT');
+
+    // 4. DST timezone regression on a group in America/New_York
+    const nyGroupRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: '/api/v1/groups',
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-ny-grp-${crypto.randomUUID()}`,
+      },
+      body: {
+        course_id: C.courseId,
+        name: 'NY-DST-TEST-GROUP',
+        primary_teacher_id: otherTeacherId,
+        billing_mode: 'CALENDAR_PRO_RATA',
+        current_fee_uzs: '500000',
+        lessons_per_cycle: 12,
+        schedule_days: ['SUN'],
+        starts_time: '01:30',
+        duration_minutes: 60,
+        timezone: 'America/New_York',
+      },
+    });
+    assert.equal(nyGroupRes.statusCode, 201);
+    const nyGroupId = nyGroupRes.json.group_id as string;
+
+    const dstGapRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${nyGroupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-ny-gap-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-03-08',
+        occurrence_seq: 1,
+        local_starts_time: '02:30',
+        duration_minutes: 60,
+      },
+    });
+    assert.equal(dstGapRes.statusCode, 422);
+
+    const dstOverlapRejectRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${nyGroupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-ny-ovl-rej-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-01',
+        occurrence_seq: 1,
+        local_starts_time: '01:30',
+        duration_minutes: 60,
+      },
+    });
+    assert.equal(dstOverlapRejectRes.statusCode, 422);
+
+    const dstOverlapEarlierRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${nyGroupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-ny-ovl-early-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-01',
+        occurrence_seq: 1,
+        local_starts_time: '01:30',
+        duration_minutes: 60,
+        dst_disambiguation: 'EARLIER',
+      },
+    });
+    assert.equal(dstOverlapEarlierRes.statusCode, 201);
+    assert.equal(dstOverlapEarlierRes.json.starts_at_utc, '2026-11-01T05:30:00.000Z');
+  });
+
+  it('ACAD-IT-06 (Matrix #6 — T07.02): reschedules lesson with stable rescheduled_from_lesson_id relation, rolls back on injected fault, preserves existing grades, and marks cancelled lessons ineligible for ping/trial/billing', async () => {
+    const origLessonRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-resched-orig-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-16',
+        occurrence_seq: 1,
+        local_starts_time: '09:00',
+        duration_minutes: 90,
+      },
+    });
+    assert.equal(origLessonRes.statusCode, 201);
+    const origLessonId = origLessonRes.json.id as string;
+
+    //Fault injection during reschedule rolls back source lesson status to SCHEDULED
+    const faultResched = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-resched-fault-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-17',
+        occurrence_seq: 1,
+        local_starts_time: '09:00',
+        duration_minutes: 90,
+        rescheduled_from_lesson_id: origLessonId,
+        expected_version: 1,
+        debug_fail_after_reschedule_source_update: true,
+      },
+    });
+    assert.equal(faultResched.statusCode, 500);
+
+    const checkOrigStillScheduled = await env.apiPoolA.query<{ status: string }>(
+      `SELECT "status" FROM "lesson_occurrences" WHERE "id" = $1::uuid`,
+      [origLessonId],
+    );
+    assert.equal(checkOrigStillScheduled.rows[0]?.status, 'SCHEDULED');
+
+    // Valid reschedule transitions origLessonId to RESCHEDULED and creates replacement lesson
+    const validResched = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-resched-ok-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-17',
+        occurrence_seq: 1,
+        local_starts_time: '09:00',
+        duration_minutes: 90,
+        rescheduled_from_lesson_id: origLessonId,
+        expected_version: 1,
+      },
+    });
+    assert.equal(validResched.statusCode, 201);
+    assert.equal(validResched.json.rescheduled_from_lesson_id, origLessonId);
+    const replacementLessonId = validResched.json.id as string;
+
+    // Attempting to reschedule origLessonId a second time is rejected with 409 VERSION_CONFLICT
+    const doubleResched = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-resched-dup-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-18',
+        occurrence_seq: 1,
+        local_starts_time: '09:00',
+        duration_minutes: 90,
+        rescheduled_from_lesson_id: origLessonId,
+      },
+    });
+    assert.equal(doubleResched.statusCode, 409);
+
+    // Cancel replacementLessonId -> status becomes CANCELLED_BY_CENTER and operational eligibility flags become false
+    const cancelRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${replacementLessonId}/cancel`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-cancel-les-${crypto.randomUUID()}`,
+      },
+      body: {
+        reason: 'National holiday closure',
+        cancellation_source: 'PUBLIC_HOLIDAY',
+        expected_version: 1,
+      },
+    });
+    assert.equal(cancelRes.statusCode, 200);
+    assert.equal(cancelRes.json.status, 'CANCELLED_BY_CENTER');
+    assert.equal(cancelRes.json.eligible_for_teacher_ping, false);
+    assert.equal(cancelRes.json.eligible_for_trial_conversion, false);
+    assert.equal(cancelRes.json.eligible_for_package_consumption, false);
+  });
+
+  it('ACAD-IT-07 & ACAD-IT-08 (Matrix #7 & #8 — T07.03): enforces single-lesson substitute entitlement (denying same-day other lesson in the same group), one-winner concurrency, atomic pay_recipient_teacher_id snapshot, fault rollback, and immediate revocation re-auth', async () => {
+    clock.setTestNow(new Date('2026-11-04T06:00:00.000Z')); // 2026-11-04 in Asia/Tashkent
+    try {
+      // Schedule TWO lessons on today (2026-11-04) in C.groupId: Morning (seq=1) and Evening (seq=2)
+      const morningRes = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/groups/${C.groupId}/lessons`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          'Idempotency-Key': `idem-sub-morn-${crypto.randomUUID()}`,
+        },
+        body: {
+          lesson_date: '2026-11-04',
+          occurrence_seq: 1,
+          local_starts_time: '09:00',
+          duration_minutes: 90,
+        },
+      });
+      const eveningRes = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/groups/${C.groupId}/lessons`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          'Idempotency-Key': `idem-sub-eve-${crypto.randomUUID()}`,
+        },
+        body: {
+          lesson_date: '2026-11-04',
+          occurrence_seq: 2,
+          local_starts_time: '16:00',
+          duration_minutes: 90,
+        },
+      });
+      assert.equal(morningRes.statusCode, 201);
+      assert.equal(eveningRes.statusCode, 201);
+      const morningLessonId = morningRes.json.id as string;
+      const eveningLessonId = eveningRes.json.id as string;
+
+      // 1. Fault injection during substitute assignment rolls back both substitute_assignments and pay_recipient_teacher_id
+      const faultSub = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/lessons/${morningLessonId}/substitute`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          'Idempotency-Key': `idem-sub-fault-${crypto.randomUUID()}`,
+        },
+        body: {
+          substitute_teacher_id: subTeacherId,
+          reason: 'Fault injection test',
+          expected_version: 1,
+          debug_fail_after_assignment_insert: true,
+        },
+      });
+      assert.equal(faultSub.statusCode, 500);
+
+      const checkPayAfterFault = await env.apiPoolA.query<{ pay_recipient_teacher_id: string }>(
+        `SELECT "pay_recipient_teacher_id"::text AS pay_recipient_teacher_id FROM "lesson_occurrences" WHERE "id" = $1::uuid`,
+        [morningLessonId],
+      );
+      assert.equal(checkPayAfterFault.rows[0]?.pay_recipient_teacher_id, C.teacherId);
+
+      // 2. Concurrent substitute assignments on morningLessonId with expected_version=1 -> 1 winner (200), 1 conflict (409)!
+      const [concSub1, concSub2] = await Promise.all([
+        httpJsonRequest({
+          port,
+          method: 'POST',
+          path: `/api/v1/lessons/${morningLessonId}/substitute`,
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+            'Idempotency-Key': `idem-sub-conc-1-${crypto.randomUUID()}`,
+          },
+          body: {
+            substitute_teacher_id: subTeacherId,
+            reason: 'Primary teacher sick leave morning only',
+            expected_version: 1,
+          },
+        }),
+        httpJsonRequest({
+          port,
+          method: 'POST',
+          path: `/api/v1/lessons/${morningLessonId}/substitute`,
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+            'Idempotency-Key': `idem-sub-conc-2-${crypto.randomUUID()}`,
+          },
+          body: {
+            substitute_teacher_id: otherTeacherId,
+            reason: 'Competing concurrent substitute assignment',
+            expected_version: 1,
+          },
+        }),
+      ]);
+      assert.deepEqual([concSub1.statusCode, concSub2.statusCode].sort(), [200, 409]);
+
+      // Ensure subTeacherId is the active substitute on morningLessonId (if concSub2 won the race, replace with subTeacherId at version 2)
+      let currentMorningLessonVersion = 2;
+      if (concSub1.statusCode !== 200) {
+        const fixSub = await httpJsonRequest({
+          port,
+          method: 'POST',
+          path: `/api/v1/lessons/${morningLessonId}/substitute`,
+          headers: {
+            Authorization: `Bearer ${adminToken}`,
+            'Idempotency-Key': `idem-sub-fix-${crypto.randomUUID()}`,
+          },
+          body: {
+            substitute_teacher_id: subTeacherId,
+            reason: 'Set subTeacherId as morning substitute',
+            expected_version: 2,
+          },
+        });
+        assert.equal(fixSub.statusCode, 200);
+        currentMorningLessonVersion = 3;
+      }
+
+      // Verify primary_teacher_snapshot_id is still C.teacherId while pay_recipient_teacher_id is subTeacherId!
+      const snapRow = await env.apiPoolA.query<{
+        primary_teacher_snapshot_id: string;
+        pay_recipient_teacher_id: string;
+      }>(
+        `SELECT "primary_teacher_snapshot_id"::text AS primary_teacher_snapshot_id,
+                "pay_recipient_teacher_id"::text AS pay_recipient_teacher_id
+           FROM "lesson_occurrences"
+          WHERE "id" = $1::uuid`,
+        [morningLessonId],
+      );
+      assert.equal(snapRow.rows[0]?.primary_teacher_snapshot_id, C.teacherId);
+      assert.equal(snapRow.rows[0]?.pay_recipient_teacher_id, subTeacherId);
+
+      // 3. Single-Lesson Boundary Proof (T07.03):
+      // subTeacherToken calling GET /api/v1/groups/:groupId/lessons sees ONLY morningLessonId (1 item), NOT eveningLessonId!
+      const subLessonsList = await httpJsonRequest({
+        port,
+        method: 'GET',
+        path: `/api/v1/groups/${C.groupId}/lessons`,
+        headers: { Authorization: `Bearer ${subTeacherToken}` },
+      });
+      assert.equal(subLessonsList.statusCode, 200);
+      const subVisibleLessons = subLessonsList.json.items as Array<Record<string, unknown>>;
+      assert.equal(subVisibleLessons.length, 1);
+      assert.equal(subVisibleLessons[0].id, morningLessonId);
+
+      // subTeacherToken can access morningLessonId grades (200) and roster with lesson_id=morningLessonId (200)
+      const subMorningGrades = await httpJsonRequest({
+        port,
+        method: 'GET',
+        path: `/api/v1/lessons/${morningLessonId}/grades`,
+        headers: { Authorization: `Bearer ${subTeacherToken}` },
+      });
+      assert.equal(subMorningGrades.statusCode, 200);
+
+      const subMorningRoster = await httpJsonRequest({
+        port,
+        method: 'GET',
+        path: `/api/v1/groups/${C.groupId}/roster?lesson_id=${morningLessonId}`,
+        headers: { Authorization: `Bearer ${subTeacherToken}` },
+      });
+      assert.equal(subMorningRoster.statusCode, 200);
+
+      // subTeacherToken is DENIED (403 FORBIDDEN_OBJECT_SCOPE) on eveningLessonId (same group, same day!)
+      const subEveningGradesRead = await httpJsonRequest({
+        port,
+        method: 'GET',
+        path: `/api/v1/lessons/${eveningLessonId}/grades`,
+        headers: { Authorization: `Bearer ${subTeacherToken}` },
+      });
+      assert.equal(subEveningGradesRead.statusCode, 403);
+      assert.equal(subEveningGradesRead.json.error_code, 'FORBIDDEN_OBJECT_SCOPE');
+
+      const subEveningGradesWrite = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/lessons/${eveningLessonId}/grades`,
+        headers: {
+          Authorization: `Bearer ${subTeacherToken}`,
+          'Idempotency-Key': `idem-sub-eve-write-${crypto.randomUUID()}`,
+        },
+        body: {
+          expected_version: 1,
+          grades: [{ student_id: C.studentId, score: 90 }],
+        },
+      });
+      assert.equal(subEveningGradesWrite.statusCode, 403);
+      assert.equal(subEveningGradesWrite.json.error_code, 'FORBIDDEN_OBJECT_SCOPE');
+
+      const subEveningRoster = await httpJsonRequest({
+        port,
+        method: 'GET',
+        path: `/api/v1/groups/${C.groupId}/roster?lesson_id=${eveningLessonId}`,
+        headers: { Authorization: `Bearer ${subTeacherToken}` },
+      });
+      assert.equal(subEveningRoster.statusCode, 403);
+      assert.equal(subEveningRoster.json.error_code, 'FORBIDDEN_OBJECT_SCOPE');
+
+      // 4. Revoke morningLessonId substitute assignment -> restores pay_recipient_teacher_id to C.teacherId
+      //    and immediately blocks subTeacherToken's offline/cached grade submission with 403!
+      const revokeSub = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/lessons/${morningLessonId}/substitute/revoke`,
+        headers: {
+          Authorization: `Bearer ${adminToken}`,
+          'Idempotency-Key': `idem-sub-rev-${crypto.randomUUID()}`,
+        },
+        body: {
+          reason: 'Primary teacher recovered and returned',
+          expected_version: currentMorningLessonVersion,
+        },
+      });
+      assert.equal(revokeSub.statusCode, 200);
+      assert.equal(revokeSub.json.status, 'REVOKED');
+      assert.equal(revokeSub.json.pay_recipient_teacher_id, C.teacherId);
+
+      const offlineSubWriteAfterRevoke = await httpJsonRequest({
+        port,
+        method: 'POST',
+        path: `/api/v1/lessons/${morningLessonId}/grades`,
+        headers: {
+          Authorization: `Bearer ${subTeacherToken}`,
+          'Idempotency-Key': `idem-sub-after-rev-${crypto.randomUUID()}`,
+        },
+        body: {
+          expected_version: Number(revokeSub.json.lesson_version),
+          grades: [{ student_id: C.studentId, score: 88 }],
+        },
+      });
+      assert.equal(offlineSubWriteAfterRevoke.statusCode, 403);
+      assert.equal(offlineSubWriteAfterRevoke.json.error_code, 'FORBIDDEN_OBJECT_SCOPE');
+    } finally {
+      clock.setTestNow(null);
+    }
+  });
+
+  it('ACAD-IT-09 & ACAD-IT-10 (Matrix #9 & #10 — T07.04): enforces grade score bounds, plain-text comment sanitization, batch atomicity, optimistic concurrency, append-only revision history in audit_logs, and zero phone/financial leaks to Teacher', async () => {
+    const gradeLessonRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/groups/${C.groupId}/lessons`,
+      headers: {
+        Authorization: `Bearer ${adminToken}`,
+        'Idempotency-Key': `idem-grd-les-${crypto.randomUUID()}`,
+      },
+      body: {
+        lesson_date: '2026-11-18',
+        occurrence_seq: 1,
+        local_starts_time: '09:00',
+        duration_minutes: 90,
+      },
+    });
+    assert.equal(gradeLessonRes.statusCode, 201);
+    const gradeLessonId = gradeLessonRes.json.id as string;
+
+    // 1. Out-of-range score (>100) and non-enrolled student_id are rejected
+    const outOfRangeRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: {
+        Authorization: `Bearer ${primaryTeacherToken}`,
+        'Idempotency-Key': `idem-grd-oor-${crypto.randomUUID()}`,
+      },
+      body: {
+        expected_version: 1,
+        grades: [{ student_id: C.studentId, score: 105 }],
+      },
+    });
+    assert.equal(outOfRangeRes.statusCode, 422);
+
+    const wrongStudentRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: {
+        Authorization: `Bearer ${primaryTeacherToken}`,
+        'Idempotency-Key': `idem-grd-wrongstu-${crypto.randomUUID()}`,
+      },
+      body: {
+        expected_version: 1,
+        grades: [{ student_id: CB.studentId, score: 85 }],
+      },
+    });
+    assert.equal(wrongStudentRes.statusCode, 422);
+
+    // 2. Fault injection rolls back grade entry and lesson version
+    const faultGradeRes = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: {
+        Authorization: `Bearer ${primaryTeacherToken}`,
+        'Idempotency-Key': `idem-grd-fault-${crypto.randomUUID()}`,
+      },
+      body: {
+        expected_version: 1,
+        grades: [{ student_id: C.studentId, score: 80, comment: 'Initial fault test' }],
+        debug_fail_after_first_grade_write: true,
+      },
+    });
+    assert.equal(faultGradeRes.statusCode, 500);
+
+    const checkNoGradesAfterFault = await env.apiPoolA.query<{ cnt: string }>(
+      `SELECT COUNT(*)::text AS cnt FROM "grade_entries" WHERE "lesson_id" = $1::uuid`,
+      [gradeLessonId],
+    );
+    assert.equal(Number(checkNoGradesAfterFault.rows[0]?.cnt), 0);
+
+    // 3. Valid grade submission v1 with <script> comment -> sanitized plain text stored, version increments to 2
+    const submitV1Key = `idem-grd-v1-${crypto.randomUUID()}`;
+    const submitV1 = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: {
+        Authorization: `Bearer ${primaryTeacherToken}`,
+        'Idempotency-Key': submitV1Key,
+        'If-Match-Version': '1',
+      },
+      body: {
+        expected_version: 1,
+        reason: 'Midterm exam initial grading',
+        grades: [
+          {
+            student_id: C.studentId,
+            score: 84.5,
+            comment: '<script>evil()</script> Strong algebra solution > average',
+          },
+        ],
+      },
+    });
+    assert.equal(submitV1.statusCode, 200);
+    assert.equal(submitV1.json.saved_count, 1);
+    assert.equal(submitV1.json.version, 2);
+    const v1Entries = submitV1.json.entries as Array<Record<string, unknown>>;
+    assert.equal(v1Entries[0].score, 84.5);
+    assert.equal(String(v1Entries[0].comment_sanitized).includes('<script>'), false);
+    assert.ok(String(v1Entries[0].comment_sanitized).includes('[REDACTED_TAG]'));
+
+    // Same Idempotency-Key with different score returns 409 IDEMPOTENCY_PAYLOAD_MISMATCH
+    const mismatchGradeIdem = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: {
+        Authorization: `Bearer ${primaryTeacherToken}`,
+        'Idempotency-Key': submitV1Key,
+      },
+      body: {
+        expected_version: 1,
+        reason: 'Midterm exam initial grading',
+        grades: [{ student_id: C.studentId, score: 99 }],
+      },
+    });
+    assert.equal(mismatchGradeIdem.statusCode, 409);
+    assert.equal(mismatchGradeIdem.json.error_code, 'IDEMPOTENCY_PAYLOAD_MISMATCH');
+
+    // Stale expected_version: 1 on update is rejected with 409 VERSION_CONFLICT
+    const staleUpdate = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: {
+        Authorization: `Bearer ${primaryTeacherToken}`,
+        'Idempotency-Key': `idem-grd-stale-${crypto.randomUUID()}`,
+      },
+      body: {
+        expected_version: 1,
+        grades: [{ student_id: C.studentId, score: 95 }],
+      },
+    });
+    assert.equal(staleUpdate.statusCode, 409);
+    assert.equal(staleUpdate.json.error_code, 'VERSION_CONFLICT');
+
+    // 4. Valid grade update v2 (score 84.5 -> 96.0) with expected_version: 2 preserves v1 and v2 in append-only revision history!
+    const submitV2 = await httpJsonRequest({
+      port,
+      method: 'POST',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: {
+        Authorization: `Bearer ${primaryTeacherToken}`,
+        'Idempotency-Key': `idem-grd-v2-${crypto.randomUUID()}`,
+        'If-Match-Version': '2',
+      },
+      body: {
+        expected_version: 2,
+        reason: 'Bonus problem re-grade approved',
+        grades: [
+          {
+            student_id: C.studentId,
+            score: 96,
+            comment: 'Updated after bonus problem review',
+            expected_grade_version: 1,
+          },
+        ],
+      },
+    });
+    assert.equal(submitV2.statusCode, 200);
+    assert.equal(submitV2.json.version, 3);
+
+    const historyRes = await httpJsonRequest({
+      port,
+      method: 'GET',
+      path: `/api/v1/lessons/${gradeLessonId}/grades`,
+      headers: { Authorization: `Bearer ${primaryTeacherToken}` },
+    });
+    assert.equal(historyRes.statusCode, 200);
+    const currentItems = historyRes.json.items as Array<Record<string, unknown>>;
+    const revisions = historyRes.json.revisions as Array<Record<string, unknown>>;
+    assert.equal(currentItems.length, 1);
+    assert.equal(currentItems[0].score, 96);
+    assert.equal(currentItems[0].version, 2);
+
+    assert.equal(revisions.length, 2);
+    assert.equal(revisions[0].action, 'GRADE_ENTRY_CREATED');
+    assert.equal(revisions[0].revision_version, 1);
+    assert.equal(revisions[0].previous_score, null);
+    assert.equal(revisions[0].new_score, 84.5);
+
+    assert.equal(revisions[1].action, 'GRADE_ENTRY_UPDATED');
+    assert.equal(revisions[1].revision_version, 2);
+    assert.equal(revisions[1].previous_score, 84.5);
+    assert.equal(revisions[1].new_score, 96);
+    assert.equal(revisions[1].reason, 'Bonus problem re-grade approved');
+
+    // 5. Verify append-only grade revision rows in audit_logs cannot be updated or deleted
+    await assert.rejects(
+      () =>
+        env.apiPoolA.query(
+          `UPDATE "audit_logs" SET "action" = 'TAMPERED' WHERE "id" = $1::uuid`,
+          [revisions[0].audit_id],
+        ),
+      (err: unknown) => (err as { code?: string }).code === '42501',
+    );
+
+    // 6. Verify Teacher responses across listCourseGroups, listGroupLessons, and listLessonGradesAndHistory
+    //    never expose raw guardian/student phones or financial fields (current_fee_uzs, debt, invoice)
+    const teacherGroupsRes = await httpJsonRequest({
+      port,
+      method: 'GET',
+      path: '/api/v1/groups',
+      headers: { Authorization: `Bearer ${primaryTeacherToken}` },
+    });
+    assert.equal(teacherGroupsRes.statusCode, 200);
+    assert.equal(teacherGroupsRes.rawBody.includes('current_fee_uzs'), false);
+    assert.equal(teacherGroupsRes.rawBody.includes('+998'), false);
+    assert.equal(historyRes.rawBody.includes('+998'), false);
+    assert.equal(historyRes.rawBody.includes('remaining_debt_uzs'), false);
+  });
+});

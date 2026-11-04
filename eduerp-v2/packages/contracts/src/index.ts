@@ -89,3 +89,6 @@ export function loadOpenApiContractDocument(projectRoot?: string): Record<string
 }
 
 export type BillingMode = 'CALENDAR_PRO_RATA' | 'ROLLING_MONTH' | 'LESSON_PACKAGE_12';
+
+export type DueDateRule = 'ENROLLMENT_ANNIVERSARY' | 'CENTER_FIXED_DAY';
+export type CollectionTiming = 'ADVANCE' | 'ARREARS';

@@ -379,6 +379,9 @@ export class StaffService {
               additionalValues: [dto.status, dto.role],
             });
 
+            let openScheduledLessonIds: string[] = [];
+            let affectedActiveGroupIds: string[] = [];
+
             if (dto.status === 'DEACTIVATED' || dto.role !== before.role) {
               const revokeReason =
                 dto.status === 'DEACTIVATED' ? 'STAFF_DEACTIVATED' : 'STAFF_ROLE_CHANGED';
@@ -393,7 +396,78 @@ export class StaffService {
                     AND "revoked_at" IS NULL`,
                 [principal.centerId, targetStaffId, now.toISOString(), revokeReason],
               );
+
+              // 07.01 & 07.03: If a TEACHER is deactivated or changed to a non-TEACHER role:
+              // 1. Revoke any ACTIVE substitute assignments on still-SCHEDULED lessons and restore
+              //    the lesson's pay_recipient_teacher_id to primary_teacher_snapshot_id (never mutating COMPLETED lessons!).
+              // 2. Surface explicit open-lesson and active-group warnings without silently reassigning primary groups/lessons.
+              if (before.role === 'TEACHER' && (dto.status === 'DEACTIVATED' || dto.role !== 'TEACHER')) {
+                const subLessonsRes = await tx.query<{ sub_id: string; lesson_id: string; primary_teacher_snapshot_id: string }>(
+                  `SELECT sa."id"::text AS sub_id,
+                          lo."id"::text AS lesson_id,
+                          lo."primary_teacher_snapshot_id"::text AS primary_teacher_snapshot_id
+                     FROM "substitute_assignments" sa
+                     JOIN "lesson_occurrences" lo
+                       ON lo."id" = sa."lesson_id"
+                      AND lo."center_id" = sa."center_id"
+                    WHERE sa."center_id" = $1::uuid
+                      AND sa."substitute_teacher_id" = $2::uuid
+                      AND sa."status" = 'ACTIVE'
+                      AND lo."status" = 'SCHEDULED'
+                    FOR UPDATE OF sa, lo`,
+                  [principal.centerId, targetStaffId],
+                );
+
+                for (const row of subLessonsRes.rows) {
+                  await tx.query(
+                    `UPDATE "substitute_assignments"
+                        SET "status" = 'REVOKED',
+                            "revoked_at" = $3::timestamptz,
+                            "revoke_reason" = $4,
+                            "version" = "version" + 1,
+                            "updated_at" = $3::timestamptz
+                      WHERE "id" = $1::uuid
+                        AND "center_id" = $2::uuid`,
+                    [row.sub_id, principal.centerId, now.toISOString(), revokeReason],
+                  );
+                  await tx.query(
+                    `UPDATE "lesson_occurrences"
+                        SET "pay_recipient_teacher_id" = $3::uuid,
+                            "version" = "version" + 1,
+                            "updated_at" = $4::timestamptz
+                      WHERE "id" = $1::uuid
+                        AND "center_id" = $2::uuid
+                        AND "status" = 'SCHEDULED'`,
+                    [row.lesson_id, principal.centerId, row.primary_teacher_snapshot_id, now.toISOString()],
+                  );
+                }
+
+                const groupsRes = await tx.query<{ id: string }>(
+                  `SELECT "id"::text AS id
+                     FROM "course_groups"
+                    WHERE "center_id" = $1::uuid
+                      AND "primary_teacher_id" = $2::uuid
+                      AND "status" = 'ACTIVE'
+                    ORDER BY "id" ASC`,
+                  [principal.centerId, targetStaffId],
+                );
+                affectedActiveGroupIds = groupsRes.rows.map((g) => g.id);
+
+                const openLessonsRes = await tx.query<{ id: string }>(
+                  `SELECT "id"::text AS id
+                     FROM "lesson_occurrences"
+                    WHERE "center_id" = $1::uuid
+                      AND "status" = 'SCHEDULED'
+                      AND ("primary_teacher_snapshot_id" = $2::uuid OR "pay_recipient_teacher_id" = $2::uuid)
+                    ORDER BY "starts_at_utc" ASC, "id" ASC`,
+                  [principal.centerId, targetStaffId],
+                );
+                openScheduledLessonIds = openLessonsRes.rows.map((l) => l.id);
+              }
             }
+
+            const reassignmentWarning =
+              openScheduledLessonIds.length > 0 || affectedActiveGroupIds.length > 0;
 
             await tx.query(
               `INSERT INTO "audit_logs" (
@@ -421,15 +495,55 @@ export class StaffService {
                   status: updated.status,
                   version: Number(updated.version),
                   reason: dto.reason,
+                  open_scheduled_lessons_warning_count: openScheduledLessonIds.length,
+                  affected_active_group_ids: affectedActiveGroupIds,
+                  open_scheduled_lesson_ids: openScheduledLessonIds,
+                  reassignment_required_warning: reassignmentWarning,
                 }),
                 requestId,
                 now.toISOString(),
               ],
             );
 
+            if (reassignmentWarning) {
+              await tx.query(
+                `INSERT INTO "audit_logs" (
+                   "id", "center_id", "actor_type", "actor_id", "actor_role",
+                   "action", "entity_type", "entity_id", "severity",
+                   "after_redacted_json", "request_id", "created_at"
+                 ) VALUES (
+                   $1::uuid, $2::uuid, 'STAFF', $3::uuid, $4,
+                   'TEACHER_DEACTIVATED_OPEN_LESSONS_WARNING', 'StaffUser', $5::uuid, 'WARN',
+                   $6::jsonb, $7, $8::timestamptz
+                 )`,
+                [
+                  crypto.randomUUID(),
+                  principal.centerId,
+                  principal.staffId,
+                  principal.role,
+                  targetStaffId,
+                  JSON.stringify({
+                    teacher_id: targetStaffId,
+                    open_scheduled_lessons_warning_count: openScheduledLessonIds.length,
+                    affected_active_group_ids: affectedActiveGroupIds,
+                    open_scheduled_lesson_ids: openScheduledLessonIds,
+                  }),
+                  requestId,
+                  now.toISOString(),
+                ],
+              );
+            }
+
+            const baseDto = mapStaffRowToSafeDto(updated);
             return {
               statusCode: 200,
-              body: mapStaffRowToSafeDto(updated),
+              body: Object.freeze({
+                ...baseDto,
+                open_scheduled_lessons_warning_count: openScheduledLessonIds.length,
+                affected_active_group_ids: Object.freeze(affectedActiveGroupIds),
+                open_scheduled_lesson_ids: Object.freeze(openScheduledLessonIds),
+                reassignment_required_warning: reassignmentWarning,
+              }),
             };
           } catch (err: unknown) {
             const pgErr = err as { code?: string; message?: string };
@@ -557,7 +671,7 @@ export class StaffService {
   public async getGroupSafeRoster(
     principal: AuthenticatedStaffPrincipal,
     rawGroupId: string,
-    query: { search?: string; cursor?: string; limit?: string } = {},
+    query: { search?: string; cursor?: string; limit?: string; lesson_id?: string } = {},
   ): Promise<SafeGroupRosterResponseDto> {
     const groupId = assertValidUuid(rawGroupId, 'group_id');
 
@@ -621,6 +735,29 @@ export class StaffService {
     // Object-level ownership verification for TEACHER (05.02 / S2F02 / T05.02 / T05.04 / G04):
     // Teacher may only access groups where they are primary_teacher_id OR have an ACTIVE substitute assignment
     // for TODAY's lesson date in the center's timezone (G04). Past or future substitute assignments are denied!
+    const explicitLessonId =
+      query.lesson_id !== undefined && query.lesson_id !== ''
+        ? assertValidUuid(query.lesson_id, 'lesson_id')
+        : null;
+
+    if (explicitLessonId !== null) {
+      const lessonCheck = await this.databaseService.query<{ id: string; group_id: string }>(
+        `SELECT "id"::text AS id, "group_id"::text AS group_id
+           FROM "lesson_occurrences"
+          WHERE "id" = $1::uuid
+            AND "center_id" = $2::uuid
+          LIMIT 1`,
+        [explicitLessonId, principal.centerId],
+      );
+      if (!lessonCheck.rows[0] || lessonCheck.rows[0].group_id !== groupId) {
+        throw new ApiHttpException({
+          statusCode: 404,
+          errorCode: 'NOT_FOUND',
+          message: 'Specified lesson_id not found in this course group',
+        });
+      }
+    }
+
     if (principal.role === 'TEACHER' && group.primary_teacher_id !== principal.staffId) {
       const effectiveTimezone = group.timezone || this.config.centerTimezone;
       const todayCenterDate = formatCenterLocalDate(this.clock.now(), effectiveTimezone);
@@ -637,8 +774,9 @@ export class StaffService {
             AND sa."status" = 'ACTIVE'
             AND lo."status" IN ('SCHEDULED', 'COMPLETED')
             AND lo."lesson_date" = $4::date
+            AND ($5::uuid IS NULL OR lo."id" = $5::uuid)
           LIMIT 1`,
-        [principal.centerId, groupId, principal.staffId, todayCenterDate],
+        [principal.centerId, groupId, principal.staffId, todayCenterDate, explicitLessonId],
       );
 
       if (!subRes.rows[0]) {
@@ -646,7 +784,7 @@ export class StaffService {
           statusCode: 403,
           errorCode: 'FORBIDDEN_OBJECT_SCOPE',
           message:
-            'Teacher is not assigned as primary or active current-day substitute teacher for this group',
+            'Teacher is not assigned as primary or active current-day substitute teacher for this group/lesson',
         });
       }
     }

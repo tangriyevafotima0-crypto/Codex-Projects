@@ -1,7 +1,7 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "EduERP v2.0 — Center Staff API, Internal Bot Command API & Vendor Control Plane Contract",
+    "title": "EduERP v2.0 \u2014 Center Staff API, Internal Bot Command API & Vendor Control Plane Contract",
     "version": "2.0.0-draft.s02-rev2",
     "description": "Strict JSON-formatted OpenAPI 3.1.0 specification (valid YAML 1.2 superset, parsable offline via Python stdlib json). NOTE: Offline JSON parse and local $ref/operationId/security/semantic checks do NOT replace a full external OpenAPI 3.1 CLI schema validator runtime (marked NOT_RUN where applicable). Fixes S2F01-S2F07: (1) Anonymous credential bootstrap allowlist uses explicit security: [] while all protected reads/writes require scheme auth; (2) Every protected GET/POST/PATCH declares explicit x-object-scope with teacher group/substitute ownership and DENY_UNTIL_POLICY_CONFIRMED gates; (3) Mutable requests (DiscountRequest, ReversalOrRefundRequest) are separated from immutable executions (ReversalOrRefundExecution, PaymentAllocationReversal, CreditNoteApplication); (4) Center Data Plane (/api/v1/*) and Vendor Control Plane (/vendor/api/v1/*) servers and credentials are strictly separated; (5) Money values are split into PositiveMoneyUzs (>0), NonNegativeMoneyUzs (>=0), SignedMoneyDeltaUzs, and NonZeroSignedMoneyDeltaUzs with 1..18 digit BIGINT bounds (ENGINEERING_PROPOSAL C03), and OpenAPI 3.1 JSON Schema type unions / anyOf replace legacy nullable:true."
   },
@@ -153,7 +153,7 @@
     },
     "responses": {
       "BadRequest400": {
-        "description": "400 Bad Request — malformed JSON, invalid parameter syntax, or schema violation.",
+        "description": "400 Bad Request \u2014 malformed JSON, invalid parameter syntax, or schema violation.",
         "content": {
           "application/json": {
             "schema": {
@@ -163,7 +163,7 @@
         }
       },
       "Unauthorized401": {
-        "description": "401 Unauthorized — missing, expired, or revoked session/JWT or invalid webhook secret.",
+        "description": "401 Unauthorized \u2014 missing, expired, or revoked session/JWT or invalid webhook secret.",
         "content": {
           "application/json": {
             "schema": {
@@ -173,7 +173,7 @@
         }
       },
       "Forbidden403": {
-        "description": "403 Forbidden — insufficient role (RBAC), cross-group/cross-center IDOR attempt, or center in LICENSE_READ_ONLY_MODE.",
+        "description": "403 Forbidden \u2014 insufficient role (RBAC), cross-group/cross-center IDOR attempt, or center in LICENSE_READ_ONLY_MODE.",
         "content": {
           "application/json": {
             "schema": {
@@ -183,7 +183,7 @@
         }
       },
       "NotFound404": {
-        "description": "404 Not Found — target resource does not exist in this center scope.",
+        "description": "404 Not Found \u2014 target resource does not exist in this center scope.",
         "content": {
           "application/json": {
             "schema": {
@@ -193,7 +193,7 @@
         }
       },
       "Conflict409": {
-        "description": "409 Conflict — optimistic expected_version mismatch, stale Excel row, closed cash shift, duplicate student, or same Idempotency-Key with different request body.",
+        "description": "409 Conflict \u2014 optimistic expected_version mismatch, stale Excel row, closed cash shift, duplicate student, or same Idempotency-Key with different request body.",
         "content": {
           "application/json": {
             "schema": {
@@ -203,7 +203,7 @@
         }
       },
       "Unprocessable422": {
-        "description": "422 Unprocessable Entity — domain invariant violation (e.g., partial payment without promise_date, zero planned lessons, refund cap exceeded, missing churn reason, or unconfirmed policy gate).",
+        "description": "422 Unprocessable Entity \u2014 domain invariant violation (e.g., partial payment without promise_date, zero planned lessons, refund cap exceeded, missing churn reason, or unconfirmed policy gate).",
         "content": {
           "application/json": {
             "schema": {
@@ -213,7 +213,7 @@
         }
       },
       "RateLimited429": {
-        "description": "429 Too Many Requests — login bruteforce limit or API/Telegram rate limit exceeded (includes retry_after_seconds).",
+        "description": "429 Too Many Requests \u2014 login bruteforce limit or API/Telegram rate limit exceeded (includes retry_after_seconds).",
         "content": {
           "application/json": {
             "schema": {
@@ -223,7 +223,7 @@
         }
       },
       "ServiceUnavailable503": {
-        "description": "503 Service Unavailable — database connection unreachable, superuser role rejected, or required schema/triggers missing (T04.03, T04.05).",
+        "description": "503 Service Unavailable \u2014 database connection unreachable, superuser role rejected, or required schema/triggers missing (T04.03, T04.05).",
         "content": {
           "application/json": {
             "schema": {
@@ -1061,6 +1061,24 @@
             "type": "integer",
             "minimum": 15,
             "maximum": 360
+          },
+          "due_date_rule": {
+            "$ref": "#/components/schemas/DueDateRule"
+          },
+          "fixed_due_day": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 31
+          },
+          "collection_timing": {
+            "$ref": "#/components/schemas/CollectionTiming"
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64
           }
         }
       },
@@ -1409,7 +1427,7 @@
           },
           "cycle_key": {
             "type": "string",
-            "description": "Unique cycle key per enrollment (e.g., CAL:2026-11, PKG:1, PKG:2 — C04)."
+            "description": "Unique cycle key per enrollment (e.g., CAL:2026-11, PKG:1, PKG:2 \u2014 C04)."
           },
           "period_start_date": {
             "$ref": "#/components/schemas/IsoDate"
@@ -3679,6 +3697,516 @@
             "$ref": "#/components/schemas/NonNegativeMoneyUzs"
           }
         }
+      },
+      "DueDateRule": {
+        "type": "string",
+        "enum": [
+          "ENROLLMENT_ANNIVERSARY",
+          "CENTER_FIXED_DAY"
+        ],
+        "description": "OWNER-20261104-02 center-configurable due-date rule: enrollment anniversary (e.g. Aug 12 -> Sep 12) or center fixed day (e.g. 15th)."
+      },
+      "CollectionTiming": {
+        "type": "string",
+        "enum": [
+          "ADVANCE",
+          "ARREARS"
+        ],
+        "description": "OWNER-20261104-02 collection timing parameter: ADVANCE (collected in advance) or ARREARS (collected after service period)."
+      },
+      "UpdateOrArchiveCourseRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "default_lessons_per_cycle": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 60
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "UpdateOrArchiveGroupRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "expected_version"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 100
+          },
+          "primary_teacher_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "due_date_rule": {
+            "$ref": "#/components/schemas/DueDateRule"
+          },
+          "fixed_due_day": {
+            "type": [
+              "integer",
+              "null"
+            ],
+            "minimum": 1,
+            "maximum": 31
+          },
+          "collection_timing": {
+            "$ref": "#/components/schemas/CollectionTiming"
+          },
+          "schedule_days": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": [
+                "MON",
+                "TUE",
+                "WED",
+                "THU",
+                "FRI",
+                "SAT",
+                "SUN"
+              ]
+            }
+          },
+          "starts_time": {
+            "type": "string",
+            "pattern": "^[0-9]{2}:[0-9]{2}$"
+          },
+          "duration_minutes": {
+            "type": "integer",
+            "minimum": 15,
+            "maximum": 360
+          },
+          "timezone": {
+            "type": "string",
+            "maxLength": 64
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "ACTIVE",
+              "ARCHIVED"
+            ]
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "GenerateRecurringLessonsRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "start_date",
+          "end_date"
+        ],
+        "properties": {
+          "start_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          },
+          "end_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          },
+          "occurrence_seq": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 10,
+            "default": 1
+          },
+          "dst_disambiguation": {
+            "type": "string",
+            "enum": [
+              "REJECT",
+              "EARLIER",
+              "LATER"
+            ],
+            "default": "REJECT"
+          },
+          "holidays": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "date",
+                "reason"
+              ],
+              "properties": {
+                "date": {
+                  "$ref": "#/components/schemas/IsoDate"
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 3,
+                  "maxLength": 255
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "SKIP",
+                    "CREATE_CANCELLED"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "GenerateRecurringLessonsResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "group_id",
+          "start_date",
+          "end_date",
+          "timezone",
+          "created_lessons",
+          "skipped_holidays"
+        ],
+        "properties": {
+          "group_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "start_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          },
+          "end_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          },
+          "timezone": {
+            "type": "string"
+          },
+          "created_lessons": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LessonOccurrenceResponse"
+            }
+          },
+          "skipped_holidays": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "lesson_date",
+                "reason",
+                "source",
+                "mode",
+                "cancelled_lesson_id"
+              ],
+              "properties": {
+                "lesson_date": {
+                  "$ref": "#/components/schemas/IsoDate"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "EXPLICIT_HOLIDAY_INPUT"
+                  ]
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "SKIP",
+                    "CREATE_CANCELLED"
+                  ]
+                },
+                "cancelled_lesson_id": {
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/Uuid"
+                    },
+                    {
+                      "type": "null"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "CancelLessonOccurrenceRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason",
+          "expected_version"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "cancellation_source": {
+            "type": "string",
+            "enum": [
+              "ADMIN_MANUAL",
+              "PUBLIC_HOLIDAY",
+              "WEATHER_EMERGENCY",
+              "HOLIDAY_CALENDAR_INPUT"
+            ]
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "RevokeSubstituteRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "reason",
+          "expected_version"
+        ],
+        "properties": {
+          "reason": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          },
+          "expected_version": {
+            "type": "integer",
+            "minimum": 1
+          }
+        }
+      },
+      "GradeEntryItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grade_entry_id",
+          "lesson_id",
+          "enrollment_id",
+          "student_id",
+          "score",
+          "comment_sanitized",
+          "recorded_by_teacher_id",
+          "version",
+          "updated_at_utc"
+        ],
+        "properties": {
+          "grade_entry_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lesson_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "enrollment_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "student_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "comment_sanitized": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "maxLength": 500
+          },
+          "recorded_by_teacher_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "updated_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        }
+      },
+      "GradeRevisionHistoryItem": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "audit_id",
+          "grade_entry_id",
+          "lesson_id",
+          "enrollment_id",
+          "student_id",
+          "action",
+          "revision_version",
+          "previous_score",
+          "new_score",
+          "previous_comment_sanitized",
+          "new_comment_sanitized",
+          "recorded_by_teacher_id",
+          "request_id",
+          "created_at_utc"
+        ],
+        "properties": {
+          "audit_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "grade_entry_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lesson_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "enrollment_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "student_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "GRADE_ENTRY_CREATED",
+              "GRADE_ENTRY_UPDATED"
+            ]
+          },
+          "revision_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "previous_score": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "new_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "previous_comment_sanitized": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "new_comment_sanitized": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "actor_staff_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "actor_role": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "recorded_by_teacher_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "request_id": {
+            "type": "string"
+          },
+          "created_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          }
+        }
+      },
+      "LessonGradesAndHistoryResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "lesson_id",
+          "group_id",
+          "lesson_version",
+          "items",
+          "revisions",
+          "next_cursor"
+        ],
+        "properties": {
+          "lesson_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "group_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "lesson_version": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GradeEntryItem"
+            }
+          },
+          "revisions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GradeRevisionHistoryItem"
+            }
+          },
+          "next_cursor": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
       }
     }
   },
@@ -3702,7 +4230,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Healthcheck and current center license mode (no secrets exposed) — success",
+            "description": "Healthcheck and current center license mode (no secrets exposed) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -3841,7 +4369,7 @@
         },
         "responses": {
           "200": {
-            "description": "Staff-only login (Director, Admin, Teacher; never Parent/Student) — success",
+            "description": "Staff-only login (Director, Admin, Teacher; never Parent/Student) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -3942,7 +4470,7 @@
         },
         "responses": {
           "200": {
-            "description": "Change initial or current staff password and revoke older sessions — success",
+            "description": "Change initial or current staff password and revoke older sessions \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4017,7 +4545,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List center staff accounts — success",
+            "description": "List center staff accounts \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4120,7 +4648,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create new staff account (OWNER-20261104-01: Director creates all roles; Admin creates TEACHER only) — success",
+            "description": "Create new staff account (OWNER-20261104-01: Director creates all roles; Admin creates TEACHER only) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4183,7 +4711,7 @@
       ],
       "patch": {
         "operationId": "updateStaffStatus",
-        "summary": "Deactivate staff account or change role (blocks self-deactivation of last Director — T05.03)",
+        "summary": "Deactivate staff account or change role (blocks self-deactivation of last Director \u2014 T05.03)",
         "tags": [
           "StaffAuthAndUsers"
         ],
@@ -4231,7 +4759,7 @@
         },
         "responses": {
           "200": {
-            "description": "Deactivate staff account or change role (blocks self-deactivation of last Director — T05.03) — success",
+            "description": "Deactivate staff account or change role (blocks self-deactivation of last Director \u2014 T05.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4307,7 +4835,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Paginated student and debtor search for Director/Admin (forbidden for Teacher) — success",
+            "description": "Paginated student and debtor search for Director/Admin (forbidden for Teacher) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4407,7 +4935,7 @@
         },
         "responses": {
           "201": {
-            "description": "15-second student registration with guardian binding, group enrollment, and sibling-safe duplicate check — success",
+            "description": "15-second student registration with guardian binding, group enrollment, and sibling-safe duplicate check \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4516,7 +5044,7 @@
         },
         "responses": {
           "200": {
-            "description": "Update guardian phone and immediately revoke old Telegram chat link (D18, T06.02, T14.01) — success",
+            "description": "Update guardian phone and immediately revoke old Telegram chat link (D18, T06.02, T14.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4628,7 +5156,7 @@
         },
         "responses": {
           "200": {
-            "description": "Withdraw student from group with mandatory 1..5 churn reason while preserving prior debt (BR-08, T09.04) — success",
+            "description": "Withdraw student from group with mandatory 1..5 churn reason while preserving prior debt (BR-08, T09.04) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4723,7 +5251,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create course group with primary teacher, schedule, and billing mode — success",
+            "description": "Create course group with primary teacher, schedule, and billing mode \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4775,7 +5303,7 @@
         "tags": [
           "GroupsLessonsSubstitutes"
         ],
-        "summary": "List course groups (for TEACHER, returns strictly own primary or active substitute groups without financial fields — S2F02, S2F05)",
+        "summary": "List course groups (for TEACHER, returns strictly own primary or active substitute groups without financial fields \u2014 S2F02, S2F05)",
         "operationId": "listCourseGroups",
         "security": [
           {
@@ -4800,7 +5328,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — scoped group list",
+            "description": "200 OK \u2014 scoped group list",
             "content": {
               "application/json": {
                 "schema": {
@@ -4844,7 +5372,7 @@
           "name": "group_id",
           "in": "path",
           "required": true,
-          "description": "Group UUID (Teacher restricted to own assigned groups — T05.02)",
+          "description": "Group UUID (Teacher restricted to own assigned groups \u2014 T05.02)",
           "schema": {
             "$ref": "#/components/schemas/Uuid"
           }
@@ -4852,7 +5380,7 @@
       ],
       "get": {
         "operationId": "getGroupSafeRoster",
-        "summary": "Get group roster using TeacherStudentView (omits guardian phone and finance — F04, T02.03, T05.04)",
+        "summary": "Get group roster using TeacherStudentView (omits guardian phone and finance \u2014 F04, T02.03, T05.04)",
         "tags": [
           "GroupsLessonsSubstitutes"
         ],
@@ -4874,7 +5402,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get group roster using TeacherStudentView (omits guardian phone and finance — F04, T02.03, T05.04) — success",
+            "description": "Get group roster using TeacherStudentView (omits guardian phone and finance \u2014 F04, T02.03, T05.04) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -4976,6 +5504,14 @@
           },
           {
             "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
           }
         ],
         "requestBody": {
@@ -4990,7 +5526,7 @@
         },
         "responses": {
           "200": {
-            "description": "1-click assignment of 1-day Substitute Teacher (Zamena) for a single lesson occurrence (R20, T07.03) — success",
+            "description": "1-click assignment of 1-day Substitute Teacher (Zamena) for a single lesson occurrence (R20, T07.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5063,8 +5599,9 @@
           }
         ],
         "x-allowed-roles": [
-          "TEACHER",
-          "ADMIN"
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
         ],
         "x-object-scope": {
           "trust_plane": "CENTER_DATA_PLANE",
@@ -5088,6 +5625,14 @@
           },
           {
             "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
           }
         ],
         "requestBody": {
@@ -5102,7 +5647,7 @@
         },
         "responses": {
           "200": {
-            "description": "Record student exam scores (0..100) and sanitized comments for authorized group/lesson (T07.04) — success",
+            "description": "Record student exam scores (0..100) and sanitized comments for authorized group/lesson (T07.04) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5146,6 +5691,84 @@
             }
           }
         ]
+      },
+      "get": {
+        "operationId": "listLessonGradesAndHistory",
+        "summary": "List current lesson grades and immutable append-only grade revision history from AuditLog (07.04, T07.04)",
+        "tags": [
+          "GroupsLessonsSubstitutes"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
+        ],
+        "x-read-only-license-policy": "ALLOWED_IN_READ_ONLY",
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "For TEACHER: SQL verifies lesson_occurrences.group.primary_teacher_id == jwt.staff_id OR active substitute_assignments.substitute_teacher_id == jwt.staff_id for lesson_id (single-lesson entitlement boundary); otherwise returns 403 FORBIDDEN_OBJECT_SCOPE.",
+          "conditional_role_policy": "Enforces confirmed role grant; returns zero phone or financial fields."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          },
+          {
+            "$ref": "#/components/parameters/CursorParam"
+          },
+          {
+            "$ref": "#/components/parameters/LimitParam"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 OK \u2014 lesson grades and revision history",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonGradesAndHistoryResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          }
+        }
       }
     },
     "/api/v1/lessons/{lesson_id}/attendance/submit": {
@@ -5211,7 +5834,7 @@
         },
         "responses": {
           "200": {
-            "description": "Submit confirmed lesson attendance (30s flow) or Admin reason-based override (BR-11, T12.01, T12.03) — success",
+            "description": "Submit confirmed lesson attendance (30s flow) or Admin reason-based override (BR-11, T12.01, T12.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5306,7 +5929,7 @@
         },
         "responses": {
           "200": {
-            "description": "Batch sync offline SQLite attendance operations with client_operation_uuid dedup and per-item ACK (T12.02, T17.03) — success",
+            "description": "Batch sync offline SQLite attendance operations with client_operation_uuid dedup and per-item ACK (T12.02, T17.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5355,7 +5978,7 @@
     "/api/v1/billing/cycles/invoice": {
       "post": {
         "operationId": "issueBillingCycleInvoice",
-        "summary": "Idempotently issue invoice for a BillingCycle (Calendar Pro-Rata, Rolling Month, or 12-Lesson Package — BR-01, BR-02, C04)",
+        "summary": "Idempotently issue invoice for a BillingCycle (Calendar Pro-Rata, Rolling Month, or 12-Lesson Package \u2014 BR-01, BR-02, C04)",
         "tags": [
           "BillingAndInvoices"
         ],
@@ -5401,7 +6024,7 @@
         },
         "responses": {
           "200": {
-            "description": "Idempotently issue invoice for a BillingCycle (Calendar Pro-Rata, Rolling Month, or 12-Lesson Package — BR-01, BR-02, C04) — success",
+            "description": "Idempotently issue invoice for a BillingCycle (Calendar Pro-Rata, Rolling Month, or 12-Lesson Package \u2014 BR-01, BR-02, C04) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5455,7 +6078,7 @@
     "/api/v1/discounts/requests": {
       "post": {
         "operationId": "createDiscountOrGrantRequest",
-        "summary": "Admin submits Family, 50% special discount, or 100% Grant request (does not alter invoice until Director approves — BR-04, T09.01)",
+        "summary": "Admin submits Family, 50% special discount, or 100% Grant request (does not alter invoice until Director approves \u2014 BR-04, T09.01)",
         "tags": [
           "DiscountsAndFreezes"
         ],
@@ -5501,7 +6124,7 @@
         },
         "responses": {
           "201": {
-            "description": "Admin submits Family, 50% special discount, or 100% Grant request (does not alter invoice until Director approves — BR-04, T09.01) — success",
+            "description": "Admin submits Family, 50% special discount, or 100% Grant request (does not alter invoice until Director approves \u2014 BR-04, T09.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5612,7 +6235,7 @@
         },
         "responses": {
           "200": {
-            "description": "Director-only atomic approval/rejection of discount or 100% Grant (BR-04, T09.02) — success",
+            "description": "Director-only atomic approval/rejection of discount or 100% Grant (BR-04, T09.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5713,7 +6336,7 @@
         },
         "responses": {
           "201": {
-            "description": "Record excused Freeze with overlap dedup and issue net-earned next-cycle CreditNote (BR-08, C03, T09.03) — success",
+            "description": "Record excused Freeze with overlap dedup and issue net-earned next-cycle CreditNote (BR-08, C03, T09.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5811,7 +6434,7 @@
         },
         "responses": {
           "201": {
-            "description": "Atomically record payment, invoice allocation, unapplied credit, receipt, and mandatory Promise-to-Pay when debt remains (B03, BR-05, T10.01, T11.03) — success",
+            "description": "Atomically record payment, invoice allocation, unapplied credit, receipt, and mandatory Promise-to-Pay when debt remains (B03, BR-05, T10.01, T11.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -5910,7 +6533,7 @@
         },
         "responses": {
           "201": {
-            "description": "Admin submits reason-based Storno/Refund request and triggers immediate red Telegram alert to Director (BR-07, T10.03) — success",
+            "description": "Admin submits reason-based Storno/Refund request and triggers immediate red Telegram alert to Director (BR-07, T10.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6021,7 +6644,7 @@
         },
         "responses": {
           "200": {
-            "description": "Director-only atomic approval of append-only reversal/refund with refund_method cash/non-cash separation (BR-07, C03, D22, T10.03) — success",
+            "description": "Director-only atomic approval of append-only reversal/refund with refund_method cash/non-cash separation (BR-07, C03, D22, T10.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6119,7 +6742,7 @@
         },
         "responses": {
           "201": {
-            "description": "Open daily cash shift with opening float (T11.01) — success",
+            "description": "Open daily cash shift with opening float (T11.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6228,7 +6851,7 @@
         },
         "responses": {
           "200": {
-            "description": "Lock cash shift, compute expected_closing_cash (3.2M - 150k = 3.05M; card/non-cash excluded), and notify Director (BR-09, C03, T11.04) — success",
+            "description": "Lock cash shift, compute expected_closing_cash (3.2M - 150k = 3.05M; card/non-cash excluded), and notify Director (BR-09, C03, T11.04) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6277,7 +6900,7 @@
     "/api/v1/cash-expenses": {
       "post": {
         "operationId": "recordCashOrCardExpense",
-        "summary": "Record categorized expense (only CASH method reduces cash shift drawer — T11.02)",
+        "summary": "Record categorized expense (only CASH method reduces cash shift drawer \u2014 T11.02)",
         "tags": [
           "CashShiftsAndExpenses"
         ],
@@ -6323,7 +6946,7 @@
         },
         "responses": {
           "201": {
-            "description": "Record categorized expense (only CASH method reduces cash shift drawer — T11.02) — success",
+            "description": "Record categorized expense (only CASH method reduces cash shift drawer \u2014 T11.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6404,7 +7027,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Download versioned Locked XLSX template with hidden student_id UUID and row_version (BR-14, T16.01) — success",
+            "description": "Download versioned Locked XLSX template with hidden student_id UUID and row_version (BR-14, T16.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6506,7 +7129,7 @@
         },
         "responses": {
           "200": {
-            "description": "Validate Locked XLSX (schema, formula injection, foreign UUID, stale row_version) without mutating DB and issue preview_token (T16.02, T16.03) — success",
+            "description": "Validate Locked XLSX (schema, formula injection, foreign UUID, stale row_version) without mutating DB and issue preview_token (T16.02, T16.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6601,7 +7224,7 @@
         },
         "responses": {
           "200": {
-            "description": "Re-verify upload_sha256 and row_version and atomically commit valid Excel import batch (T16.04) — success",
+            "description": "Re-verify upload_sha256 and row_version and atomically commit valid Excel import batch (T16.04) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6670,7 +7293,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get cash vs accrued revenue, open debt, and promise forecast in center timezone (T18.01) — success",
+            "description": "Get cash vs accrued revenue, open debt, and promise forecast in center timezone (T18.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6749,7 +7372,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get teacher and substitute payroll report (T18.02) — success",
+            "description": "Get teacher and substitute payroll report (T18.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6854,7 +7477,7 @@
         },
         "responses": {
           "200": {
-            "description": "Close monthly PayrollSnapshot as immutable record (BR-10, T18.02) — success",
+            "description": "Close monthly PayrollSnapshot as immutable record (BR-10, T18.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -6951,7 +7574,7 @@
         },
         "responses": {
           "201": {
-            "description": "Create append-only adjustment in current payroll referencing a closed prior period snapshot (CASE-20, T18.02) — success",
+            "description": "Create append-only adjustment in current payroll referencing a closed prior period snapshot (CASE-20, T18.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7023,7 +7646,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Get student drop-out analytics by 5 mandatory reasons, teacher attribution, and cohort (T18.03) — success",
+            "description": "Get student drop-out analytics by 5 mandatory reasons, teacher attribution, and cohort (T18.03) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7134,7 +7757,7 @@
         },
         "responses": {
           "200": {
-            "description": "Receive Telegram Update verified by X-Telegram-Bot-Api-Secret-Token and deduplicate by update_id (T14.04) — success",
+            "description": "Receive Telegram Update verified by X-Telegram-Bot-Api-Secret-Token and deduplicate by update_id (T14.04) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7228,7 +7851,7 @@
         },
         "responses": {
           "200": {
-            "description": "Internal Bot Command API: bind guardian phone via single-use invite and verified contact.user_id == sender.id (D06, T14.01) — success",
+            "description": "Internal Bot Command API: bind guardian phone via single-use invite and verified contact.user_id == sender.id (D06, T14.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7287,7 +7910,7 @@
       ],
       "get": {
         "operationId": "getGuardianBalanceAndAttendanceForBot",
-        "summary": "Internal Bot Query API: fetch children balance and attendance for active linked guardian chat (rejects unlinked/revoked chats — D18, T14.02)",
+        "summary": "Internal Bot Query API: fetch children balance and attendance for active linked guardian chat (rejects unlinked/revoked chats \u2014 D18, T14.02)",
         "tags": [
           "TelegramBotAndCallbacks"
         ],
@@ -7307,7 +7930,7 @@
         ],
         "responses": {
           "200": {
-            "description": "Internal Bot Query API: fetch children balance and attendance for active linked guardian chat (rejects unlinked/revoked chats — D18, T14.02) — success",
+            "description": "Internal Bot Query API: fetch children balance and attendance for active linked guardian chat (rejects unlinked/revoked chats \u2014 D18, T14.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7411,7 +8034,7 @@
         },
         "responses": {
           "200": {
-            "description": "Internal Bot Command API: execute Director discount/reversal approval callback with version and replay check (D06, T14.02) — success",
+            "description": "Internal Bot Command API: execute Director discount/reversal approval callback with version and replay check (D06, T14.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7501,7 +8124,7 @@
         },
         "responses": {
           "200": {
-            "description": "Vendor Control Plane login requiring password + 6-digit TOTP MFA (D23, T19.01) — success",
+            "description": "Vendor Control Plane login requiring password + 6-digit TOTP MFA (D23, T19.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7536,7 +8159,7 @@
         "servers": [
           {
             "url": "https://vendor.eduerp.uz",
-            "description": "Isolated Vendor Control Plane API (Vendor Pre-Token TOTP MFA Auth, Center Registry & Subscription Kill-Switch — Zero Student PII)"
+            "description": "Isolated Vendor Control Plane API (Vendor Pre-Token TOTP MFA Auth, Center Registry & Subscription Kill-Switch \u2014 Zero Student PII)"
           }
         ],
         "x-trust-boundary": "VENDOR_PUBLIC_CREDENTIAL_AND_TOTP_BOOTSTRAP",
@@ -7546,7 +8169,7 @@
     "/vendor/api/v1/centers": {
       "get": {
         "operationId": "listVendorCentersRegistry",
-        "summary": "List registered centers in Vendor Control Plane (PII-free metadata only, zero student/ledger fields — T19.01)",
+        "summary": "List registered centers in Vendor Control Plane (PII-free metadata only, zero student/ledger fields \u2014 T19.01)",
         "tags": [
           "VendorControlPlane"
         ],
@@ -7572,7 +8195,7 @@
         ],
         "responses": {
           "200": {
-            "description": "List registered centers in Vendor Control Plane (PII-free metadata only, zero student/ledger fields — T19.01) — success",
+            "description": "List registered centers in Vendor Control Plane (PII-free metadata only, zero student/ledger fields \u2014 T19.01) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7607,7 +8230,7 @@
         "servers": [
           {
             "url": "https://vendor.eduerp.uz",
-            "description": "Isolated Vendor Control Plane API (Vendor Pre-Token TOTP MFA Auth, Center Registry & Subscription Kill-Switch — Zero Student PII)"
+            "description": "Isolated Vendor Control Plane API (Vendor Pre-Token TOTP MFA Auth, Center Registry & Subscription Kill-Switch \u2014 Zero Student PII)"
           }
         ],
         "x-object-scope": {
@@ -7633,7 +8256,7 @@
       ],
       "post": {
         "operationId": "updateCenterLicenseKillSwitch",
-        "summary": "Sign and publish ACTIVE or READ_ONLY license token for a center (Subscription Kill-Switch — R04, BR-15, D17, D23, T19.02)",
+        "summary": "Sign and publish ACTIVE or READ_ONLY license token for a center (Subscription Kill-Switch \u2014 R04, BR-15, D17, D23, T19.02)",
         "tags": [
           "VendorControlPlane"
         ],
@@ -7681,7 +8304,7 @@
         },
         "responses": {
           "200": {
-            "description": "Sign and publish ACTIVE or READ_ONLY license token for a center (Subscription Kill-Switch — R04, BR-15, D17, D23, T19.02) — success",
+            "description": "Sign and publish ACTIVE or READ_ONLY license token for a center (Subscription Kill-Switch \u2014 R04, BR-15, D17, D23, T19.02) \u2014 success",
             "content": {
               "application/json": {
                 "schema": {
@@ -7720,7 +8343,7 @@
         "servers": [
           {
             "url": "https://vendor.eduerp.uz",
-            "description": "Isolated Vendor Control Plane API (Vendor Pre-Token TOTP MFA Auth, Center Registry & Subscription Kill-Switch — Zero Student PII)"
+            "description": "Isolated Vendor Control Plane API (Vendor Pre-Token TOTP MFA Auth, Center Registry & Subscription Kill-Switch \u2014 Zero Student PII)"
           }
         ]
       }
@@ -7759,7 +8382,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 OK — rotated session tokens",
+            "description": "200 OK \u2014 rotated session tokens",
             "content": {
               "application/json": {
                 "schema": {
@@ -7832,7 +8455,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — session revoked",
+            "description": "200 OK \u2014 session revoked",
             "content": {
               "application/json": {
                 "schema": {
@@ -7921,7 +8544,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 OK — target staff sessions revoked",
+            "description": "200 OK \u2014 target staff sessions revoked",
             "content": {
               "application/json": {
                 "schema": {
@@ -7999,7 +8622,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — student profile for Admin/Director (forbidden to TEACHER)",
+            "description": "200 OK \u2014 student profile for Admin/Director (forbidden to TEACHER)",
             "content": {
               "application/json": {
                 "schema": {
@@ -8091,7 +8714,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 OK — updated or soft-archived student profile",
+            "description": "200 OK \u2014 updated or soft-archived student profile",
             "content": {
               "application/json": {
                 "schema": {
@@ -8179,7 +8802,7 @@
         },
         "responses": {
           "201": {
-            "description": "201 Created — enrollment created",
+            "description": "201 Created \u2014 enrollment created",
             "content": {
               "application/json": {
                 "schema": {
@@ -8258,7 +8881,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — course list",
+            "description": "200 OK \u2014 course list",
             "content": {
               "application/json": {
                 "schema": {
@@ -8335,7 +8958,7 @@
         },
         "responses": {
           "201": {
-            "description": "201 Created — course created",
+            "description": "201 Created \u2014 course created",
             "content": {
               "application/json": {
                 "schema": {
@@ -8433,7 +9056,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 OK — tariff updated for future cycles; historical invoices preserved",
+            "description": "200 OK \u2014 tariff updated for future cycles; historical invoices preserved",
             "content": {
               "application/json": {
                 "schema": {
@@ -8488,7 +9111,7 @@
         "tags": [
           "GroupsLessonsSubstitutes"
         ],
-        "summary": "List scheduled lesson occurrences for a group (TEACHER restricted to own primary or active substitute group — S2F02, S2F05)",
+        "summary": "List scheduled lesson occurrences for a group (TEACHER restricted to own primary or active substitute group \u2014 S2F02, S2F05)",
         "operationId": "listGroupLessons",
         "security": [
           {
@@ -8521,7 +9144,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — lesson occurrences for group",
+            "description": "200 OK \u2014 lesson occurrences for group",
             "content": {
               "application/json": {
                 "schema": {
@@ -8565,7 +9188,7 @@
         "tags": [
           "GroupsLessonsSubstitutes"
         ],
-        "summary": "Schedule or reschedule a lesson occurrence (supports multiple daily occurrences via occurrence_seq — D07, S2F05, T07.02)",
+        "summary": "Schedule or reschedule a lesson occurrence (supports multiple daily occurrences via occurrence_seq \u2014 D07, S2F05, T07.02)",
         "operationId": "scheduleGroupLessonOccurrence",
         "security": [
           {
@@ -8609,7 +9232,7 @@
         },
         "responses": {
           "201": {
-            "description": "201 Created — lesson occurrence scheduled",
+            "description": "201 Created \u2014 lesson occurrence scheduled",
             "content": {
               "application/json": {
                 "schema": {
@@ -8696,7 +9319,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — student invoices",
+            "description": "200 OK \u2014 student invoices",
             "content": {
               "application/json": {
                 "schema": {
@@ -8768,7 +9391,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — invoice details",
+            "description": "200 OK \u2014 invoice details",
             "content": {
               "application/json": {
                 "schema": {
@@ -8840,7 +9463,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — internal electronic receipt",
+            "description": "200 OK \u2014 internal electronic receipt",
             "content": {
               "application/json": {
                 "schema": {
@@ -8931,7 +9554,7 @@
         ],
         "responses": {
           "200": {
-            "description": "200 OK — duplicate candidate warnings",
+            "description": "200 OK \u2014 duplicate candidate warnings",
             "content": {
               "application/json": {
                 "schema": {
@@ -8977,7 +9600,7 @@
         "tags": [
           "StudentsAndGuardians"
         ],
-        "summary": "Link an additional guardian to a student (supports multiple guardians per child and multiple children per guardian — 06.02, T06.02)",
+        "summary": "Link an additional guardian to a student (supports multiple guardians per child and multiple children per guardian \u2014 06.02, T06.02)",
         "operationId": "linkGuardianToStudent",
         "security": [
           {
@@ -9022,7 +9645,7 @@
         },
         "responses": {
           "201": {
-            "description": "201 Created — guardian linked to student",
+            "description": "201 Created \u2014 guardian linked to student",
             "content": {
               "application/json": {
                 "schema": {
@@ -9130,7 +9753,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 OK — guardian soft-unlinked from student",
+            "description": "200 OK \u2014 guardian soft-unlinked from student",
             "content": {
               "application/json": {
                 "schema": {
@@ -9230,7 +9853,7 @@
         },
         "responses": {
           "200": {
-            "description": "200 OK — old enrollment closed and linked new enrollment created",
+            "description": "200 OK \u2014 old enrollment closed and linked new enrollment created",
             "content": {
               "application/json": {
                 "schema": {
@@ -9277,6 +9900,518 @@
           "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
           "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
           "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        }
+      }
+    },
+    "/api/v1/courses/{course_id}": {
+      "patch": {
+        "operationId": "updateOrArchiveCourse",
+        "summary": "Update course metadata or soft-archive course without cascading deletes (07.01)",
+        "tags": [
+          "GroupsLessonsSubstitutes"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to courses.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; soft-archiving preserves groups, enrollments, and historical invoices."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "course_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrArchiveCourseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 OK \u2014 course updated or archived",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CourseResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{group_id}": {
+      "patch": {
+        "operationId": "updateOrArchiveCourseGroup",
+        "summary": "Update course group teacher, schedule, OWNER-20261104-02 due-date/timing parameters, or soft-archive status without mutating completed lesson snapshots (07.01)",
+        "tags": [
+          "GroupsLessonsSubstitutes"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to course_groups.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; primary_teacher_id must be an ACTIVE TEACHER in the same center; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant and OWNER-20261104-02 billing parameter separation."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "group_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateOrArchiveGroupRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 OK \u2014 group updated or archived",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GroupResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
+      }
+    },
+    "/api/v1/groups/{group_id}/lessons/generate": {
+      "post": {
+        "operationId": "generateRecurringGroupLessons",
+        "summary": "Deterministic recurring lesson occurrence generator with explicit public holiday skip/cancel (07.02)",
+        "tags": [
+          "GroupsLessonsSubstitutes"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": false,
+          "same_key_different_body_status": 409
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to course_groups.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; public holidays are provided explicitly in request payload."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "name": "group_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GenerateRecurringLessonsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 Created \u2014 recurring lessons generated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GenerateRecurringLessonsResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/cancel": {
+      "post": {
+        "operationId": "cancelLessonOccurrence",
+        "summary": "Cancel a scheduled lesson occurrence with explicit reason and source, stopping future ping/trial/package triggers (07.02, T07.02)",
+        "tags": [
+          "GroupsLessonsSubstitutes"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to lesson_occurrences.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; unconfirmed package credit/extension adjustments fail closed with 403 POLICY_DECISION_NOT_CONFIRMED."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelLessonOccurrenceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 OK \u2014 lesson cancelled",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LessonOccurrenceResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/substitute/revoke": {
+      "post": {
+        "operationId": "revokeSingleLessonSubstitute",
+        "summary": "Revoke an active single-lesson substitute assignment and atomically restore original pay_recipient_teacher_id (07.03, T07.03)",
+        "tags": [
+          "GroupsLessonsSubstitutes"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to lesson_occurrences.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; completed lesson snapshots cannot be retroactively altered."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          },
+          {
+            "name": "lesson_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schemas/Uuid"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RevokeSubstituteRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200 OK \u2014 substitute assignment revoked",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SubstituteAssignmentResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
         }
       }
     }

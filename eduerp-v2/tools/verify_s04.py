@@ -122,7 +122,7 @@ LINEAGE_TRIGGER_TABLES = [
 ]
 
 
-def parse_migration_table_columns(mig_sql: str, s05_sql: str = "", s06_sql: str = "") -> dict[str, set[str]]:
+def parse_migration_table_columns(mig_sql: str, s05_sql: str = "", s06_sql: str = "", s07_sql: str = "") -> dict[str, set[str]]:
     table_cols: dict[str, set[str]] = {}
     for m in re.finditer(r'CREATE TABLE IF NOT EXISTS "([a-z0-9_]+)"\s*\((.*?)\n\);', mig_sql, flags=re.S):
         tbl_name = m.group(1)
@@ -137,7 +137,7 @@ def parse_migration_table_columns(mig_sql: str, s05_sql: str = "", s06_sql: str 
                 cols.add(cm.group(1))
         table_cols[tbl_name] = cols
 
-    for m in re.finditer(r'ALTER TABLE "([a-z0-9_]+)"(.*?);', s05_sql + "\n" + s06_sql, flags=re.S):
+    for m in re.finditer(r'ALTER TABLE "([a-z0-9_]+)"(.*?);', s05_sql + "\n" + s06_sql + "\n" + s07_sql, flags=re.S):
         tbl_name = m.group(1)
         body = m.group(2)
         if tbl_name in table_cols:
@@ -311,7 +311,12 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
         raise ValueError("[ERR_S06_MISSING_MIGRATION] Missing Stage 06 additive migration 20261104000300_s06_auth_fixes_and_student_foundation/migration.sql")
     s06_sql = s06_mig_path.read_text(encoding="utf-8")
 
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql)
+    s07_mig_path = root / "apps/api/prisma/migrations/20261104000400_s07_academics_schedule_substitutes_grades/migration.sql"
+    if not s07_mig_path.exists():
+        raise ValueError("[ERR_S07_MISSING_MIGRATION] Missing Stage 07 additive migration 20261104000400_s07_academics_schedule_substitutes_grades/migration.sql")
+    s07_sql = s07_mig_path.read_text(encoding="utf-8")
+
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql)
     expected_tables = set(ALL_ENTITIES.values())
     if set(table_cols.keys()) != expected_tables:
         diff = set(table_cols.keys()) ^ expected_tables
@@ -386,7 +391,7 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
 
     return {
         "sql_tables_created": len(table_cols),
-        "migrations_verified": 3,
+        "migrations_verified": 4,
         "foreign_keys_restrict": fk_count,
         "named_check_constraints_verified": len(REQUIRED_CHECK_CONSTRAINTS),
         "partial_unique_indexes_verified": len(REQUIRED_PARTIAL_INDEXES),
@@ -405,7 +410,10 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
     s06_sql = (
         root / "apps/api/prisma/migrations/20261104000300_s06_auth_fixes_and_student_foundation/migration.sql"
     ).read_text(encoding="utf-8")
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql)
+    s07_sql = (
+        root / "apps/api/prisma/migrations/20261104000400_s07_academics_schedule_substitutes_grades/migration.sql"
+    ).read_text(encoding="utf-8")
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql)
     table_cols.update(parse_migration_table_columns(s06_sql))
 
     # F02: Ensure handwritten src/types/pg.d.ts is removed
@@ -439,6 +447,14 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "apps/api/test/auth-unit.test.ts",
         "apps/api/test/students-unit.test.ts",
         "apps/api/test/students/students-lifecycle.integration.test.ts",
+        "apps/api/src/academics/academic-access.service.ts",
+        "apps/api/src/academics/courses.service.ts",
+        "apps/api/src/academics/groups.service.ts",
+        "apps/api/src/academics/lessons.service.ts",
+        "apps/api/src/academics/substitutions.service.ts",
+        "apps/api/src/academics/grades.service.ts",
+        "apps/api/test/academics-unit.test.ts",
+        "apps/api/test/academics/academics-lifecycle.integration.test.ts",
     ]
     if test_corpus is None:
         test_corpus = "\n".join((root / rel).read_text(encoding="utf-8") for rel in ts_files)
@@ -457,6 +473,11 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         code = f"STU-IT-{i:02d}"
         if code not in test_corpus:
             raise ValueError(f"[ERR_S06_MISSING_STU_IT] Missing required Stage 06 integration test scenario {code}")
+
+    for i in range(1, 11):
+        code = f"ACAD-IT-{i:02d}"
+        if code not in test_corpus:
+            raise ValueError(f"[ERR_S07_MISSING_ACAD_IT] Missing required Stage 07 integration test scenario {code}")
 
     if "EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS" not in test_corpus or "eduerp_test_" not in test_corpus:
         raise ValueError("[ERR_S04_HARNESS_GUARD] Missing destructive test harness safety guards")
@@ -502,13 +523,14 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         raise ValueError("[ERR_S05_MISSING_RBAC_CSV] docs/security/rbac-matrix.csv does not exist")
     with rbac_csv_path.open(encoding="utf-8") as f:
         rbac_rows = list(csv.DictReader(f))
-    if len(rbac_rows) < 22:
-        raise ValueError("[ERR_S06_RBAC_CSV_ROWS] docs/security/rbac-matrix.csv must cover all 22 Stage 03-06 operations")
+    if len(rbac_rows) < 36:
+        raise ValueError("[ERR_S07_RBAC_CSV_ROWS] docs/security/rbac-matrix.csv must cover all 36 Stage 03-07 operations")
 
     return {
         "db_integration_scenarios_verified": 21,
         "auth_integration_scenarios_verified": 17,
         "students_integration_scenarios_verified": 9,
+        "academics_integration_scenarios_verified": 10,
         "rbac_matrix_rows_verified": len(rbac_rows),
         "ts_sql_insert_statements_verified": inserts_verified,
         "node_target": nvmrc,

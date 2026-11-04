@@ -23,11 +23,13 @@ export class RosterController {
     @Query('search') search?: string,
     @Query('cursor') cursor?: string,
     @Query('limit') limit?: string,
+    @Query('lesson_id') lessonId?: string,
   ): Promise<SafeGroupRosterResponseDto> {
     return this.staffService.getGroupSafeRoster(req.principal!, groupId, {
       search,
       cursor,
       limit,
+      lesson_id: lessonId,
     });
   }
 }
