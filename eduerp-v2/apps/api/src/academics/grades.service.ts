@@ -222,8 +222,9 @@ export class GradesService {
             id: lessonId,
             centerId: principal.centerId,
             expectedVersion,
-            setClauseSql: `"updated_at" = $4::timestamptz`,
-            additionalValues: [now.toISOString()],
+            // The optimistic helper owns updated_at/version; keep lesson state intact.
+            setClauseSql: `"status" = "status"`,
+            additionalValues: [],
           });
 
           const recordedByTeacherId =

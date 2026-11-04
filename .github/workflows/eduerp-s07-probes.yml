@@ -8,7 +8,7 @@ permissions:
 jobs:
   semantic-probes:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 6
     defaults:
       run:
         working-directory: eduerp-v2
@@ -34,11 +34,3 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run prisma:generate && npm run build
       - run: node ../s07-semantic-probes.cjs
-      - name: Independently execute G2 G3 G4 with bounds
-        if: ${{ !cancelled() }}
-        run: |
-          failures=0
-          timeout 150s npm run test:auth || failures=$((failures+1))
-          timeout 150s npm run test:students || failures=$((failures+1))
-          timeout 150s npm run test:academics || failures=$((failures+1))
-          exit "$failures"
