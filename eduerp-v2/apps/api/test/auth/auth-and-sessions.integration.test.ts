@@ -384,7 +384,7 @@ describe('Stage 05 Staff Auth, G01 No-Replay Credential Check, G02 Atomic Counte
 
       // R1 Live Privilege Failure Test: revoking table privilege on auth_rate_limit_buckets from API runtime role
       // causes login to fail closed with 503 DATABASE_UNAVAILABLE (never silently falling back to a local Map!)
-      await env.adminPool.query(`REVOKE ALL ON TABLE "auth_rate_limit_buckets" FROM "${env.roles.apiRoleA}"`);
+      await env.migratorPoolA.query(`REVOKE ALL ON TABLE "auth_rate_limit_buckets" FROM "${env.roleApiRuntime}"`);
       try {
         const failClosedRes = await httpJsonRequest({
           port,
@@ -397,8 +397,8 @@ describe('Stage 05 Staff Auth, G01 No-Replay Credential Check, G02 Atomic Counte
         assert.equal(failClosedRes.json.error_code, 'DATABASE_UNAVAILABLE');
         assert.equal(failClosedRes.rawBody.includes('postgresql://'), false);
       } finally {
-        await env.adminPool.query(
-          `GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "auth_rate_limit_buckets" TO "${env.roles.apiRoleA}"`,
+        await env.migratorPoolA.query(
+          `GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE "auth_rate_limit_buckets" TO "${env.roleApiRuntime}"`,
         );
       }
     } finally {

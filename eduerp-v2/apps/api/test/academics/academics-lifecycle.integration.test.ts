@@ -87,7 +87,6 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
   let subTeacherId: string;
   let subTeacherToken: string;
   let otherTeacherId: string;
-  let otherTeacherToken: string;
 
   before(async () => {
     env = await createEphemeralTestDbEnv();
@@ -151,7 +150,7 @@ describe('Stage 07 Academics: Courses, Price History, Groups, Schedule, Single-L
     adminToken = await loginAs('admin.demo');
     primaryTeacherToken = await loginAs('teacher.demo');
     subTeacherToken = await loginAs('teacher.sub.zamena');
-    otherTeacherToken = await loginAs('teacher.other.group');
+    await loginAs('teacher.other.group');
   });
 
   after(async () => {
