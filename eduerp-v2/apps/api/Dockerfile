@@ -50,6 +50,8 @@ COPY --from=prod-deps /app/node_modules ./node_modules
 COPY --from=prod-deps /app/packages/contracts/package.json ./packages/contracts/package.json
 COPY --from=prod-deps /app/packages/contracts/dist ./packages/contracts/dist
 COPY --from=prod-deps /app/apps/api/package.json ./apps/api/package.json
+# Preserve workspace-local runtime dependencies (Nest is not hoisted).
+COPY --from=prod-deps /app/apps/api/node_modules ./apps/api/node_modules
 COPY --from=prod-deps /app/apps/api/dist ./apps/api/dist
 COPY --from=prod-deps /app/docs/architecture/openapi.yaml ./docs/architecture/openapi.yaml
 COPY --from=prod-deps /app/docs/architecture/operation-inventory.csv ./docs/architecture/operation-inventory.csv

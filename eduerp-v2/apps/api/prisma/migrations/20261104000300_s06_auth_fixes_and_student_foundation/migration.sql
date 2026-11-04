@@ -108,7 +108,6 @@ BEGIN
   REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 
   IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = p_api_role) THEN
-    EXECUTE format('ALTER ROLE %I SET lock_timeout = ''1500ms'';', p_api_role);
     EXECUTE format('GRANT USAGE ON SCHEMA public TO %I;', p_api_role);
     FOREACH tbl IN ARRAY mutable_tables LOOP
       EXECUTE format('REVOKE ALL ON TABLE %I FROM %I;', tbl, p_api_role);

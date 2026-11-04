@@ -59,3 +59,7 @@ GRANT USAGE ON SCHEMA public TO eduerp_api_runtime, eduerp_worker_runtime, eduer
 REVOKE CREATE ON SCHEMA public FROM PUBLIC;
 GRANT USAGE, CREATE ON SCHEMA public TO eduerp_migrator;
 GRANT USAGE ON SCHEMA public TO eduerp_center_b_api, eduerp_center_b_worker, eduerp_center_b_readonly;
+
+-- Role defaults are administrative bootstrap, never schema-migrator privilege.
+ALTER ROLE eduerp_api_runtime SET lock_timeout = '1500ms';
+ALTER ROLE eduerp_center_b_api SET lock_timeout = '1500ms';

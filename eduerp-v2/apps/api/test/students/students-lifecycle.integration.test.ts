@@ -568,7 +568,7 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
     );
     await env.apiPoolA.query(
       `INSERT INTO "billing_cycles" ("id", "center_id", "enrollment_id", "cycle_type", "cycle_key", "cycle_seq", "period_start_date", "period_end_date", "planned_lessons", "billable_lessons", "policy_version_id")
-       VALUES ($1::uuid, $2::uuid, $3::uuid, 'CALENDAR_MONTH', '2026-10', '2026-10-01', '2026-10-31', 12, $4::uuid)`,
+       VALUES ($1::uuid, $2::uuid, $3::uuid, 'CALENDAR_MONTH', '2026-10', 1, '2026-10-01', '2026-10-31', 12, 12, $4::uuid)`,
       [cycleId, C.centerId, enrForInvoiceId, C.billingPolicyId],
     );
     await env.apiPoolA.query(

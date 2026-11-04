@@ -232,11 +232,11 @@ export class StudentsService {
     const totalRemainingDebtUzs = BigInt(debtRes.rows[0]?.total_debt ?? '0').toString(10);
 
     const creditRes = await executor.query<{ total_credit: string }>(
-      `SELECT COALESCE(SUM("remaining_amount_uzs"), 0)::text AS total_credit
+      `SELECT COALESCE(SUM("remaining_credit_uzs"), 0)::text AS total_credit
          FROM "unapplied_credits"
         WHERE "center_id" = $1::uuid
           AND "student_id" = $2::uuid
-          AND "status" = 'AVAILABLE'`,
+          AND "remaining_credit_uzs" > 0`,
       [centerId, studentRow.id],
     );
     const unappliedCreditUzs = BigInt(creditRes.rows[0]?.total_credit ?? '0').toString(10);
