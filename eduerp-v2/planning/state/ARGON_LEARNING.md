@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 2 ta olingan artifact — ARGON-01.01-A va S01-FULL-C. Joriy S01-FIX-S02-FULL-D hali topshirilmagan. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 4 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D va S02FIX-S03FULL-E. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
