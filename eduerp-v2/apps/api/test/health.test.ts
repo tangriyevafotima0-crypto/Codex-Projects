@@ -37,10 +37,12 @@ function httpGetJson(
         headers,
       },
       (res) => {
-        const chunks: Buffer[] = [];
-        res.on('data', (chunk: Buffer) => chunks.push(chunk));
+        res.setEncoding('utf8');
+        let rawBody = '';
+        res.on('data', (chunk: string) => {
+          rawBody += chunk;
+        });
         res.on('end', () => {
-          const rawBody = Buffer.concat(chunks).toString('utf-8');
           resolve({
             statusCode: res.statusCode ?? 0,
             headers: res.headers,

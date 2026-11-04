@@ -1,0 +1,450 @@
+{
+  "task_id": "S04FIX-S05FULL-G",
+  "base_commit": "2fea3afa40e241fede4bdb148d44563d0032a7d4",
+  "candidate_input_commit": "9c05b6f4cef907fe21137ea629919037b6d5bdaa",
+  "status": "IN_REVIEW",
+  "confirmed_owner_decisions_applied": [
+    "OWNER-20261104-01"
+  ],
+  "needs_manager_dependency_refresh": true,
+  "dependency_refresh_notes": [
+    "Root package.json devDependencies updated '@types/node' from 18.18.14 to 24.13.6 (F02).",
+    "apps/api/package.json dependencies added 'jose': '6.2.15' (05.01) and 'prisma': '7.10.1' (F06 production migrator CLI); devDependencies added '@types/pg': '8.23.1' (F02).",
+    "package-lock.json was intentionally not hand-edited offline per assignment rules; manager should run 'npm install' and 'npm run prisma:generate' on the online Node 24.18.1 runner."
+  ],
+  "deleted_paths": [
+    "apps/api/src/types/pg.d.ts"
+  ],
+  "closed_findings": [
+    "F01: Added @@unique([..., centerId]) on all 5 composite 1-to-1 models (Invoice, DiscountApproval, CreditNote, ReversalOrRefundExecution, Receipt) in schema.prisma + migration.sql; verified 0 P1012 relation errors.",
+    "F02: Deleted handwritten apps/api/src/types/pg.d.ts, added @types/pg 8.23.1 and @types/node 24.13.6, un-excluded src/generated in apps/api/tsconfig.json, and wired real PrismaClient({ adapter: new PrismaPg(this.pool) }) + $disconnect() in DatabaseService.",
+    "F03: Consolidated DatabaseService into a single provider in DatabaseModule.register() with API_CONFIG_TOKEN visible to DatabaseService.",
+    "F04: Added exhaustive trailing throw in runInSerializableTransaction / runRetryableSerializableMock and replaced Buffer.concat in apps/api/test/health.test.ts with UTF-8 string accumulation.",
+    "F05: Resolved migration paths relative to __dirname in harness.ts, created distinct Center B roles (eduerp_center_b_api, eduerp_center_b_worker, eduerp_center_b_readonly) with distinct-role guard in eduerp_apply_role_grants(), and added try/catch cleanup on harness bootstrap failure.",
+    "F06: Switched harness.ts to invoke real 'prisma migrate deploy --config prisma.config.ts' CLI subprocess as eduerp_migrator, added dedicated one-shot migrator service in infra/compose.dev.yml, removed MIGRATION_DATABASE_URL from ApiEnvConfig and api container, and hardened /api/v1/ready to verify rolsuper=false, schema_owner=false, tgenabled!='D', and runtime ACLs with a static safe 503 message.",
+    "F07: Expanded apps/api/test/database/*.integration.test.ts with 6-table financial rollback (DB-IT-11), negative disabled-trigger/dropped-constraint drift detection (DB-IT-04), additive S04->S05 upgrade row preservation (DB-IT-02-UPGRADE), full STAFF|SYSTEM_WORKER actor matrix (DB-IT-08/15/16/17), LEFT->reenroll and same-day occurrence_seq=1,2 (DB-IT-06), and bounded 40001 retry exhaustion (DB-IT-12).",
+    "F08: Hardened eduerp_guard_last_active_director() with deterministic 'SELECT id FROM staff_users WHERE center_id = OLD.center_id AND role = DIRECTOR AND status = ACTIVE ORDER BY id FOR UPDATE' + 1500ms lock_timeout, tested with 2-connection concurrency barrier (DB-IT-19, AUTH-IT-11).",
+    "F09: Enforced relational student/enrollment/group/lesson/invoice/payment/allocation/credit/ledger lineage via composite FKs and eduerp_enforce_relational_lineage() triggers across 11 tables (DB-IT-08/15/16/17).",
+    "F10: Changed client_operation_logs primary key to composite (center_id, actor_id, operation_type, client_operation_uuid) across schema.prisma, migration.sql, and idempotency.ts (DB-IT-13, AUTH-IT-08)."
+  ],
+  "completed_steps": [
+    "04.01",
+    "04.02",
+    "04.03",
+    "04.04",
+    "04.05",
+    "05.01",
+    "05.02",
+    "05.03",
+    "05.04",
+    "05.05"
+  ],
+  "actual_checks": [
+    {
+      "command": "python3 -m py_compile tools/verify_s01_s02.py tools/verify_s04.py",
+      "status": "PASS",
+      "details": "Both offline stdlib verifiers compiled with zero syntax errors."
+    },
+    {
+      "command": "python3 tools/verify_s01_s02.py",
+      "status": "PASS",
+      "details": "Verified 14 markdown docs, 68 scope anchors, 119 traceability rows, 18 BRs, 22 CASEs, 56 OpenAPI 3.1 operations, OWNER-20261104-01 staff creation RBAC, and 12/12 negative mutation self-tests."
+    },
+    {
+      "command": "python3 tools/verify_s04.py",
+      "status": "PASS",
+      "details": "Verified 46 Prisma models, 5/5 1-to-1 composite relations (0 P1012 errors), 2 SQL migrations, 99 ON DELETE RESTRICT FKs, 24 immutability triggers + 11 lineage triggers, 21 DB-IT scenarios, 17 AUTH-IT scenarios, 11 RBAC matrix rows, 87 TypeScript SQL INSERT statements against DDL, and 5/5 negative mutation self-tests."
+    },
+    {
+      "command": "python3 planning/tools/check_plan.py && python3 planning/tools/test_plan.py",
+      "status": "PASS",
+      "details": "Verified planning registry integrity and all 7 planner unit tests pass."
+    },
+    {
+      "command": "node --test (Babel-transpiled contracts.test.ts, api/test/config.test.ts, worker/test/worker.test.ts, worker/test/process.test.ts, api/test/auth-unit.test.ts + S04/S05 unit modules)",
+      "status": "PASS",
+      "details": "13/13 unit and subprocess tests passed on local Node runtime, including async crypto.scrypt (N=131072, r=8, p=1) hashing/verification/parameter tampering, token hashing, Cookie/CSRF/Origin transport validation, DTO validation, BigInt money math, and bounded 40001 retry exhaustion."
+    },
+    {
+      "command": "npm install && npm run prisma:generate && npm run lint && npm run typecheck && npm test && npm run test:db && npm run test:auth",
+      "status": "NOT_RUN",
+      "reason": "Sandbox VM has no outbound internet access, no pre-installed node_modules, and no running PostgreSQL 16 server."
+    },
+    {
+      "command": "docker compose --env-file .env.example -f infra/compose.dev.yml up --build -d",
+      "status": "NOT_RUN",
+      "reason": "Sandbox VM does not have a Docker daemon."
+    }
+  ],
+  "remaining_open_questions": [
+    "Non-create Admin staff management capabilities (broad listStaffUsers, updateStaffStatus, revokeStaffSessions) remain fail-closed (403 POLICY_DECISION_NOT_CONFIRMED) until product owner explicitly confirms them under OPEN_RBAC_01.",
+    "OPEN_RBAC_02 (Admin report scope), OPEN_CHANNEL_01/02 (notification transport), and OPEN_PRIVACY_01 (masked phone suffix) remain open for downstream stages."
+  ],
+  "files": [
+    {
+      "path": ".env.example",
+      "sha256": "f0095cb5f13f9c0f3d9282c53d84ecb06e882c290a9f36d9511eec0b32823d09",
+      "change_type": "modified"
+    },
+    {
+      "path": "README.md",
+      "sha256": "e4ad4b39b6cd7b837e6b78f37d6590d40abfe8c6e6df7beab98612e5ef42e0b0",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/Dockerfile",
+      "sha256": "a0f0830e2d23e515f34305daa67c9920c0b7fbc3d39c5fdede72f7c8de4f39f9",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/package.json",
+      "sha256": "1f9e07ac0d9e6c52e7de97373f582a92fdb3fd7639bc3e1737a773a5661190a5",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/prisma/migrations/20261104000100_initial_foundation/migration.sql",
+      "sha256": "6a9a977ea7121bcfc0c6cd648c669c4ba83d188a37d2ce2576997ac6151b2e7d",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/prisma/migrations/20261104000200_s05_auth_and_rbac_foundation/migration.sql",
+      "sha256": "ce0b0bcc26691fd972606fa705f362e8e8ab7234641b1130941ffa05f73f82c8",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/prisma/schema.prisma",
+      "sha256": "75203c742156cf97f80338beb7e4cf68ae11ae65dc4c2f05a3fe147b2b239a24",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/app.module.ts",
+      "sha256": "6f1d077e0275a7c3d7405a599be7256b14cbdbc8385206c4574047bd6f82f8d3",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/application.ts",
+      "sha256": "d2ffacbff6a8f064788a42544f941a68a64f0c0924e75fa3879df47965c5df98",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/auth/auth.controller.ts",
+      "sha256": "2f591f586e612686a8f7eeb39b3294877765ce86db24b4b580d3e16ab97d7deb",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/auth.errors.ts",
+      "sha256": "3db518f36374015de4effa31ebc99fe042565939d42c413c92aa136273946889",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/auth.module.ts",
+      "sha256": "ec3f5c6e0cad54bf2010c7f9b408543cb07e34e870c6a503a84fa286fd0d0b3e",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/auth.service.ts",
+      "sha256": "fcda4298697030a451a7729ce65d04550bb85d6a430fb0557958318d96fd9a06",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/clock.service.ts",
+      "sha256": "0a6038c6501be41d49a73613214060893c991c83224f834155b90c9ee4cc42b7",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/index.ts",
+      "sha256": "7ca828e20519318aa6a5c2807322e4b426e1a08f5ce08e773aa7891f0895b40a",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/password.ts",
+      "sha256": "bf260ec029e3f14f4fd4bc93f158d88316229087430e8cc13d5c8c8772868bbe",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/permissions.guard.ts",
+      "sha256": "d403423cfd3af0bce7dc2b4428203196a6475c6735ff34ae59c148715be35085",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/roster.controller.ts",
+      "sha256": "468eaa05ee1e2b8917db1efe363097036e19f81a75613a5cdf5d0efd5d64fa8f",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/staff.controller.ts",
+      "sha256": "0eaa0c47dfe84c04f6f122e3d8326d14a85b8f8dff3229ecfa1874c3c5967c6b",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/staff.service.ts",
+      "sha256": "4717801be75ec7d81ed73a678eab61113c41b5944ed562e35392b9deddc04432",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/token.service.ts",
+      "sha256": "9cc50210eb421b40ebf6ba91bc827f842a40df0ab5c6ffbff0ae24c0585402a6",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/transport.ts",
+      "sha256": "f076b30fc2db68c4ae91402ccf020b9f6c4db3693f0aa152372064387be535e3",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/auth/validation.ts",
+      "sha256": "8e41f71095211ed50cc2c51afbb529aeadb254bb5158440fa5c11970be82621f",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/src/config/env.ts",
+      "sha256": "fd88e351748f71b813c90c1ce21eafad1b100a0870492ff5526d783b5d887ad7",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/database/database.module.ts",
+      "sha256": "5e3e2d3d38124529457fb4d5a6b880bba20189b1dfadefc23617446e23889445",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/database/database.service.ts",
+      "sha256": "78a440d99303560d462bbc8faf5d86c117a01faf65470b3bb080af052f8d797f",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/database/idempotency.ts",
+      "sha256": "2390c7b3fe0c281459afc040645fdf2b2bda251c332aadc19e79a1b600ac2705",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/database/seed-contract.ts",
+      "sha256": "dcb01064935cda3fdde7227d182c7e519d28640c78cc8ff61da22fb08abad206",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/database/transaction.ts",
+      "sha256": "5d2153c5e4a828e81fc141d9bc157f1ae67b5fd82549e0c6d298cd127c02028c",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/src/health/readiness.controller.ts",
+      "sha256": "89a1fd06341550b251894ded9ec1437b18b3c06105ed1cd13df580195d2ae61d",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/test/auth-unit.test.ts",
+      "sha256": "207342f1b8c110be6d03fe0c726876b71ad8658bfbee5fbf74a3a634a88d401a",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/test/auth/auth-and-sessions.integration.test.ts",
+      "sha256": "02a31992e26d60090b89a6e15fa93939da0f0d6bb6b9eb55e1c29df2a3cd6821",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/test/auth/rbac-staff-and-roster.integration.test.ts",
+      "sha256": "26323a707e1dde7436d556d2d500d3525de1a5e699230e22b415d1ed6b38f177",
+      "change_type": "added"
+    },
+    {
+      "path": "apps/api/test/database-unit.test.ts",
+      "sha256": "67c053d72f54120d3cbf4921cf78036788b8f43e29e69b9da4c00e0734005cf8",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/test/database/domain-constraints.integration.test.ts",
+      "sha256": "902a287785183882e4eef4218156b715f43ec94ef68736c4bed2d396dec4cdff",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/test/database/harness.ts",
+      "sha256": "2646c32246512a23a4457154c16c1f3f029c627450fd01af36f7c93126a30f9e",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "sha256": "86c9b78a09a5e8adeb1f1fb4b72fc68aec16ba721ec790d81bc634da690137b6",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/test/database/roles-and-isolation.integration.test.ts",
+      "sha256": "1524718d2e17ca9a28dbfed7c7eb61e3cfa551232d86a357ddb55cc2f330df18",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/test/database/transactions-and-readiness.integration.test.ts",
+      "sha256": "7f1c07226e28119c0f6064dfbd25787249f38730f1af2f98e84835df5ea09bc5",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/test/health.test.ts",
+      "sha256": "50edd3478fc4126a49b3bf942ca4d44191f92780452d147619212f6de9f9df72",
+      "change_type": "modified"
+    },
+    {
+      "path": "apps/api/tsconfig.json",
+      "sha256": "592e22185cd0a84ae7f093488ca9fefeb5a8666205edfb5e579d575b86b2514a",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/architecture/adr/ADR-004-database-foundation.md",
+      "sha256": "8f34e73d83d987dd9f52bd886b50a31ded88fe7efdf9ea29b7653046124cec7d",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/architecture/adr/ADR-005-auth-and-session.md",
+      "sha256": "7709742f2454df117d69ceee49297f571577144a408583c7f718195516953c89",
+      "change_type": "added"
+    },
+    {
+      "path": "docs/architecture/openapi.yaml",
+      "sha256": "022bb682fb52f5673c8d892b6eb9ee3e088ce1bd298e113431eb25184d5c1e46",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/architecture/operation-inventory.csv",
+      "sha256": "3d2f86a7783c652e4827bf3915144deef2ce718b736abe21e88083c9cb08c867",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/architecture/schema-coverage.csv",
+      "sha256": "10cd12dc17bd1ca904fb766acae02bb1edfd52d30efe9343e2be1a716b9cdfef",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/security/rbac-matrix.csv",
+      "sha256": "6b9af47944d20036d208010ff8f3ffafe55138172f7a1f0f109ea8a3ab68d5a5",
+      "change_type": "added"
+    },
+    {
+      "path": "docs/spec/decisions.md",
+      "sha256": "783c76c805a830b2afb9f93f02d6e6a92ef7b67f02d0fb75e132ce15faf92535",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/spec/scope.md",
+      "sha256": "763c6db9d3cde18abc78dba0df3bdda52f3b4bafad3ec581a5b0530708ae5a11",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/verification/S04-G.md",
+      "sha256": "e60eacbdfe6882b60022b25e85b38356c32b327e71355a5355af0cc04b755b80",
+      "change_type": "added"
+    },
+    {
+      "path": "docs/verification/S04.md",
+      "sha256": "d1f4ab3c9788b8142c5d98bfff0e02426b3672922963f83271d170b369cf5d3c",
+      "change_type": "modified"
+    },
+    {
+      "path": "docs/verification/S05.md",
+      "sha256": "7f69066e4314efa30b7651872f2f3d0b68741fdca48bcff92f0186833ad14faa",
+      "change_type": "added"
+    },
+    {
+      "path": "infra/ci/eduerp-ci.yml",
+      "sha256": "f9a603f4fc3af011a2bdd7cf1b548d3a904a677cf9b8162f6bfc79d40e323289",
+      "change_type": "modified"
+    },
+    {
+      "path": "infra/compose.dev.yml",
+      "sha256": "7638e41006eb139d81ac730fa4af1619ba623b904dbc7896cde89ac7fe414bdd",
+      "change_type": "modified"
+    },
+    {
+      "path": "infra/db/00-docker-init.sh",
+      "sha256": "783f075028e9fe23e9ba27aa1b357b75841210bb0940f2fca2ac8a92ae834f5f",
+      "change_type": "modified"
+    },
+    {
+      "path": "infra/db/01-init-roles-and-databases.sql",
+      "sha256": "ae03284c670ebe8ee298b7cd9248f264cba501de38efc0cd7bf8230dfd7888af",
+      "change_type": "modified"
+    },
+    {
+      "path": "infra/db/02-apply-runtime-grants.sql",
+      "sha256": "3bfbe6e12e42a60187fda1bc1336282bf2c77b80b36c89663219d35f580b64f1",
+      "change_type": "modified"
+    },
+    {
+      "path": "package.json",
+      "sha256": "6ae1cacc4c6e19225a5c35e2be5f03f1a3e5f76ca9fff373632758d0683301b9",
+      "change_type": "modified"
+    },
+    {
+      "path": "packages/contracts/src/index.ts",
+      "sha256": "868ec493a54b4e5106553a65fe75711e38d76f6d56bb4aef15c0b80825efc0d1",
+      "change_type": "modified"
+    },
+    {
+      "path": "planning/state/handoffs/S04.md",
+      "sha256": "cd31532bae0f07e2e9d5a4d99f3d5486936fb41fde99778e13ae87d808e2a079",
+      "change_type": "modified"
+    },
+    {
+      "path": "planning/state/handoffs/S05.md",
+      "sha256": "d7ce5a7b10c4e5a76575c9e4167b5d805403c475f47428f3ce33d68d2144e5e7",
+      "change_type": "added"
+    },
+    {
+      "path": "planning/state/steps/04.01.md",
+      "sha256": "6521a59d0c4b1a6aa8c5a58535a29015bf72819f5a1baf666610e231d0f4e7a9",
+      "change_type": "modified"
+    },
+    {
+      "path": "planning/state/steps/04.02.md",
+      "sha256": "cfc50e300ae54a0a5402ac0d194da5e9d94fb3b384a887993e03efff1bdf5b28",
+      "change_type": "modified"
+    },
+    {
+      "path": "planning/state/steps/04.03.md",
+      "sha256": "f6581428b60efbd96207a0c4247830b7ac475896ce078a91af3474990721a5eb",
+      "change_type": "modified"
+    },
+    {
+      "path": "planning/state/steps/04.04.md",
+      "sha256": "f0f37031e2d6bd2e40dbfcdcc38d852ed6f8a8df6393ca50eb2a57b1391d7396",
+      "change_type": "modified"
+    },
+    {
+      "path": "planning/state/steps/04.05.md",
+      "sha256": "0059232385bc3560d564cc72e209103a76fc879998689ff065ebcaac84703fb9",
+      "change_type": "modified"
+    },
+    {
+      "path": "planning/state/steps/05.01.md",
+      "sha256": "dc2b13f730be2d788283df64a7b793d9ecfb02e6eefc6e43b5aa0dc82b3dfc54",
+      "change_type": "added"
+    },
+    {
+      "path": "planning/state/steps/05.02.md",
+      "sha256": "e2bd2e514bc7b8779e874cc0447c388530508fb26eb541b93650217a569f17bb",
+      "change_type": "added"
+    },
+    {
+      "path": "planning/state/steps/05.03.md",
+      "sha256": "3f51ce01e12e5bd087201bbea83f6dbc190c8937f4f9a709d4cbdea4a4b14087",
+      "change_type": "added"
+    },
+    {
+      "path": "planning/state/steps/05.04.md",
+      "sha256": "6c9db013e0e5f09668ba0a8c409eb88470eb4d587f256ce9f4e98bc59c6bcf16",
+      "change_type": "added"
+    },
+    {
+      "path": "planning/state/steps/05.05.md",
+      "sha256": "68034a778f353cd3a25fc254cab1f05183af4971205aa7fbdb6407f2ad958929",
+      "change_type": "added"
+    },
+    {
+      "path": "tools/verify_s01_s02.py",
+      "sha256": "e973b6571c7c004bf97040fd77b93bea1284e073ce4a2640aeb4cf8bc8bd47d5",
+      "change_type": "modified"
+    },
+    {
+      "path": "tools/verify_s04.py",
+      "sha256": "a557eb5f10439ddc2905b484b3d13142dd2f1081a023fc2484b60356302c9139",
+      "change_type": "modified"
+    }
+  ]
+}
