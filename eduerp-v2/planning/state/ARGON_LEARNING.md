@@ -18,3 +18,11 @@ Keyingi review: qaysi finding yopildi, qaysisi takrorlandi, yangi issue, manager
 ## Uchinchi artifact — S01-FIX-S02-FULL-D
 Manager haqiqiy skriptni compile+run qildi:PASS,5negative test o‘tdi. Quote/control/CSV GivenWhen/source-set tuzatishlari sezilarli yaxshilangan. S01docstage manager reviewdan o‘tdi, P2coverage-label risk nextbatchda.
 Yangi kuzatuvlar: L09 generic POSTauthguard publicloginni ham bearerga bog‘lagan; L10 field/row classification o‘zaro zid; L11 localrefsoni usecase/securitycoverage emas; L12 producerdedup consumerdedup o‘rnida ishlatilgan. Kelasi prompt: positive+negative semantic invariant va lifecycle-crosscheck, faqatcountemas. L05coverage overclaim qisman davom etgan. Dataset3artifact, modelga umumiy statistik hukm yo‘q. Attachmentmismatch usertransportholati, Argonxatosi deb hisoblanmaydi.
+
+## To‘rtinchi artifact — S02FIX-S03FULL-E
+S02fixes improved:55operations,structuredownership,46entitycatalog,consumerreceipts/fencing,actualcaseoracles. Managerchecker+fullOpenAPIvalidatorPASS. Original9tests/lint/tscbuildPASS;actualNestbootFAILandworkerprocessimmediatelyexited. Managerfixedand14actual/unit tests+CIdockerpassed.
+L13:helper HTTPserver/functionstoptestisnotdeployedframework/processlifecycle. Prevention:actualcompiledentrypoint+realHTTP/OSsignal.
+L14:copyingonlyhoistednode_moduleslosesworkspace-localdependencies;dockerignorehidrequiredcontractassets. Prevention:realcontainerbuild+composehealth,notYAMLparseonly.
+L15:availableVMruntimeisnotprojectsupportedtarget;Node18EOLwaschosenfromVM. Prevention:preserveNode24target,explicitverifiedversions,offlineNOT_RUNratherthandowngrade.
+L16:blanket.sqlignore/secretfilebanblockslegitimatemigrations. Prevention:allowtrustedsourcepaths,forbidrealDBdumps/keys.
+Managerclosedthesefixesinthisturn;donotaskArgontorecreateorrevertcorrectbaseline. Dataset4artifacts,notamodelbenchmark.

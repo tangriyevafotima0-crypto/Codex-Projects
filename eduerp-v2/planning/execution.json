@@ -121,10 +121,10 @@
       "test_id": "T02.01",
       "acceptance": "Center A va B uchun database credential, storage, bot va network chegarasi chizmada ko‘rsatilgan; shared VPS nosozlik domeni alohida yozilgan.",
       "prompt": "prompts/S02/01.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-S02-D.md",
-      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -144,10 +144,10 @@
       "test_id": "T02.02",
       "acceptance": "Enrollment ko‘p guruhni, guardian ko‘p farzandni, lesson bir kunda ko‘p darsni qo‘llaydi. Ledger/invoice/allocation va audit o‘rtasidagi FKlar ko‘rsatilgan.",
       "prompt": "prompts/S02/02.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-S02-D.md",
-      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -167,10 +167,10 @@
       "test_id": "T02.03",
       "acceptance": "Har write endpointda rol, body, error, idempotency yoki expected_version talabi bor; Teacher DTOda telefon yo‘q. OpenAPI parse/validationdan o‘tadi.",
       "prompt": "prompts/S02/03.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-S02-D.md",
-      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -190,10 +190,10 @@
       "test_id": "T02.04",
       "acceptance": "PaymentRecorded va AttendanceSubmitted schema versiyasi, outbox transaction, retry, dedup key, consumer va retentioni belgilangan. At-least-once chegarasi ochiq.",
       "prompt": "prompts/S02/04.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-S02-D.md",
-      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -211,10 +211,10 @@
       "test_id": "T02.05",
       "acceptance": "Har API uchun rol va xato kodi bor; boshqa markaz bazasiga marshrut yo‘q",
       "prompt": "prompts/S02/05.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-S02-D.md",
-      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -234,11 +234,11 @@
       "test_id": "T03.01",
       "acceptance": "Toza checkoutda belgilangan runtime bilan install va workspace build ishlaydi; Flutter alohida toolchain bo‘lib JS lockfilega kirmaydi.",
       "prompt": "prompts/S03/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "bdc229c2e7bacb18714183c3c1d54d7cfbbb886b",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "03.02",
@@ -257,11 +257,11 @@
       "test_id": "T03.02",
       "acceptance": "Config yo‘q yoki noto‘g‘ri bo‘lsa xizmat aniq xato bilan startni rad etadi; health secret/DB password qaytarmaydi; request ID logda bor.",
       "prompt": "prompts/S03/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "bdc229c2e7bacb18714183c3c1d54d7cfbbb886b",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "03.03",
@@ -280,11 +280,11 @@
       "test_id": "T03.03",
       "acceptance": "Dev Compose healthcheckdan o‘tadi; DB tashqi internetga ochilmaydi; .env.example haqiqiy kalitsiz; lokal volume qayta startda saqlanadi.",
       "prompt": "prompts/S03/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "bdc229c2e7bacb18714183c3c1d54d7cfbbb886b",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "03.04",
@@ -303,11 +303,11 @@
       "test_id": "T03.04",
       "acceptance": "Atay buzilgan type/test bilan CI qizil, tuzatilganda yashil. Hali mavjud bo‘lmagan app uchun soxta PASS yoki barcha testlarni skip qilish yo‘q.",
       "prompt": "prompts/S03/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "bdc229c2e7bacb18714183c3c1d54d7cfbbb886b",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "03.05",
@@ -324,11 +324,11 @@
       "test_id": "T03.05",
       "acceptance": "Toza checkout hujjatdagi buyruqlar bilan ishga tushadi; CI yashil",
       "prompt": "prompts/S03/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S02-S03-E.md",
+      "reviewed_revision": "bdc229c2e7bacb18714183c3c1d54d7cfbbb886b",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "04.01",

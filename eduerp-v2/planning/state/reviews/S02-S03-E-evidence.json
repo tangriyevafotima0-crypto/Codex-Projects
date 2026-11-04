@@ -1,0 +1,45 @@
+{
+  "runtime": {
+    "node": "24.18.1",
+    "npm": "11.16.0"
+  },
+  "original": {
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "helper_tests": "9/9 PASS",
+    "actual_api_boot": "FAIL Nest DI Object not provided",
+    "actual_worker_process": "FAIL exited0 while idle"
+  },
+  "repaired": {
+    "npm_install_ignore_scripts": "PASS",
+    "npm_ci_ignore_scripts": "PASS",
+    "lint": "PASS",
+    "typecheck": "PASS",
+    "build": "PASS",
+    "real_and_unit_tests": "14/14 PASS",
+    "openapi_full_validator": "PASS",
+    "production_npm_audit": {
+      "total": 0
+    },
+    "docker_local": "NOT_RUN:no Docker CLI/daemon",
+    "github_ci": {
+      "status": "SUCCESS",
+      "run_id": 41802562459,
+      "code_commit": "bdc229c2e7bacb18714183c3c1d54d7cfbbb886b",
+      "url": "https://github.com/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41802562459",
+      "jobs": [
+        "contract+secret checks",
+        "lint+typecheck+build+14tests",
+        "DockerCompose PostgreSQL+API+worker smoke"
+      ]
+    }
+  },
+  "limitations": [
+    "Build was tested on manager Node24, original pinned Node18 was not used.",
+    "Production audit excludes devDependencies.",
+    "Docker image execution passed actual GitHub CI run41802562459; local Docker unavailable."
+  ],
+  "package_lock_sha256": "102f081ad01a62b7639040a7e0193abbe7f435cf32f0e6d13d882413b6312774",
+  "original_artifact_sha256": "624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085"
+}

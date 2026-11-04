@@ -20,3 +20,6 @@ Salbiy ssenariy:45–65+ sikl —22–42+ qo‘shimcha qayta topshirish/scope yo
 Matematik worst-case chegaralanmagan: user qarori, access, toolchain yoki production muammosi ishni tashqi sabab bilan to‘xtatishi mumkin. Yuqoridagi45–65 optimistik kafolat emas, stress scenario.
 
 S24 real onboarding/pilotdagi1–3 oylik kuzatuvni o‘z ichiga oladi. Uni promptlar sonini kamaytirish bilan tugatib bo‘lmaydi. “Demo/release-ready mahsulot” va “real pilot sign-off” yakuni farqlanadi. Birinchi runtime bosqichlaridan so‘ng (S03–S05) ushbu baho haqiqiy natijaga qarab yangilanadi.
+
+## S03 qabulidan keyingi yangilanish — 2026-11-04
+S01, S02 va manager tuzatgan S03 qabul qilindi. Navbatdagi paket S04FULL-F; S04–S24 uchun 21 asosiy stage-paket qoladi. Avvalgi 23 paket hisob-kitobi o‘sha paytdagi holat edi. Hozir ideal 21–23, amaliy 26–33, salbiy 43–63+ almashinuv taxmini; o‘lchangan kafolat emas. Real pilot muddati va tashqi dependencylar saqlanadi.

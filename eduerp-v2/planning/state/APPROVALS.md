@@ -1,3 +1,5 @@
 # Manager approvals
-2026-11-04: S01/01.01–01.05 hujjatlari APPROVED. Evidence:reviews/S01-S02-D.md. Minor P2risk:S2F06casecoverage-label correction due nextbatch. Business decisions remain unaccepted; no runtimecodeapproval. Executor IN_REVIEW reportlar tarixiy artifact, manager qarori ularni status uchun supersede qiladi.
-S02/02.01–02.05:CHANGES_REQUIRED; S2F01–S2F07.
+S01/01.01–01.05documentationAPPROVED. BusinesspolicyD01–D25/OPENquestionsstillnotACCEPTED.
+S02/02.01–02.05architectureAPPROVEDafterEfixes+managerfullOpenAPIvalidation.
+S03/03.01–03.05foundationAPPROVEDonlyforrepairedcodecommitbdc229c2e7bacb18714183c3c1d54d7cfbbb886b;CI41802562459threejobsSUCCESS. OriginalEartifactbootstrapwasbrokenandpreservedseparately.
+Evidence:planning/state/reviews/S02-S03-E.md. NoS04migration/auth/billing/pilotapprovalimplied.

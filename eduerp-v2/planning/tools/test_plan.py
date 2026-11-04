@@ -2,9 +2,15 @@ from pathlib import Path
 import importlib.util,json,copy,tempfile,shutil
 root=Path(__file__).resolve().parents[1]
 spec=importlib.util.spec_from_file_location('check',root/'tools/check_plan.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
-doc=json.loads((root/'execution.json').read_text());results=[]
+current_document=json.loads((root/'execution.json').read_text());results=[]
+# Negative test fixtures must be independent of live project approvals.
+doc=copy.deepcopy(current_document)
+for step in doc['steps']:
+ step.update(status='NOT_STARTED',evidence=None,reviewed_revision=None,review_result=None,reviewer=None)
 def run(name,fn):fn();results.append(name)
-def ok():assert not m.validate(root,doc)
+def ok():
+ assert not m.validate(root,current_document)
+ assert not m.validate(root,doc)
 run('Valid baseline',ok)
 def negative(name,mut):
  d=copy.deepcopy(doc);mut(d);assert m.validate(root,d),name

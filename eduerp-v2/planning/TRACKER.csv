@@ -4,16 +4,16 @@ step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
 01.03,01,"Har talabga R-ID, rol, kirish, natija va sinov biriktirish",docs/spec/acceptance.md,01.02,APPROVED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
 01.04,01,"240/250 demo, oy/12 dars, bot tasdiqlash, zaxira va xizmat darajasi noaniqliklarini yopish",docs/spec/decisions.md,01.03,APPROVED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
 01.05,01,"Review, regressiya va handoff",planning/state/handoffs/S01.md,01.04,APPROVED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
-02.01,02,"Har markazga alohida API, worker, PostgreSQL, fayl hajmi va bot chegaralarini loyihalash",docs/architecture/system.md,01.05,CHANGES_REQUIRED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
-02.02,02,"UUID, version, foreign key, unique va immutable ledger jadvallarini ER diagrammada belgilash",docs/architecture/data-model.md,02.01,CHANGES_REQUIRED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
-02.03,02,"Auth, students, groups, lessons, billing, payments, imports va sync kontraktlarini belgilash",docs/architecture/openapi.yaml,02.02,CHANGES_REQUIRED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
-02.04,02,"Outbox hodisalari, idempotency, event version va retry semantikasini yozish",docs/architecture/events.md,02.03,CHANGES_REQUIRED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
-02.05,02,"Review, regressiya va handoff",planning/state/handoffs/S02.md,02.04,CHANGES_REQUIRED,state/reviews/S01-S02-D.md,artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b
-03.01,03,"JS workspace va Flutter toolchainni alohida pin qilish, install/build buyruqlarini yaratish",package.json,02.05,NOT_STARTED,,
-03.02,03,"NestJS API health, config validation va request ID poydevorini yozish",apps/api/src/main.ts,03.01,NOT_STARTED,,
-03.03,03,"Mahalliy PostgreSQL, API va worker servislarini secretsiz sozlash",infra/compose.dev.yml,03.02,NOT_STARTED,,
-03.04,03,"Lint, typecheck, test, build va maxfiy kalitlarni tekshirishni ulash",.github/workflows/ci.yml,03.03,NOT_STARTED,,
-03.05,03,"Review, regressiya va handoff",planning/state/handoffs/S03.md,03.04,NOT_STARTED,,
+02.01,02,"Har markazga alohida API, worker, PostgreSQL, fayl hajmi va bot chegaralarini loyihalash",docs/architecture/system.md,01.05,APPROVED,state/reviews/S02-S03-E.md,artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085
+02.02,02,"UUID, version, foreign key, unique va immutable ledger jadvallarini ER diagrammada belgilash",docs/architecture/data-model.md,02.01,APPROVED,state/reviews/S02-S03-E.md,artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085
+02.03,02,"Auth, students, groups, lessons, billing, payments, imports va sync kontraktlarini belgilash",docs/architecture/openapi.yaml,02.02,APPROVED,state/reviews/S02-S03-E.md,artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085
+02.04,02,"Outbox hodisalari, idempotency, event version va retry semantikasini yozish",docs/architecture/events.md,02.03,APPROVED,state/reviews/S02-S03-E.md,artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085
+02.05,02,"Review, regressiya va handoff",planning/state/handoffs/S02.md,02.04,APPROVED,state/reviews/S02-S03-E.md,artifact-sha256:624eb34e0f1008c7494f14447707ad17dc0648d9bd8f8b20d9c1ebca66f45085
+03.01,03,"JS workspace va Flutter toolchainni alohida pin qilish, install/build buyruqlarini yaratish",package.json,02.05,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
+03.02,03,"NestJS API health, config validation va request ID poydevorini yozish",apps/api/src/main.ts,03.01,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
+03.03,03,"Mahalliy PostgreSQL, API va worker servislarini secretsiz sozlash",infra/compose.dev.yml,03.02,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
+03.04,03,"Lint, typecheck, test, build va maxfiy kalitlarni tekshirishni ulash",.github/workflows/ci.yml,03.03,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
+03.05,03,"Review, regressiya va handoff",planning/state/handoffs/S03.md,03.04,APPROVED,state/reviews/S02-S03-E.md,bdc229c2e7bacb18714183c3c1d54d7cfbbb886b
 04.01,04,"Staff, student, guardian, enrollment, group, lesson, invoice, ledger, audit, outbox jadvallarini yaratish",apps/api/prisma/schema.prisma,03.05,NOT_STARTED,,
 04.02,04,"FK, unique, check, indekslar va ledger UPDATE/DELETE cheklovlarini yozish",apps/api/prisma/migrations/initial/migration.sql,04.01,NOT_STARTED,,
 04.03,04,Tranzaksiya chegarasi va parallel yozish xatolarini boshqarish,apps/api/src/database/transaction.ts,04.02,NOT_STARTED,,
