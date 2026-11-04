@@ -5,6 +5,7 @@ on:
     paths: ['.github/workflows/eduerp-s07-probes.yml', 's07-semantic-probes.cjs']
 permissions:
   contents: read
+  actions: write
 jobs:
   semantic-probes:
     runs-on: ubuntu-latest
@@ -27,6 +28,17 @@ jobs:
       EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: 'true'
       TEST_DATABASE_ADMIN_URL: postgresql://eduerp_probe_admin:TEST_ONLY_PROBE_PASSWORD@127.0.0.1:5432/eduerp_test_probe_admin
     steps:
+      - name: Stop only the superseded stuck manager-owned diagnostic run
+        working-directory: /tmp
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          previous_sha=$(gh api repos/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41840669344 --jq '.head_sha')
+          previous_status=$(gh api repos/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41840669344 --jq '.status')
+          if [ "$previous_sha" = "6ff48e3fae0cbeacf92f6ab410ea4e394938ec46" ] && [ "$previous_status" != "completed" ]; then
+            gh api -X POST repos/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41840669344/cancel
+          fi
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
