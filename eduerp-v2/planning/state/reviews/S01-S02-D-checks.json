@@ -1,0 +1,56 @@
+{
+  "artifact_sha256": "b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+  "supplied_checker_compile": "PASS",
+  "supplied_checker_execution": "PASS",
+  "negative_tests": 5,
+  "paths_operations": 41,
+  "local_refs": 643,
+  "review_exceptions": [
+    {
+      "id": "S2F01",
+      "operation": "loginStaff",
+      "actual_security": [
+        {
+          "StaffBearerAuth": []
+        }
+      ],
+      "issue": "Anonymous bootstrap is blocked by bearer requirement"
+    },
+    {
+      "id": "S2F01",
+      "operation": "loginVendorWithMfa",
+      "actual_security": [
+        {
+          "VendorMfaBearerAuth": []
+        }
+      ],
+      "issue": "Anonymous bootstrap is blocked by bearer requirement"
+    },
+    {
+      "id": "S2F02",
+      "read_operations_without_explicit_object_scope": [
+        "listStaffUsers",
+        "listStudentsForAdmin",
+        "getGroupSafeRoster",
+        "exportLockedExcelTemplate",
+        "getDirectorFinancialReport",
+        "getPayrollReport",
+        "getChurnAnalyticsReport",
+        "getGuardianBalanceAndAttendanceForBot",
+        "listVendorCentersRegistry"
+      ]
+    }
+  ],
+  "oas31_nullable_keywords": 18,
+  "negative_payment_schema_accepted": true,
+  "missing_explicit_case_model_identifiers": [
+    "excel_version",
+    "server_version",
+    "send_reminder",
+    "remaining_debt",
+    "debt_after_leave",
+    "oct_snapshot"
+  ],
+  "three_requirement_sets": "119 unique IDs match baseline",
+  "boundaries": "Document/model checks, not application tests."
+}

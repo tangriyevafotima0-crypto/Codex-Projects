@@ -14,10 +14,10 @@
       "test_id": "T01.01",
       "acceptance": "Rahbar/Admin/Teacher uchun kanal va amal jadvali mavjud; parent/student web login scope tashqarisida. Har PDF talabi manba sahifasi va R-IDga bog‘langan.",
       "prompt": "prompts/S01/01.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-FULL-C.md",
-      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -35,10 +35,10 @@
       "test_id": "T01.02",
       "acceptance": "480000×7/12=280000 misoli, trialning ikkinchi attendance transitioni, grant, freeze va refund hisoblari qarorlar bilan berilgan; noma’lum natija taxminiy PASS emas.",
       "prompt": "prompts/S01/02.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-FULL-C.md",
-      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -56,10 +56,10 @@
       "test_id": "T01.03",
       "acceptance": "Har talabning kamida bitta owner stepi va tekshiriladigan natijasi bor; barcha 8 sahifa qamrovi tekshirilgan; qabul qiluvchi rol belgilangan.",
       "prompt": "prompts/S01/03.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-FULL-C.md",
-      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -77,10 +77,10 @@
       "test_id": "T01.04",
       "acceptance": "D01–D18 holati PROPOSED/ACCEPTED/DEFERRED; egasi va qaysi stepni bloklashi bor. Moliya qarori ochiq bo‘lsa aynan unga bog‘liq step bloklanadi, butun repo emas.",
       "prompt": "prompts/S01/04.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-FULL-C.md",
-      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -98,10 +98,10 @@
       "test_id": "T01.05",
       "acceptance": "Barcha ochiq moliyaviy qarorlar egasi bilan belgilangan; tasdiqlanmagan qoida kodga aylantirilmaydi",
       "prompt": "prompts/S01/05.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S01-FULL-C.md",
-      "reviewed_revision": "artifact-sha256:f726c482cf3c1766e08d5e6c4bf8cda8aeb4623f8bf60123dbba406636ec6b89",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -121,11 +121,11 @@
       "test_id": "T02.01",
       "acceptance": "Center A va B uchun database credential, storage, bot va network chegarasi chizmada ko‘rsatilgan; shared VPS nosozlik domeni alohida yozilgan.",
       "prompt": "prompts/S02/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "02.02",
@@ -144,11 +144,11 @@
       "test_id": "T02.02",
       "acceptance": "Enrollment ko‘p guruhni, guardian ko‘p farzandni, lesson bir kunda ko‘p darsni qo‘llaydi. Ledger/invoice/allocation va audit o‘rtasidagi FKlar ko‘rsatilgan.",
       "prompt": "prompts/S02/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "02.03",
@@ -167,11 +167,11 @@
       "test_id": "T02.03",
       "acceptance": "Har write endpointda rol, body, error, idempotency yoki expected_version talabi bor; Teacher DTOda telefon yo‘q. OpenAPI parse/validationdan o‘tadi.",
       "prompt": "prompts/S02/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "02.04",
@@ -190,11 +190,11 @@
       "test_id": "T02.04",
       "acceptance": "PaymentRecorded va AttendanceSubmitted schema versiyasi, outbox transaction, retry, dedup key, consumer va retentioni belgilangan. At-least-once chegarasi ochiq.",
       "prompt": "prompts/S02/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "02.05",
@@ -211,11 +211,11 @@
       "test_id": "T02.05",
       "acceptance": "Har API uchun rol va xato kodi bor; boshqa markaz bazasiga marshrut yo‘q",
       "prompt": "prompts/S02/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S01-S02-D.md",
+      "reviewed_revision": "artifact-sha256:b8e010e4517c9e8df4c05821504c5e624ac01a3c1d2ba5699f3ba45ed107662b",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "03.01",

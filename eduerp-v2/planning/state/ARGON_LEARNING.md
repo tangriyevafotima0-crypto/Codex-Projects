@@ -14,3 +14,7 @@ Holat: 2026-11-04. Dataset: 2 ta olingan artifact — ARGON-01.01-A va S01-FULL-
 
 Kuchli natijalar: ikkala artifactda fayl/transport tartibi, hashlar va119 ID set mos. Ikkinchi artifact hajmi sezilarli kattaroq bo‘lsa ham bu struktura saqlangan.
 Keyingi review: qaysi finding yopildi, qaysisi takrorlandi, yangi issue, manager/ijrochi/shared sabab va promptga eng qisqa foydali o‘zgarish yoziladi.
+
+## Uchinchi artifact — S01-FIX-S02-FULL-D
+Manager haqiqiy skriptni compile+run qildi:PASS,5negative test o‘tdi. Quote/control/CSV GivenWhen/source-set tuzatishlari sezilarli yaxshilangan. S01docstage manager reviewdan o‘tdi, P2coverage-label risk nextbatchda.
+Yangi kuzatuvlar: L09 generic POSTauthguard publicloginni ham bearerga bog‘lagan; L10 field/row classification o‘zaro zid; L11 localrefsoni usecase/securitycoverage emas; L12 producerdedup consumerdedup o‘rnida ishlatilgan. Kelasi prompt: positive+negative semantic invariant va lifecycle-crosscheck, faqatcountemas. L05coverage overclaim qisman davom etgan. Dataset3artifact, modelga umumiy statistik hukm yo‘q. Attachmentmismatch usertransportholati, Argonxatosi deb hisoblanmaydi.
