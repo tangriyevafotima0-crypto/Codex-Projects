@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 6 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F va S04FIX-S05FULL-G. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 7 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
@@ -47,3 +47,15 @@ L25: Composeconfig nomi kodnomidan farq qiladi; migrator runnerCLIprune bilan ke
 L26: “bugungi substitute” hujjatda bor, SQLda date predicate yo‘q. Next:temporal entitlement tests past/today/future center timezone.
 L27: security unit/hash tests login protocol semanticsni yopmaydi; 17AUTHlabel8actualtest. Next:semantic false-positive regression hamda liveHTTP/PG mandatory.
 Manager mechanical compile corrections allaqachon nextinputda:readonlypgbind copy,unused cleanup,BillingModeexport,contractsbuildorder,actual lock. Ularni qayta yozmang. Dataset6artifacts, statistik model benchmark emas.
+
+## Yettinchi artifact — S04S05FIX-S06FULL-H
+G01/G02actualfixed:oldwrongpasswordreplay401,no rawrefreshcache,countercommit. Managerrepairsdan keyin64tests+strictCI418325723943/3SUCCESS.
+L28:decorator/controller/service import cycle configtokenundefined qildi. Next:pure tokens.ts module vaactualbootstrap.
+L29:DATEcalendarvalue localDate→UTCISO bilan birkun surildi. Next:driver-boundarycalendarstrings,UTC/TashkentactualDBtest;lessonTZtests.
+L30:testcustomroles productiondefaultrolebootstrapprivilegesni yopmagan; actualDockerALTERROLEfail. Next:clusterroleopsadminbootstrapda,migratortableschemaonly.
+L31:INSERTcolumncount checker SELECTwrongcolumns+fixturearityni tutmagan. Next:actual SELECT/endtoendfixture,notcountapproval.
+L14repeat:minimalDockercopy yana workspace-local Nestdepsni yo‘qotdi. Managerpreservedproperprodlocalcopy.
+L32:futurebotURL/refhash mosligi va realissuance yo‘q edi. Next:futureintegrationpendingexplicit;S06relinkmetadatanullURL,S14actualissuance.
+L33:2pycoutputartifactkeraksiz;exactrawZIPreviewbranchda,productcachefree.
+Manager-induced broadINSERTVALUESreplacement strictCIcatchqildi va scope-specificfixbo‘ldi;Argonxatosi debhisoblanmaydi. NextmanagereditsmaydoncontextvaactualG3fixturebilantekshiriladi.
+Dataset7artifacts,statistikbenchmarkemas. P2R1limiterfailclosed/R2explicitreuse nextpacketgaassigned.

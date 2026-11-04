@@ -347,10 +347,10 @@
       "test_id": "T04.01",
       "acceptance": "DB modelda barcha invariant FK/unique bilan ifodalangan; student archive ledgerni cascade delete qilmaydi; guardian unlink qarzni o‘chirmaydi.",
       "prompt": "prompts/S04/01.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -370,10 +370,10 @@
       "test_id": "T04.02",
       "acceptance": "Runtime user ledger UPDATE/DELETE qila olmaydi; migrator user alohida. Invoice period va attendance lesson/student duplicate DB darajasida rad.",
       "prompt": "prompts/S04/02.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -393,10 +393,10 @@
       "test_id": "T04.03",
       "acceptance": "Payment transactionning o‘rtasida fault kiritilganda payment/allocation/audit/outboxning hammasi rollback; deadlock retry cheklangan va idempotent.",
       "prompt": "prompts/S04/03.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -416,10 +416,10 @@
       "test_id": "T04.04",
       "acceptance": "Bo‘sh DBga barcha migration, oldingi snapshotga yangi migration ishlaydi; schema drift aniqlanadi. Restore faylining format/version kontrakti qayd etilgan.",
       "prompt": "prompts/S04/04.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -437,10 +437,10 @@
       "test_id": "T04.05",
       "acceptance": "Bo‘sh bazada migratsiya o‘tadi; runtime DB roli ledgerni o‘chira olmaydi",
       "prompt": "prompts/S04/05.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -460,10 +460,10 @@
       "test_id": "T05.01",
       "acceptance": "Bruteforce limit, disabled staff, token rotation/revoke va logout tekshiriladi; browser sessiyasida CSRF siyosati, mobile token saqlash kontrakti bor.",
       "prompt": "prompts/S05/01.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -483,10 +483,10 @@
       "test_id": "T05.02",
       "acceptance": "Teacher A boshqa teacher guruh IDsi bilan GET/POST/export qila olmaydi; URLni almashtirish huquq bermaydi; API role va object scope tekshiradi.",
       "prompt": "prompts/S05/02.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -506,10 +506,10 @@
       "test_id": "T05.03",
       "acceptance": "O‘zini oxirgi Director sifatida deaktivatsiya qilib markazni egasiz qoldirish rad; rol o‘zgarganda eski session vakolati yo‘qoladi; audit bor.",
       "prompt": "prompts/S05/03.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -529,10 +529,10 @@
       "test_id": "T05.04",
       "acceptance": "Har role uchun allow/deny jadvali bajarilgan; pagination, search va error response orqali ham telefon/moliya sizib chiqmaydi.",
       "prompt": "prompts/S05/04.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -550,10 +550,10 @@
       "test_id": "T05.05",
       "acceptance": "ID almashtirib kirish urinishlari 403/404; response va exportlarda ham shaxsiy telefon yashirilgan",
       "prompt": "prompts/S05/05.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S04-S05-G.md",
-      "reviewed_revision": "a1457c2a8021689c87d548ebaa3de05db36dbda9",
-      "review_result": "FAIL",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -573,11 +573,11 @@
       "test_id": "T06.01",
       "acceptance": "Bir xil create idempotency key bitta student; bir xil ismli turli student mumkin; archived student qidiruv defaultida yashirin, tarixda saqlanadi.",
       "prompt": "prompts/S06/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "06.02",
@@ -596,11 +596,11 @@
       "test_id": "T06.02",
       "acceptance": "Bir guardian ikki farzandga bog‘lanadi, bir farzand ikki guardian bilan ishlaydi; guardian phone o‘zgarishida eski Telegram link avtomatik ishonchli qolmaydi.",
       "prompt": "prompts/S06/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "06.03",
@@ -619,11 +619,11 @@
       "test_id": "T06.03",
       "acceptance": "Faqat ruxsat etilgan status transitionlari; enrollmentning effective sanasi bor; guruh almashishda oldingi enrollment va moliya tarixi saqlanadi.",
       "prompt": "prompts/S06/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "06.04",
@@ -642,11 +642,11 @@
       "test_id": "T06.04",
       "acceptance": "Bitta familiya/telefonli aka-ukalar bloklanmaydi; ehtimoliy dublikat Admin ko‘rigiga chiqadi; merge moliyaviy tarixni fizik o‘chirmaydi.",
       "prompt": "prompts/S06/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "06.05",
@@ -663,11 +663,11 @@
       "test_id": "T06.05",
       "acceptance": "Bitta telefonli ikki farzand saqlanadi; bir o‘quvchini ikki marta qo‘shish aniqlanadi",
       "prompt": "prompts/S06/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S04-S06-H.md",
+      "reviewed_revision": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "07.01",

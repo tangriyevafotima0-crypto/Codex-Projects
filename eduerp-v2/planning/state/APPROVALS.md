@@ -1,9 +1,12 @@
-# Manager approvals
-S01/01.01–01.05documentationAPPROVED. BusinesspolicyD01–D25/OPENquestionsstillnotACCEPTED.
-S02/02.01–02.05architectureAPPROVEDafterEfixes+managerfullOpenAPIvalidation.
-S03/03.01–03.05foundationAPPROVEDonlyforrepairedcodecommitbdc229c2e7bacb18714183c3c1d54d7cfbbb886b;CI41802562459threejobsSUCCESS. OriginalEartifactbootstrapwasbrokenandpreservedseparately.
-Evidence:planning/state/reviews/S02-S03-E.md. NoS04migration/auth/billing/pilotapprovalimplied.
+# Joriy manager tasdiqlari
 
-S04FULL-F review: CHANGES_REQUIRED. Original candidate source review branchda, approved main product source S03 holatida. S04 yoki S05 implementation approval yo‘q. OWNER-20261104-01 faqat create_staff biznes ruxsatini tasdiqlaydi.
+S01–S03 oldingi reviewlarda tasdiqlangan.
 
-S04FIX-S05FULL-G:CHANGES_REQUIRED. G1 DB17/17PASS manager-assisted candidate’da; G2 auth6/8PASS va dedicatedcredential replay finding. Docker migration gate ochiq. S04/S05 hech biri global APPROVED emas.
+S04 (04.01–04.05), S05 (05.01–05.05) va S06 (06.01–06.05) manager tuzatishlaridan keyin poydevor scope’i uchun **APPROVED**.
+
+- Tekshirilgan kod: `ee0c12dfd89c91de3079ce0bb4be51afc4439c37`.
+- Strict CI: `41832572394`, **3/3 SUCCESS**.
+- Haqiqiy testlar: 26 unit/runtime + 18 DB + 14 auth + 6 students = **64 PASS**.
+- Reja: **30/120 qadam, 6/24 bosqich — 25%**. Bu vaqt yoki mahsulot release tayyorligi foizi emas.
+
+Dalil: planning/state/reviews/S04-S06-H.md. R1/R2/R3 kichik follow-uplar S07FULL-Iga berilgan. Telegram invite issuance S14da; billing S08+da; frontend va pilot hali tasdiqlanmagan. Biznes tasdiqlari faqat OWNER_DECISIONS.md’dagi aniq scope bilan.

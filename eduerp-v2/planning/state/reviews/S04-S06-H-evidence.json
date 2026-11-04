@@ -1,0 +1,84 @@
+{
+  "task_id": "S04S05FIX-S06FULL-H",
+  "result": "REVIEW_PASS_AFTER_MANAGER_FIXES",
+  "approved_scopes": [
+    "S04",
+    "S05",
+    "S06"
+  ],
+  "original_artifact_sha256": "94579612efee4fec2178889f5a880639a226659874193f03ba22bb1ea93ccc63",
+  "original_commit": "7bec03dd215a18bfa93025cadf72d7e50844e459",
+  "tested_code_commit": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+  "ci": {
+    "run_id": 41832572394,
+    "code_commit": "ee0c12dfd89c91de3079ce0bb4be51afc4439c37",
+    "conclusion": "success",
+    "jobs": [
+      {
+        "id": 126583182797,
+        "name": "S01/S02/S04/S05 Contract Verification & Secret Scan",
+        "conclusion": "success"
+      },
+      {
+        "id": 126583245668,
+        "name": "JS Workspace Lint, Typecheck, Build, Unit, DB (G1) & Auth/RBAC (G2) Tests",
+        "conclusion": "success"
+      },
+      {
+        "id": 126583905351,
+        "name": "Build and smoke-test the dev Compose stack (migrator + /health + /ready)",
+        "conclusion": "success"
+      }
+    ],
+    "url": "https://github.com/tangriyevafotima0-crypto/Codex-Projects/actions/runs/41832572394"
+  },
+  "unit_runtime": {
+    "passed": 26,
+    "failed": 0
+  },
+  "database": {
+    "passed": 18,
+    "failed": 0
+  },
+  "auth": {
+    "passed": 14,
+    "failed": 0
+  },
+  "students": {
+    "passed": 6,
+    "failed": 0
+  },
+  "total_executable_tests": 64,
+  "full_openapi_validator": "PASS",
+  "original_date_probe": {
+    "node_TZ": "Asia/Tashkent",
+    "input": "2026-11-04",
+    "output": "2026-11-03"
+  },
+  "original_h_diagnostic": {
+    "unit_compile_assists": 26,
+    "db_pass": 17,
+    "auth_pass": 14,
+    "students_pass": 2,
+    "students_fail": 4,
+    "docker": "FAIL P3018 ALTER ROLE permission"
+  },
+  "second_assisted_run": {
+    "id": 41829879820,
+    "unit_pass": 26,
+    "db_pass": 17,
+    "auth_pass": 14,
+    "students_pass": 6,
+    "docker": "PASS"
+  },
+  "superseded_strict_failure": {
+    "id": 41831063768,
+    "cause": "Manager relink patch also changed sibling VALUES; fixed in final tested revision"
+  },
+  "followups": [
+    "R1 shared limiter store error fail-closed",
+    "R2 strict explicit reuse/boolean handling",
+    "R3 no pyc/generated artifacts"
+  ],
+  "source_boundary": "No Stage14 Telegram invite issuance implemented; S06 returns relink_required and null URL."
+}
