@@ -35,7 +35,7 @@ import {
   formatMoneyUzs,
   parseNonNegativeMoneyUzs,
 } from '../database/money';
-import { executeOptimisticUpdate, TransactionContext } from '../database/transaction';
+import { executeOptimisticUpdate } from '../database/transaction';
 import {
   ADJUSTMENTS_CALCULATION_VERSION,
   BillingPolicyService,
