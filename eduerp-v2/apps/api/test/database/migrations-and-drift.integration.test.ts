@@ -69,7 +69,17 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
          FROM "_prisma_migrations"
         ORDER BY "migration_name" ASC`,
     );
-    assert.equal(migRowsBefore.rows.length, 7);
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const crypto = await import('node:crypto');
+    const migrationRoot = path.dirname(path.dirname(resolveMigrationSqlPath()));
+    const expectedMigrationNames = fs.readdirSync(migrationRoot, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
+    assert.deepEqual(migRowsBefore.rows.map((row) => row.migration_name), expectedMigrationNames);
+    for (const row of migRowsBefore.rows) {
+      const sql = fs.readFileSync(path.join(migrationRoot, row.migration_name, 'migration.sql'));
+      assert.equal(row.checksum, crypto.createHash('sha256').update(sql).digest('hex'));
+    }
     assert.equal(migRowsBefore.rows[0].migration_name, '20261104000100_initial_foundation');
     assert.equal(migRowsBefore.rows[1].migration_name, '20261104000200_s05_auth_and_rbac_foundation');
     assert.equal(migRowsBefore.rows[2].migration_name, '20261104000300_s06_auth_fixes_and_student_foundation');
@@ -88,7 +98,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
     const migRowsAfter = await env.apiPoolA.query<{ count: string }>(
       `SELECT COUNT(*)::text AS count FROM "_prisma_migrations"`,
     );
-    assert.equal(Number(migRowsAfter.rows[0]?.count), 7);
+    assert.equal(Number(migRowsAfter.rows[0]?.count), expectedMigrationNames.length);
 
     // Fault injection: a migration batch that fails mid-script in a transaction leaves zero partial tables
     const client = await env.migratorPoolA.connect();
