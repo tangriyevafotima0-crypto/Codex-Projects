@@ -389,10 +389,10 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
       await upgPool.query(
         `INSERT INTO "payments" (
            "id", "center_id", "student_id", "cash_shift_id", "amount_uzs",
-           "currency", "payment_method", "recorded_by_admin_id", "idempotency_key"
+           "currency", "payment_method", "recorded_by_admin_id", "idempotency_key", "request_hash"
          ) VALUES
-         ($1::uuid, $3::uuid, $4::uuid, $5::uuid, 100000, 'UZS', 'CASH', $6::uuid, 'idem-upg-pay-1'),
-         ($2::uuid, $3::uuid, $4::uuid, $5::uuid, 100000, 'UZS', 'CASH', $6::uuid, 'idem-upg-pay-2')`,
+         ($1::uuid, $3::uuid, $4::uuid, $5::uuid, 100000, 'UZS', 'CASH', $6::uuid, 'idem-upg-pay-1', repeat('a',64)),
+         ($2::uuid, $3::uuid, $4::uuid, $5::uuid, 100000, 'UZS', 'CASH', $6::uuid, 'idem-upg-pay-2', repeat('b',64))`,
         [
           payment1Id,
           payment2Id,
@@ -422,10 +422,25 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
         ],
       );
 
-      const s11Sql = fs.readFileSync(path.join(migrationsRoot, s11Dir, 'migration.sql'), 'utf8');
-      await upgPool.query(s11Sql);
-      // Re-run migration 000700 a second time to prove idempotent re-execution!
-      await upgPool.query(s11Sql);
+      // Baseline the six scripts actually applied above through Prisma's own CLI.
+      // Never fabricate _prisma_migrations rows or checksums.
+      const { execFile } = await import('node:child_process');
+      const { promisify } = await import('node:util');
+      const runCli = promisify(execFile);
+      const apiRoot = path.resolve(migrationsRoot, '../..');
+      const prismaCli = require.resolve('prisma/build/index.js', { paths: [apiRoot] });
+      for (const dir of predecessorDirs) {
+        await runCli(process.execPath, [prismaCli, 'migrate', 'resolve', '--applied', dir,
+          '--config', 'prisma.config.ts'], {
+          cwd: apiRoot, timeout: 60000,
+          env: { ...process.env, MIGRATION_DATABASE_URL: upgUrl.toString(), DATABASE_URL: upgUrl.toString() },
+        });
+      }
+      await runPrismaMigrateDeploy(upgUrl.toString());
+      await runPrismaMigrateDeploy(upgUrl.toString());
+      const migrationHistory = await upgPool.query<{ migration_name: string }>(
+        'SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NOT NULL AND rolled_back_at IS NULL ORDER BY migration_name');
+      assert.deepEqual(migrationHistory.rows.map(row => row.migration_name), allMigrationDirs);
 
       const promisesAfter = await upgPool.query<{
         id: string;
