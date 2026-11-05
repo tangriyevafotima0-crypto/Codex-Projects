@@ -1,0 +1,64 @@
+{
+  "task_id": "S11FULL-O",
+  "status": "CHANGES_REQUIRED",
+  "base_commit": "252a11ef767069e70b4149e599701431cdbcd909",
+  "original_candidate_commit": "027b8fb30c8425eeba0ea72832c2d4b400c5266b",
+  "tested_product_commit": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+  "candidate_input_commit": "3a110d8cf6c75da3cc750227ee7cedff9ecacd83",
+  "original_zip_sha256": "02ac445951ee0336c61c7efcf8453083d98ac2dda1f8ed24faf73fe83326304b",
+  "strict_run_id": 42054251793,
+  "strict_conclusion": "failure",
+  "strict_jobs": [
+    127338188203,
+    127338320372
+  ],
+  "docker_status": "NOT_RUN_UPSTREAM_G8_FAILURE",
+  "independent_run_id": 42055084357,
+  "independent_job_id": 127341163711,
+  "independent_conclusion": "failure_G8_after_probe_completed",
+  "tests": {
+    "contracts": 1,
+    "api_unit": 54,
+    "worker": 4,
+    "G1_database": 18,
+    "G2_auth": 14,
+    "G3_students": 6,
+    "G4_academics": 10,
+    "G5_billing": 13,
+    "G6_adjustments": 6,
+    "G7_payments": 11,
+    "G8_cash": {
+      "pass": 2,
+      "fail": 8
+    },
+    "total_pass": 139,
+    "total_fail": 8
+  },
+  "probe": {
+    "missing_ledger": {
+      "ledger_rows": 0,
+      "get_http": 200,
+      "projection_drift": false,
+      "close_http": 200,
+      "closed_status": "CLOSED"
+    },
+    "predecessor_duplicate_promises_upgrade": {
+      "code": "23505",
+      "message": "could not create unique index \"idx_promises_active_invoice\""
+    }
+  },
+  "manager_assist_paths": [
+    "apps/api/src/cash/promises.service.ts",
+    "apps/api/test/cash/cash-lifecycle.integration.test.ts"
+  ],
+  "approved_steps": 50,
+  "total_steps": 120,
+  "findings": [
+    "O01_P2_canonical_status_and_typed_principal_compile_assists_and_remaining_filter_validation",
+    "O02_P1_missing_ledger_rows_bypass_reconciliation_and_close",
+    "O03_P1_populated_predecessor_duplicate_ACTIVE_promises_break_upgrade",
+    "O04_P1_G8_8_fail_and_missing_mixed_close_race_evidence",
+    "O05_P2_expense_outbox_missing_and_evidence_docs"
+  ],
+  "manager_probe_correction": "Initial diagnostic run used wrong SQL read path relative to working directory; corrected before reporting observed values. Not an Argon defect."
+}

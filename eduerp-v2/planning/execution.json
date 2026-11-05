@@ -1138,11 +1138,11 @@
       "test_id": "T11.01",
       "acceptance": "Yopiq smenaga yangi naqd payment rad yoki yangi smena talab qiladi; parallel close bitta natija; counted va expected farqi reason/audit bilan.",
       "prompt": "prompts/S11/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-O.md",
+      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "11.02",
@@ -1161,11 +1161,11 @@
       "test_id": "T11.02",
       "acceptance": "Expense uchun rol/sabab/summa talab qilinadi; reverse expense cash balancega bir marta ta’sir qiladi; karta expense naqdni kamaytirmaydi.",
       "prompt": "prompts/S11/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-O.md",
+      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "11.03",
@@ -1184,11 +1184,11 @@
       "test_id": "T11.03",
       "acceptance": "Qisman payment+promise yaratish atomik command orqali: sana yo‘q bo‘lsa payment ham commit bo‘lmaydi. Qarz nol bo‘lganda eski promise CANCELLED.",
       "prompt": "prompts/S11/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-O.md",
+      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "11.04",
@@ -1207,11 +1207,11 @@
       "test_id": "T11.04",
       "acceptance": "Opening0+cash3200000-expense150000=3050000; card1800000 naqdga qo‘shilmaydi. Refund, opening float va discrepancy alohida satrlar bilan reconcile.",
       "prompt": "prompts/S11/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-O.md",
+      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "11.05",
@@ -1228,11 +1228,11 @@
       "test_id": "T11.05",
       "acceptance": "3200000 naqd −150000 xarajat =3050000; karta naqd qoldiqqa qo‘shilmaydi",
       "prompt": "prompts/S11/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-O.md",
+      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "12.01",
