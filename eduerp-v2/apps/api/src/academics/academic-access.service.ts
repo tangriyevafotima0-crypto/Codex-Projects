@@ -50,6 +50,7 @@ export interface AuthorizedLessonContext {
   readonly rescheduled_from_lesson_id: string | null;
   readonly primary_teacher_snapshot_id: string;
   readonly pay_recipient_teacher_id: string;
+  readonly attendance_version: number;
   readonly version: number;
   readonly access_mode: 'ADMIN_OR_DIRECTOR' | 'PRIMARY_TEACHER' | 'SUBSTITUTE_TEACHER';
   readonly active_substitute_assignment_id: string | null;
@@ -303,6 +304,7 @@ export class AcademicAccessService {
       rescheduled_from_lesson_id: string | null;
       primary_teacher_snapshot_id: string;
       pay_recipient_teacher_id: string;
+      attendance_version: number;
       version: number;
     }>(
       `SELECT "id"::text AS lesson_id,
@@ -315,6 +317,7 @@ export class AcademicAccessService {
               "rescheduled_from_lesson_id"::text AS rescheduled_from_lesson_id,
               "primary_teacher_snapshot_id"::text AS primary_teacher_snapshot_id,
               "pay_recipient_teacher_id"::text AS pay_recipient_teacher_id,
+              "attendance_version",
               "version"
          FROM "lesson_occurrences"
         WHERE "id" = $1::uuid
@@ -383,6 +386,7 @@ export class AcademicAccessService {
         rescheduled_from_lesson_id: lesson.rescheduled_from_lesson_id,
         primary_teacher_snapshot_id: lesson.primary_teacher_snapshot_id,
         pay_recipient_teacher_id: lesson.pay_recipient_teacher_id,
+        attendance_version: Number(lesson.attendance_version ?? 0),
         version: Number(lesson.version),
         access_mode: 'ADMIN_OR_DIRECTOR',
         active_substitute_assignment_id: meta.active_sub_id,
@@ -412,6 +416,7 @@ export class AcademicAccessService {
         rescheduled_from_lesson_id: lesson.rescheduled_from_lesson_id,
         primary_teacher_snapshot_id: lesson.primary_teacher_snapshot_id,
         pay_recipient_teacher_id: lesson.pay_recipient_teacher_id,
+        attendance_version: Number(lesson.attendance_version ?? 0),
         version: Number(lesson.version),
         access_mode: 'SUBSTITUTE_TEACHER',
         active_substitute_assignment_id: meta.active_sub_id,
@@ -446,6 +451,7 @@ export class AcademicAccessService {
         rescheduled_from_lesson_id: lesson.rescheduled_from_lesson_id,
         primary_teacher_snapshot_id: lesson.primary_teacher_snapshot_id,
         pay_recipient_teacher_id: lesson.pay_recipient_teacher_id,
+        attendance_version: Number(lesson.attendance_version ?? 0),
         version: Number(lesson.version),
         access_mode: 'PRIMARY_TEACHER',
         active_substitute_assignment_id: meta.active_sub_id,
