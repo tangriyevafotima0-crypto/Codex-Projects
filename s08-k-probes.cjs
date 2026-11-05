@@ -1,0 +1,19 @@
+// Synthetic, ephemeral, guarded test databases only. Observations, not acceptance assertions.
+const crypto=require('node:crypto');
+const {createEphemeralTestDbEnv}=require('./eduerp-v2/apps/api/dist/test/database/harness');
+const {executeSyntheticSeed,SYNTHETIC_DEMO_CENTER_A:C,SYNTHETIC_TEST_ONLY_PASSWORD:password}=require('./eduerp-v2/apps/api/dist/src/database/seed-contract');
+const {createApiApplication}=require('./eduerp-v2/apps/api/dist/src/application');
+const {loadApiEnv}=require('./eduerp-v2/apps/api/dist/src/config/env');
+const {ClockService}=require('./eduerp-v2/apps/api/dist/src/auth/clock.service');
+(async()=>{const e=await createEphemeralTestDbEnv();let app;try{
+ await executeSyntheticSeed(e.apiPoolA,C,{NODE_ENV:'test',BOT_OUTBOUND_ENABLED:'false'});
+ const legacy=await e.apiPoolA.query('SELECT policy_confirmation_status,first_partial_charge_mode FROM billing_policy_versions WHERE id=$1',[C.billingPolicyId]);
+ for(const month of ['10','11'])for(const day of ['02','03','04']){const date=`2026-${month}-${day}`;await e.apiPoolA.query(`INSERT INTO lesson_occurrences(id,center_id,group_id,lesson_date,starts_at_utc,ends_at_utc,status,primary_teacher_snapshot_id,pay_recipient_teacher_id) VALUES($1,$2,$3,$4::date,$5::timestamptz,$6::timestamptz,'SCHEDULED',$7,$7)`,[crypto.randomUUID(),C.centerId,C.groupId,date,date+'T04:00:00Z',date+'T05:00:00Z',C.teacherId]);}
+ const config=loadApiEnv({NODE_ENV:'test',LOG_LEVEL:'error',API_HOST:'127.0.0.1',API_PORT:'3000',CENTER_ID:C.centerId,CENTER_SLUG:C.centerSlug,CENTER_TIMEZONE:'Asia/Tashkent',LICENSE_MODE:'ACTIVE',DATABASE_URL:e.apiRuntimeCenterAUrl,JWT_ACCESS_SECRET:'TEST_ONLY_ACCESS_123456789012345678901',JWT_REFRESH_SECRET:'TEST_ONLY_REFRESH_12345678901234567890',INTERNAL_BOT_HMAC_SECRET:'TEST_ONLY_HMAC_12345678901234567890123',TELEGRAM_WEBHOOK_SECRET:'TEST_ONLY_WEBHOOK_1234567890'});
+ app=await createApiApplication(config);app.get(ClockService).setTestNow(new Date('2026-11-04T09:00:00Z'));await app.listen(0,'127.0.0.1');const root=`http://127.0.0.1:${app.getHttpServer().address().port}`;
+ const call=async(path,body,token)=>{const r=await fetch(root+path,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token,'Idempotency-Key':crypto.randomUUID()}:{} )},body:JSON.stringify(body)});return{status:r.status,body:await r.json()}};
+ const login=await call('/api/v1/auth/login',{username:'director.demo',password});const token=login.body.access_token;
+ const issue=async(status,enrolled,month)=>{const student=crypto.randomUUID(),enrollment=crypto.randomUUID();await e.apiPoolA.query(`INSERT INTO students(id,center_id,student_code,full_name,normalized_name,status) VALUES($1,$2,$3,'Probe Student','probe student','ACTIVE')`,[student,C.centerId,'PROBE-'+student.slice(0,8)]);await e.apiPoolA.query(`INSERT INTO enrollments(id,center_id,student_id,group_id,status,enrolled_at_date) VALUES($1,$2,$3,$4,$5,$6::date)`,[enrollment,C.centerId,student,C.groupId,status,enrolled]);const r=await call('/api/v1/billing/cycles/invoice',{enrollment_id:enrollment,cycle_type:'CALENDAR_MONTH',cycle_key:`CAL:2026-${month}`,period_start_date:`2026-${month}-01`,apply_available_credit_notes:false},token);const counts=await e.apiPoolA.query(`SELECT count(*)::int AS count,COALESCE(sum(remaining_debt_uzs),0)::text AS debt FROM invoices WHERE enrollment_id=$1`,[enrollment]);return{status:r.status,error:r.body.error?.code||r.body.error_code,invoice_count:counts.rows[0].count,debt:counts.rows[0].debt}};
+ const out={legacy_policy:legacy.rows[0],trial_without_attendance:await issue('TRIAL','2026-10-01','10'),active_period_before_enrollment:await issue('ACTIVE','2026-11-12','10')};
+ console.log('S08_K_BOUNDARY_PROBE '+JSON.stringify(out));
+ }finally{if(app)await app.close();await e.cleanup()}})().catch(e=>{console.error({probe_error:e.message,code:e.code});process.exitCode=1});

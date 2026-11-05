@@ -1,0 +1,36 @@
+name: S08-K financial boundary diagnostics
+on:
+  push:
+    branches: ['codex/s08-k-runtime-review']
+    paths: ['.github/workflows/eduerp-s08-k-probes.yml', 's08-k-probes.cjs']
+permissions:
+  contents: read
+jobs:
+  semantic-probes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    defaults:
+      run:
+        working-directory: eduerp-v2
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: eduerp_probe_admin
+          POSTGRES_PASSWORD: TEST_ONLY_PROBE_PASSWORD
+          POSTGRES_DB: eduerp_test_probe_admin
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready -U eduerp_probe_admin -d eduerp_test_probe_admin"
+          --health-interval=3s --health-timeout=3s --health-retries=15
+    env:
+      EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: 'true'
+      TEST_DATABASE_ADMIN_URL: postgresql://eduerp_probe_admin:TEST_ONLY_PROBE_PASSWORD@127.0.0.1:5432/eduerp_test_probe_admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: eduerp-v2/.nvmrc
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run prisma:generate && npm run build
+      - run: node ../s08-k-probes.cjs
