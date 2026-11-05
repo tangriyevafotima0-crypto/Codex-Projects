@@ -6364,8 +6364,9 @@
           }
         ],
         "x-allowed-roles": [
-          "TEACHER",
-          "ADMIN"
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
         ],
         "x-object-scope": {
           "trust_plane": "CENTER_DATA_PLANE",
@@ -6462,8 +6463,9 @@
           }
         ],
         "x-allowed-roles": [
-          "TEACHER",
-          "ADMIN"
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
         ],
         "x-object-scope": {
           "trust_plane": "CENTER_DATA_PLANE",
@@ -11384,6 +11386,265 @@
             }
           }
         ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/attendance": {
+      "parameters": [
+        {
+          "name": "lesson_id",
+          "in": "path",
+          "required": true,
+          "description": "LessonOccurrence UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getLessonAttendanceDraftOrSubmitted",
+        "summary": "Get lesson attendance draft roster (defaults PRESENT) or submitted records and revision history (T12.01, T12.04)",
+        "tags": [
+          "AttendanceAndOfflineSync"
+        ],
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz"
+          }
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries filter by center_id == jwt.center_id matching Host center_slug; cross-center UUID returns 404.",
+          "object_ownership_rule": "For TEACHER: AcademicAccessService verifies course_groups.primary_teacher_id == jwt.staff_id OR active substitute_assignments.substitute_teacher_id == jwt.staff_id for lesson_id (else 403 FORBIDDEN_OBJECT_SCOPE); returns zero guardian phone or financial fields.",
+          "conditional_role_policy": "Enforces confirmed role grant; allowed in READ_ONLY license mode."
+        },
+        "x-read-only-license-policy": "ALLOWED_IN_READ_ONLY",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lesson attendance draft or submitted roster and append-only revisions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSubmitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/attendance/override": {
+      "parameters": [
+        {
+          "name": "lesson_id",
+          "in": "path",
+          "required": true,
+          "description": "LessonOccurrence UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "overrideLessonAttendance",
+        "summary": "Admin/Director reason-based attendance override preserving untouched students and appending AttendanceRevision + AttendanceCorrected outbox (BR-11, D07, T12.03, T12.04)",
+        "tags": [
+          "AttendanceAndOfflineSync"
+        ],
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz"
+          }
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center UUID returns 404.",
+          "object_ownership_rule": "DIRECTOR/ADMIN only (TEACHER denied 403 FORBIDDEN_ROLE); requires override_reason and expected_version; updates only included student records.",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter defaults to fail-closed."
+        },
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitAttendanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Attendance override committed with append-only revision and AttendanceCorrected outbox",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSubmitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/attendance/excel-import": {
+      "parameters": [
+        {
+          "name": "lesson_id",
+          "in": "path",
+          "required": true,
+          "description": "LessonOccurrence UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "importExcelLessonAttendance",
+        "summary": "Import lesson attendance from Excel when no prior teacher/admin submission exists; rejects stale overwrite with 409 STALE_EXCEL_CONFLICT (D07, CASE-16, T12.03)",
+        "tags": [
+          "AttendanceAndOfflineSync"
+        ],
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz"
+          }
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center UUID returns 404.",
+          "object_ownership_rule": "DIRECTOR/ADMIN only (TEACHER denied 403 FORBIDDEN_ROLE); rejects overwrite when attendance records already exist with 409 STALE_EXCEL_CONFLICT.",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter defaults to fail-closed."
+        },
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitAttendanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Initial Excel attendance import committed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSubmitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
       }
     }
   }

@@ -161,3 +161,110 @@ export type ReversalOrRefundStatus =
 export type ReversalDecision = 'APPROVED_EXECUTED' | 'REJECTED';
 
 export type DebtEffectPolicy = 'REOPEN_INVOICE_DEBT' | 'CLOSE_WITH_CREDIT_NOTE';
+
+export type AttendanceStatus = 'PRESENT' | 'LATE' | 'ABSENT';
+
+export type AttendanceSourceChannel =
+  | 'TEACHER_MOBILE'
+  | 'TEACHER_WEB'
+  | 'ADMIN_EXCEL'
+  | 'ADMIN_OVERRIDE';
+
+export type OfflineAttendanceAckStatus =
+  | 'ACK_COMMITTED'
+  | 'ACK_IDEMPOTENT_REPLAY'
+  | 'CONFLICT_409'
+  | 'FORBIDDEN_PERMISSION_REVOKED'
+  | 'BLOCKED_LICENSE_READ_ONLY';
+
+export type OfflineQueueOperationState = 'PENDING' | 'SYNCED' | 'CONFLICT' | 'REJECTED';
+
+export interface OfflineAttendanceQueueItemContract {
+  readonly client_operation_uuid: string;
+  readonly lesson_id: string;
+  readonly expected_version: number;
+  readonly payload_sha256: string;
+  readonly state: OfflineQueueOperationState;
+  readonly synced_server_version: number | null;
+  readonly last_ack_status: OfflineAttendanceAckStatus | null;
+  readonly last_error_code: string | null;
+  readonly conflict_details_json: Record<string, unknown> | null;
+}
+
+export interface OfflineAttendanceAckResultContract {
+  readonly client_operation_uuid: string;
+  readonly lesson_id: string;
+  readonly ack_status: OfflineAttendanceAckStatus;
+  readonly server_version: number | null;
+  readonly error_code: string | null;
+  readonly conflict_details?: Record<string, unknown> | null;
+}
+
+export function applyOfflineAttendanceSyncAck(
+  queueItems: readonly OfflineAttendanceQueueItemContract[],
+  ackResults: readonly OfflineAttendanceAckResultContract[],
+): readonly OfflineAttendanceQueueItemContract[] {
+  const ackByUuid = new Map<string, OfflineAttendanceAckResultContract>();
+  for (const res of ackResults) {
+    if (!ackByUuid.has(res.client_operation_uuid)) {
+      ackByUuid.set(res.client_operation_uuid, res);
+    }
+  }
+
+  return Object.freeze(
+    queueItems.map((item) => {
+      if (item.state === 'SYNCED') {
+        return item;
+      }
+      const ack = ackByUuid.get(item.client_operation_uuid);
+      if (!ack || ack.lesson_id !== item.lesson_id) {
+        return item;
+      }
+      if (
+        ack.ack_status === 'ACK_COMMITTED' ||
+        ack.ack_status === 'ACK_IDEMPOTENT_REPLAY'
+      ) {
+        if (
+          typeof ack.server_version !== 'number' ||
+          !Number.isInteger(ack.server_version) ||
+          ack.server_version < 1
+        ) {
+          return Object.freeze({
+            ...item,
+            state: 'PENDING' as const,
+            synced_server_version: null,
+            last_ack_status: ack.ack_status,
+            last_error_code: ack.error_code ?? 'INVALID_ACK_SERVER_VERSION',
+            conflict_details_json: ack.conflict_details ?? null,
+          });
+        }
+        return Object.freeze({
+          ...item,
+          state: 'SYNCED' as const,
+          synced_server_version: ack.server_version,
+          last_ack_status: ack.ack_status,
+          last_error_code: null,
+          conflict_details_json: null,
+        });
+      }
+      if (ack.ack_status === 'CONFLICT_409') {
+        return Object.freeze({
+          ...item,
+          state: 'CONFLICT' as const,
+          synced_server_version: ack.server_version,
+          last_ack_status: ack.ack_status,
+          last_error_code: ack.error_code ?? 'VERSION_CONFLICT',
+          conflict_details_json: ack.conflict_details ?? null,
+        });
+      }
+      return Object.freeze({
+        ...item,
+        state: 'REJECTED' as const,
+        synced_server_version: ack.server_version,
+        last_ack_status: ack.ack_status,
+        last_error_code: ack.error_code ?? ack.ack_status,
+        conflict_details_json: ack.conflict_details ?? null,
+      });
+    }),
+  );
+}

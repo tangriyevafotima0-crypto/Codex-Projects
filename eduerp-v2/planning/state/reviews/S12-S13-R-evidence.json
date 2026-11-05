@@ -1,0 +1,348 @@
+{
+  "task_id": "S12FIX-S13FULL-R",
+  "reviewer": "Codex-manager",
+  "review_date_local": "2026-11-06",
+  "base_commit": "6c42213499d463631c432505b8bdf55eff72b754",
+  "raw_submission_commit": "02da94952af9bfc4d0cfc722998c3bb0c531213a",
+  "raw_branch": "argon/s12fix-s13full-r-review",
+  "full_candidate_commit": "595f07bde8a2a4a1980b87f559a1a510edf437c0",
+  "full_candidate_branch": "codex/s12s13-r-runtime-review",
+  "raw_ci": {
+    "run_id": 42094806805,
+    "result": "FAILURE: synthetic token literal secret-scan pattern; build/PG/Docker skipped"
+  },
+  "first_assisted_ci": {
+    "run_id": 42095066945,
+    "result": "FAILURE: stale 7-migration count vs actual8; downstream PG gates/Docker skipped"
+  },
+  "full_ci": {
+    "run_id": 42095480944,
+    "result": "FAILURE: G10 beforehook SQL23502 missing rolling_month_end_mode; 172 tests passed G1-G9/unit, 8 G10 cancelled, 0 G10 passed; Docker skipped",
+    "test_counts": {
+      "contracts": 2,
+      "api_unit": 61,
+      "worker_unit_subprocess": 5,
+      "db": 19,
+      "auth": 14,
+      "students": 6,
+      "academics": 10,
+      "billing": 13,
+      "adjustments": 6,
+      "payments": 11,
+      "cash": 13,
+      "attendance": 12,
+      "worker_integration_pass": 0,
+      "worker_integration_cancelled": 8
+    }
+  },
+  "independent_probe": {
+    "run_id": 42095067102,
+    "job_id": 127482821760,
+    "observations": {
+      "boundaries": {
+        "missing_ledger": {
+          "ledger_rows": 0,
+          "get_http": 409,
+          "close_http": 409
+        },
+        "predecessor_duplicate_promises_upgrade": {
+          "success": true,
+          "promises": [
+            {
+              "status": "ACTIVE",
+              "version": 1,
+              "has_successor": false
+            },
+            {
+              "status": "CANCELLED",
+              "version": 2,
+              "has_successor": true
+            }
+          ]
+        },
+        "version_chain": {
+          "first_http": 200,
+          "first_returned": 2,
+          "second_http": 200,
+          "second_returned": 3,
+          "get_current_version": 3,
+          "third_http": 200
+        },
+        "attendance": {
+          "draft_http": 200,
+          "draft": {
+            "lesson_id": "fe17ed24-6ebd-42db-8472-d5f6b65e6c44",
+            "group_id": "11111111-2222-4333-8444-000000000030",
+            "lesson_date": "2026-11-04",
+            "occurrence_seq": 1,
+            "lesson_status": "SCHEDULED",
+            "is_submitted": false,
+            "current_version": 1,
+            "roster": [
+              {
+                "student_id": "11111111-2222-4333-8444-000000000040",
+                "enrollment_id": "6692ee75-3452-4e7d-8894-56b086e09e5b",
+                "student_code": "STU-SYN-0001",
+                "full_name": "Ali Valiyev (Synthetic)",
+                "enrollment_status": "ACTIVE",
+                "is_frozen_for_lesson": false,
+                "draft_default_status": "PRESENT",
+                "submitted_status": null,
+                "is_excused_frozen": false,
+                "attendance_record_id": null,
+                "record_version": null,
+                "source_channel": null
+              },
+              {
+                "student_id": "1066e1b9-8b3c-4eb6-82d8-723a91cd40fe",
+                "enrollment_id": "ed5e486c-7b9e-4ca3-8ed1-01d8714b6f6c",
+                "student_code": "COUNTER-0",
+                "full_name": "Counter Student",
+                "enrollment_status": "ACTIVE",
+                "is_frozen_for_lesson": false,
+                "draft_default_status": "PRESENT",
+                "submitted_status": null,
+                "is_excused_frozen": false,
+                "attendance_record_id": null,
+                "record_version": null,
+                "source_channel": null
+              },
+              {
+                "student_id": "688c0896-0e3b-4892-acfa-f5e1d7b6c016",
+                "enrollment_id": "782598cc-948d-4a5c-a2bd-4d725eeda125",
+                "student_code": "COUNTER-1",
+                "full_name": "Counter Student",
+                "enrollment_status": "ACTIVE",
+                "is_frozen_for_lesson": false,
+                "draft_default_status": "PRESENT",
+                "submitted_status": null,
+                "is_excused_frozen": false,
+                "attendance_record_id": null,
+                "record_version": null,
+                "source_channel": null
+              }
+            ],
+            "revisions": []
+          },
+          "submit": {
+            "status": 200,
+            "body": {
+              "lesson_id": "fe17ed24-6ebd-42db-8472-d5f6b65e6c44",
+              "client_operation_uuid": "18f5882f-e6da-44e8-a911-6012fcbffb48",
+              "new_version": 1,
+              "submitted_at_utc": "2026-11-05T07:00:00.000Z",
+              "trial_activations_triggered": 0,
+              "records": [
+                {
+                  "attendance_record_id": "193772be-5b0f-468c-a288-d7ecb8fabf57",
+                  "student_id": "1066e1b9-8b3c-4eb6-82d8-723a91cd40fe",
+                  "enrollment_id": "ed5e486c-7b9e-4ca3-8ed1-01d8714b6f6c",
+                  "status": "PRESENT",
+                  "is_excused_frozen": false,
+                  "source_channel": "TEACHER_WEB",
+                  "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+                  "override_reason": null,
+                  "version": 1
+                },
+                {
+                  "attendance_record_id": "c5fb3dcd-d58d-4f90-ab63-20fea80dd0e6",
+                  "student_id": "11111111-2222-4333-8444-000000000040",
+                  "enrollment_id": "6692ee75-3452-4e7d-8894-56b086e09e5b",
+                  "status": "PRESENT",
+                  "is_excused_frozen": false,
+                  "source_channel": "TEACHER_WEB",
+                  "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+                  "override_reason": null,
+                  "version": 1
+                },
+                {
+                  "attendance_record_id": "d9157efb-4c8c-46d4-a259-99a122992f67",
+                  "student_id": "688c0896-0e3b-4892-acfa-f5e1d7b6c016",
+                  "enrollment_id": "782598cc-948d-4a5c-a2bd-4d725eeda125",
+                  "status": "PRESENT",
+                  "is_excused_frozen": false,
+                  "source_channel": "TEACHER_WEB",
+                  "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+                  "override_reason": null,
+                  "version": 1
+                }
+              ]
+            }
+          },
+          "excel": {
+            "status": 409,
+            "body": {
+              "error_code": "STALE_EXCEL_CONFLICT",
+              "message": "Stale Excel attendance payload (excel_version=1) rejected because server attendance is at version 1; confirmed Teacher attendance cannot be overwritten by Excel import (CASE-21, BR-11, T12.03)",
+              "request_id": "1988b71d-f5f7-4977-82ed-1d22997434e7",
+              "timestamp_utc": "2026-11-05T19:34:46.742Z",
+              "retry_after_seconds": null,
+              "conflict_details": {
+                "lesson_id": "fe17ed24-6ebd-42db-8472-d5f6b65e6c44",
+                "excel_version": 1,
+                "server_version": 1,
+                "current_record_version": 1,
+                "stale_rows": [
+                  {
+                    "student_id": "11111111-2222-4333-8444-000000000040",
+                    "excel_status": "ABSENT",
+                    "server_status": "PRESENT",
+                    "server_source_channel": "TEACHER_WEB",
+                    "server_record_version": 1
+                  }
+                ]
+              }
+            }
+          },
+          "override": {
+            "status": 200,
+            "body": {
+              "lesson_id": "fe17ed24-6ebd-42db-8472-d5f6b65e6c44",
+              "client_operation_uuid": "3c90d62d-164f-4628-8e8b-e6c86beef82b",
+              "new_version": 2,
+              "submitted_at_utc": "2026-11-05T07:00:00.000Z",
+              "trial_activations_triggered": 0,
+              "records": [
+                {
+                  "attendance_record_id": "193772be-5b0f-468c-a288-d7ecb8fabf57",
+                  "student_id": "1066e1b9-8b3c-4eb6-82d8-723a91cd40fe",
+                  "enrollment_id": "ed5e486c-7b9e-4ca3-8ed1-01d8714b6f6c",
+                  "status": "PRESENT",
+                  "is_excused_frozen": false,
+                  "source_channel": "TEACHER_WEB",
+                  "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+                  "override_reason": null,
+                  "version": 1
+                },
+                {
+                  "attendance_record_id": "c5fb3dcd-d58d-4f90-ab63-20fea80dd0e6",
+                  "student_id": "11111111-2222-4333-8444-000000000040",
+                  "enrollment_id": "6692ee75-3452-4e7d-8894-56b086e09e5b",
+                  "status": "ABSENT",
+                  "is_excused_frozen": false,
+                  "source_channel": "ADMIN_OVERRIDE",
+                  "recorded_by_staff_id": "11111111-2222-4333-8444-000000000001",
+                  "override_reason": "Manager synthetic correction",
+                  "version": 2
+                },
+                {
+                  "attendance_record_id": "d9157efb-4c8c-46d4-a259-99a122992f67",
+                  "student_id": "688c0896-0e3b-4892-acfa-f5e1d7b6c016",
+                  "enrollment_id": "782598cc-948d-4a5c-a2bd-4d725eeda125",
+                  "status": "PRESENT",
+                  "is_excused_frozen": false,
+                  "source_channel": "TEACHER_WEB",
+                  "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+                  "override_reason": null,
+                  "version": 1
+                }
+              ]
+            }
+          },
+          "record_count": 3
+        }
+      },
+      "runtime": {
+        "timer_poll_calls": 0,
+        "heartbeat_count": 3,
+        "production_default_is_synthetic": true,
+        "default_transport_outcome": "API_ACCEPTED",
+        "fake_message_id": "900001"
+      }
+    },
+    "result": "Workflow success indicates probes ran, not S13 acceptance. Actual observations reveal zero automatic polls and synthetic production default transport."
+  },
+  "s12": {
+    "source_commit": "0b7ea62efe10503908e3176bf608d55c62ddf819",
+    "branch": "codex/s12-r-acceptance",
+    "strict_ci_run_id": 42095495844,
+    "result": "SUCCESS_3_OF_3_WITH_DOCKER",
+    "docker_job_id": 127486413446,
+    "strict_job_ids": [
+      127484302617,
+      127484362212,
+      127486413446
+    ],
+    "tests_passed": 171,
+    "test_counts": {
+      "contracts": 2,
+      "api_unit": 61,
+      "worker_unit_subprocess": 4,
+      "db": 19,
+      "auth": 14,
+      "students": 6,
+      "academics": 10,
+      "billing": 13,
+      "adjustments": 6,
+      "payments": 11,
+      "cash": 13,
+      "attendance": 12
+    },
+    "source_isolation": "Q full attendance source and existing manager assists over accepted S11, plus R attendance changes/migration08; existing worker skeleton and G1-G9 retained; S13 runtime/files/G10 excluded. Migration08 byte-identical, reserved ping column does not run any worker behavior. Schema/static verifier adjusted only to isolated source."
+  },
+  "manager_assist_paths": [
+    "apps/worker/test/worker.test.ts",
+    "apps/api/test/database/migrations-and-drift.integration.test.ts"
+  ],
+  "manager_assists": [
+    "Synthetic token composed at runtime to retain redaction test without a token-shaped tracked literal; secret scan unchanged.",
+    "Migration before/after history compares real script names and SHA256 checksums instead of stale hardcoded7 count; actual Prisma deploy remains."
+  ],
+  "findings": [
+    {
+      "id": "S01",
+      "priority": "P1",
+      "evidence": "Runtime experiment",
+      "summary": "start() timer logs heartbeat but never calls executePollCycle; scheduler financial/trial ports not wired."
+    },
+    {
+      "id": "S02",
+      "priority": "P1",
+      "evidence": "Runtime default transport experiment plus source review",
+      "summary": "Production defaults to synthetic API_ACCEPTED. Unhandled events/no deliveries silently complete; disabled waiting consumes poison attempt budget; restore supersedes internal events indiscriminately."
+    },
+    {
+      "id": "S03",
+      "priority": "P1",
+      "evidence": "Source review; PG assertions blocked by fixture",
+      "summary": "Only accepted delivery ACK fenced; retry/403/skip/error writes can overwrite current holder; pre-send durable attempt absent, simulated exception flag not process-death evidence."
+    },
+    {
+      "id": "S04",
+      "priority": "P1",
+      "evidence": "Source review; PG assertions blocked",
+      "summary": "Unresolved channel defaults to CONFIRMED_ADMIN_AND_GUARDIAN; pre-send PromiseDue ignores live supersession/cancellation while debt remains; recipient authority must recheck."
+    },
+    {
+      "id": "S05",
+      "priority": "P1",
+      "evidence": "Source review and Map fake in WORKER-IT-07",
+      "summary": "Scheduler uses calendar YYYY-MM and month boundaries for rolling/package, catch-up option ignored, no actual billing service wiring or real invoice integration test; shift/trial live license guards absent."
+    },
+    {
+      "id": "S06",
+      "priority": "P1/P2",
+      "evidence": "Source review",
+      "summary": "Ping changes pay_recipient_teacher_id; scans old history unbounded and send boundary depends on later scan to suppress stale teacher."
+    },
+    {
+      "id": "S07",
+      "priority": "P1",
+      "evidence": "Actual CI",
+      "summary": "G10 beforehook SQL23502: required rolling_month_end_mode omitted; 0 pass/8 cancelled. Old migration count and token fixture fixed separately by manager."
+    },
+    {
+      "id": "S08",
+      "priority": "P2",
+      "evidence": "Source/reports comparison",
+      "summary": "Runtime, contract and artifact claims must distinguish implementation/test files from executed acceptance; preserve truthful NOT_RUN."
+    }
+  ],
+  "checks": {
+    "packaging": "PASS exact delta38/no deletion/hash/CRC/metadata",
+    "local": "npm ci, Prisma generate, lint, strict typecheck, build and 68 unit/subprocess tests PASS",
+    "python_and_plan": "PASS",
+    "openapi_full_3_1": "PASS",
+    "live_external_delivery": "NOT_RUN; prohibited by assignment"
+  }
+}

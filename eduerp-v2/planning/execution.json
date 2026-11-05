@@ -1253,10 +1253,10 @@
       "test_id": "T12.01",
       "acceptance": "Draft default present ota-onaga xabar yubormaydi; submit har student uchun unique result; kechikish holati distinct; teacher bo‘lmagan actor rad.",
       "prompt": "prompts/S12/01.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-S12-Q.md",
-      "reviewed_revision": "191339dba68b0cfbaf23251d8a2a894868b55e2e",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:0b7ea62efe10503908e3176bf608d55c62ddf819",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1278,10 +1278,10 @@
       "test_id": "T12.02",
       "acceptance": "Bir operation UUID retransmitda oldingi natija; boshqa body shu UUID bilan conflict. Batchda har op natijasi qaytadi va SQLite faqat ackdan keyin synced.",
       "prompt": "prompts/S12/02.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-S12-Q.md",
-      "reviewed_revision": "191339dba68b0cfbaf23251d8a2a894868b55e2e",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:0b7ea62efe10503908e3176bf608d55c62ddf819",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1303,10 +1303,10 @@
       "test_id": "T12.03",
       "acceptance": "Stale Excel409 va per-row conflict; Teacher tasdiqini Admin faqat sababli override qiladi; blind last-write-wins yo‘q; teng versionli ikki write biri yutadi.",
       "prompt": "prompts/S12/03.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-S12-Q.md",
-      "reviewed_revision": "191339dba68b0cfbaf23251d8a2a894868b55e2e",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:0b7ea62efe10503908e3176bf608d55c62ddf819",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1328,10 +1328,10 @@
       "test_id": "T12.04",
       "acceptance": "Submitted event trialni bir marta aktiv qiladi; absence correction yangi event/audit beradi; oldingi jo‘natilgan xabar o‘chirildi deb da’vo qilinmaydi.",
       "prompt": "prompts/S12/04.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-S12-Q.md",
-      "reviewed_revision": "191339dba68b0cfbaf23251d8a2a894868b55e2e",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:0b7ea62efe10503908e3176bf608d55c62ddf819",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1349,10 +1349,10 @@
       "test_id": "T12.05",
       "acceptance": "Eski Excel yangi mobil davomatni buzmaydi; retransmit yangi hodisa yaratmaydi",
       "prompt": "prompts/S12/05.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-S12-Q.md",
-      "reviewed_revision": "191339dba68b0cfbaf23251d8a2a894868b55e2e",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:0b7ea62efe10503908e3176bf608d55c62ddf819",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1374,11 +1374,11 @@
       "test_id": "T13.01",
       "acceptance": "Worker DB commitdan oldin yiqilsa lease tugagach retry; tashqi senddan keyin yiqilsa duplicate ehtimoli kuzatiladi; poison event DLQga, qolganlari davom etadi.",
       "prompt": "prompts/S13/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:595f07bde8a2a4a1980b87f559a1a510edf437c0",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "13.02",
@@ -1399,11 +1399,11 @@
       "test_id": "T13.02",
       "acceptance": "Center local09:00da due debt qayta hisoblanadi; payment qilingan promisega xabar yo‘q; worker ertalab offline bo‘lsa catch-up siyosati bo‘yicha bir marta.",
       "prompt": "prompts/S13/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:595f07bde8a2a4a1980b87f559a1a510edf437c0",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "13.03",
@@ -1424,11 +1424,11 @@
       "test_id": "T13.03",
       "acceptance": "20 daqiqada submitted bo‘lmasa bitta ping; cancelled lesson yoki substitute eski teacherga ping bermaydi; lesson endda Admin escalation bir marta.",
       "prompt": "prompts/S13/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:595f07bde8a2a4a1980b87f559a1a510edf437c0",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "13.04",
@@ -1449,11 +1449,11 @@
       "test_id": "T13.04",
       "acceptance": "Ikki worker bir vaqt billing jobni ishga tushirsa bitta effect; timezone/clock boundary, restart catch-up va disabled center siyosati sinovlangan. Trial no-show follow-up vazifasi yaratiladi.",
       "prompt": "prompts/S13/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:595f07bde8a2a4a1980b87f559a1a510edf437c0",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "13.05",
@@ -1470,11 +1470,11 @@
       "test_id": "T13.05",
       "acceptance": "Worker to‘xtab qaytsa hodisalar yo‘qolmaydi; bekor qarzga eslatma ketmaydi",
       "prompt": "prompts/S13/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S12-S13-R.md",
+      "reviewed_revision": "commit:595f07bde8a2a4a1980b87f559a1a510edf437c0",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "14.01",

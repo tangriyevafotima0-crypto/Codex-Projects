@@ -1,6 +1,6 @@
-# Joriy loyiha holati — 2026-11-05
+# Joriy loyiha holati — 2026-11-06
 
-S01–S11APPROVED55/120=45.83%,11/24stage. S11isolated152realtests+DockerPASS. S12CHANGES_REQUIRED:independentlessonaggregateversionP1. NextS12FIX-S13FULL-Rfix+workerfullcandidate. ExactACTIVE_TASK;dalilstate/reviews/S11-S12-Q.md. Rejasanog‘irelease/timefoiziemas.
+S01–S12 APPROVED60/120=50%,12/24stage. S12isolated171realtests+DockerPASS. S13CHANGES_REQUIRED,fullcandidate172PASSpreG10/8CANCELLEDworkerfixtures,independentnopoll/faketransport. NextS13FIX-Sfullfix/acceptance. ExactACTIVE_TASK;dalilstate/reviews/S12-S13-R.md. Planpercentageeffort/releasepercentageemas.
 
 Quyidagi v2.1 matni tarixiy boshlang‘ich reja; undagi NOT_STARTED yoki “GitHubga yuklanmagan” bayonotlari joriy holat emas. Joriy source va status uchun execution.json/ACTIVE_TASK/APPROVALS/manager review ustuvor.
 

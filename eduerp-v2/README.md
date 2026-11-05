@@ -1,4 +1,4 @@
-> Current manager status: S01–S11 approved (55/120 =45.83%). S12 version fix required; next S12FIX-S13FULL-R. Evidence planning/state/reviews/S11-S12-Q.md. No production release approval.
+> Current manager status: S01–S12 approved (60/120 =50%). S12 isolated171tests+Docker; S13 changes required, next S13FIX-S. Evidence planning/state/reviews/S12-S13-R.md. No production release approval.
 
 # EduERP v2.0 — B2B Turnkey O‘quv Markazi Platformasi (`eduerp-v2/`)
 
