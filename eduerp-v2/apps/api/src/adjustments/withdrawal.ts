@@ -51,6 +51,18 @@ export interface ValidatedWithdrawalInput {
   readonly expectedVersion: number;
 }
 
+/** Reject unsupported future-effective exits before any transaction or replay. */
+export function assertWithdrawalEffectiveDate(leftAtDate: string, now: Date, timezone: string): void {
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: timezone,
+    year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now);
+  const part = (kind: string) => parts.find((p) => p.type === kind)!.value;
+  const today = `${part('year')}-${part('month')}-${part('day')}`;
+  if (leftAtDate > today) {
+    throw new ApiHttpException({ statusCode: 403, errorCode: 'POLICY_DECISION_NOT_CONFIRMED',
+      message: 'Future-effective withdrawal is not configured; active enrollment cannot be closed early' });
+  }
+}
+
 export interface WithdrawalFinalAccountSummary {
   readonly enrollmentId: string;
   readonly studentId: string;
@@ -226,6 +238,7 @@ export class WithdrawalService {
   ): Promise<EnrollmentResponseDto> {
     const idempotencyKey = requireIdempotencyKeyHeader(req);
     const parsed = validateWithdrawalRequestInput(req, rawEnrollmentId, rawBody);
+    assertWithdrawalEffectiveDate(parsed.leftAtDate, this.clock.now(), this.config.centerTimezone);
     const requestId = req.requestId ?? resolveRequestId(req.headers['x-request-id']);
     const now = this.clock.now();
 

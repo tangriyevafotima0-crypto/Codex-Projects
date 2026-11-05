@@ -1198,6 +1198,18 @@ describe('Gate G6 — Stage 09 Discounts, Stacking, Grants, Freezes & Withdrawal
     });
     assert.equal(badChurn.statusCode, 400);
 
+    // Omitting the scheduling flag must not allow closing an active learner early.
+    const futureExit = await httpJsonRequest({ port, method: 'POST',
+      path: `/api/v1/enrollments/${enrId}/withdraw`, headers: {
+        Authorization: `Bearer ${adminToken}`, 'Idempotency-Key': `future-exit-${crypto.randomUUID()}` },
+      body: { left_at_date: '2027-01-01', churn_reason_code: 1, expected_version: 1 } });
+    assert.equal(futureExit.statusCode, 403);
+    const unchanged = await env.apiPoolA.query<{ status: string; version: number }>(
+      'SELECT status, version FROM enrollments WHERE id=$1::uuid', [enrId]);
+    assert.equal(unchanged.rows[0].status, 'ACTIVE'); assert.equal(Number(unchanged.rows[0].version), 1);
+    app.get(ClockService).setTestNow(new Date('2026-11-20T09:00:00Z'));
+    await refreshTokens();
+
     // 2. Valid withdrawal with churn_reason_code = 1 transitions to LEFT, preserves 480,000 UZS debt, and revokes pending discount request
     const wdRes = await httpJsonRequest({
       port,

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import type { BillingMode } from '@eduerp/contracts';
 import * as crypto from 'node:crypto';
 import {
+  assertWithdrawalEffectiveDate,
   buildWithdrawalFinalAccountSummary,
   validateWithdrawalRequestInput,
   WithdrawalFaultStep,
@@ -337,6 +338,7 @@ export class EnrollmentsService {
   ): Promise<EnrollmentResponseDto> {
     const idempotencyKey = requireIdempotencyKeyHeader(req);
     const parsed = validateWithdrawalRequestInput(req, rawEnrollmentId, rawBody);
+    assertWithdrawalEffectiveDate(parsed.leftAtDate, this.clock.now(), this.config.centerTimezone);
     const requestId = req.requestId ?? resolveRequestId(req.headers['x-request-id']);
     const now = this.clock.now();
 

@@ -38,7 +38,7 @@ const {ClockService}=require('./eduerp-v2/apps/api/dist/src/auth/clock.service')
  for(let n=0;n<3;n++)split+=f({...fp,alreadyFrozenLessonsCount:n,alreadyCreditedUzs:split,newDistinctFrozenLessonIds:['abc'[n]]}).calculatedCreditUzs;
  out.freeze_split=split.toString();
  const beforeExit=await e.apiPoolA.query('SELECT version FROM enrollments WHERE id=$1',[enr]);
- const futureExit=await call(`/api/v1/students/${C.studentId}/enrollments/${enr}/withdraw`,{left_at_date:'2027-01-01',churn_reason_code:1,expected_version:beforeExit.rows[0].version},token);
+ const futureExit=await call(`/api/v1/enrollments/${enr}/withdraw`,{left_at_date:'2027-01-01',churn_reason_code:1,expected_version:beforeExit.rows[0].version},token);
  const afterExit=await e.apiPoolA.query('SELECT status,left_at_date::text FROM enrollments WHERE id=$1',[enr]);
  out.future_withdraw={clock:'2026-11-04',requested:'2027-01-01',http:futureExit.status,status:afterExit.rows[0].status,left_at_date:afterExit.rows[0].left_at_date};
  console.log('M_MANAGER_BOUNDARIES '+JSON.stringify(out));

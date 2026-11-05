@@ -245,6 +245,10 @@ export function calculateFreezeProportionalCreditUzs(params: {
   }
 
   const alreadyFrozenCount = params.alreadyFrozenLessonsCount ?? 0;
+  if (!Number.isInteger(alreadyFrozenCount) || alreadyFrozenCount < 0) {
+    throw new ApiHttpException({ statusCode: 422, errorCode: 'VALIDATION_ERROR',
+      message: 'alreadyFrozenLessonsCount must be a non-negative integer' });
+  }
   const distinctFrozenLessons = params.newDistinctFrozenLessonIds.length;
 
   if (alreadyFrozenCount + distinctFrozenLessons > params.billedLessons) {
@@ -271,8 +275,13 @@ export function calculateFreezeProportionalCreditUzs(params: {
     basisNetChargeUzs > 0n &&
     params.billedLessons > 0
   ) {
+    // Round the cumulative eligible union, then credit only its delta. Splitting
+    // the same lessons into several requests must not change the total credit.
     const rawProportional = divideAndRoundHalfUpUzs(
-      basisNetChargeUzs * BigInt(distinctFrozenLessons),
+      basisNetChargeUzs * BigInt(alreadyFrozenCount + distinctFrozenLessons),
+      BigInt(params.billedLessons),
+    ) - divideAndRoundHalfUpUzs(
+      basisNetChargeUzs * BigInt(alreadyFrozenCount),
       BigInt(params.billedLessons),
     );
     calculatedCreditUzs =
@@ -649,13 +658,12 @@ export class FreezeCreditService {
             }
           }
 
-          // Load already-frozen lesson links for this enrollment (locked FOR UPDATE to serialize overlapping freeze requests)
+          // Enrollment FOR UPDATE above serializes overlap; append-only links need no UPDATE privilege.
           const existingLinksRes = await tx.query<{ lesson_id: string }>(
             `SELECT "lesson_id"::text AS lesson_id
                FROM "freeze_lesson_links"
               WHERE "center_id" = $1::uuid
-                AND "enrollment_id" = $2::uuid
-              FOR UPDATE`,
+                AND "enrollment_id" = $2::uuid`,
             [principal.centerId, enrollment.id],
           );
 

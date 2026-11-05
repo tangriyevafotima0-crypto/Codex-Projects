@@ -25,6 +25,7 @@ import {
   selectDistinctEligibleFreezeLessons,
 } from '../src/adjustments/freeze-credit';
 import {
+  assertWithdrawalEffectiveDate,
   buildWithdrawalFinalAccountSummary,
   validateWithdrawalRequestInput,
 } from '../src/adjustments/withdrawal';
@@ -397,5 +398,26 @@ describe('Stage 09 Unit Suite — Discounts, Stacking, Freeze Credits & Withdraw
     assert.equal(summary.preservedEnrollmentDebtUzs, '320000');
     assert.equal(summary.preservedStudentTotalDebtUzs, '320000');
     assert.equal(summary.automaticRefundOrWriteoffApplied, false);
+  });
+});
+
+
+describe('Manager monetary/time boundary regressions', () => {
+  it('gives equal freeze credit for the same lesson union split across requests', () => {
+    for (const [basis, lessons, frozen, expected] of [[100000n, 12, 3, 25000n], [1n, 3, 3, 1n], [2n, 3, 3, 2n]] as const) {
+      const common = { freezeCreditBasis: 'NET_PROPORTIONAL_LESSON', baseProRataChargeUzs: basis,
+        approvedDiscountUzs: 0n, effectiveNetChargeUzs: basis, billedLessons: lessons };
+      const combined = calculateFreezeProportionalCreditUzs({ ...common,
+        newDistinctFrozenLessonIds: Array.from({ length: frozen }, (_, i) => String(i)) });
+      let split = 0n;
+      for (let i = 0; i < frozen; i++) split += calculateFreezeProportionalCreditUzs({ ...common,
+        alreadyFrozenLessonsCount: i, alreadyCreditedUzs: split, newDistinctFrozenLessonIds: [String(i)] }).calculatedCreditUzs;
+      assert.equal(combined.calculatedCreditUzs, expected); assert.equal(split, expected);
+    }
+  });
+  it('rejects future-effective exits regardless of flags and honors center midnight', () => {
+    assert.throws(() => assertWithdrawalEffectiveDate('2027-01-01', new Date('2026-11-04T09:00:00Z'), 'Asia/Tashkent'));
+    assert.doesNotThrow(() => assertWithdrawalEffectiveDate('2026-11-05', new Date('2026-11-04T20:00:00Z'), 'Asia/Tashkent'));
+    assert.throws(() => assertWithdrawalEffectiveDate('2026-11-05', new Date('2026-11-04T20:00:00Z'), 'UTC'));
   });
 });
