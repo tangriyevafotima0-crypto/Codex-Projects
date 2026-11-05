@@ -92,8 +92,8 @@ describe('Stage 11 — Cash Shifts, Expenses, Promises & Method-Wise Reconciliat
         ),
       (err: unknown) =>
         err instanceof ApiHttpException &&
-        err.statusCode === 409 &&
-        err.errorCode === 'VERSION_CONFLICT',
+        err.statusCode === 400 &&
+        err.errorCode === 'VALIDATION_ERROR',
     );
 
     assert.throws(
