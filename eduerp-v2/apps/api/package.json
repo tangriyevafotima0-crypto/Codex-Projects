@@ -2,7 +2,7 @@
   "name": "@eduerp/api",
   "version": "2.0.0-s05.0",
   "private": true,
-  "description": "EduERP v2.0 Center Data Plane NestJS API, PostgreSQL/Prisma 7 Database Foundation, and Staff Auth/RBAC (Stages 04\u201305)",
+  "description": "EduERP v2.0 Center Data Plane NestJS API, PostgreSQL/Prisma 7 Database Foundation, and Staff Auth/RBAC (Stages 04–05)",
   "main": "dist/src/main.js",
   "scripts": {
     "prisma:generate": "prisma generate --config prisma.config.ts",
@@ -14,7 +14,8 @@
     "test:db": "node --test dist/test/database/*.integration.test.js",
     "test:auth": "node --test dist/test/auth/*.integration.test.js",
     "test:students": "node --test dist/test/students/*.integration.test.js",
-    "test:academics": "node --test dist/test/academics/*.integration.test.js"
+    "test:academics": "node --test dist/test/academics/*.integration.test.js",
+    "test:billing": "node --test dist/test/billing/*.integration.test.js"
   },
   "dependencies": {
     "@eduerp/contracts": "2.0.0-s03.0",
