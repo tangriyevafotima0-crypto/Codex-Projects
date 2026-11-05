@@ -1,0 +1,252 @@
+{
+  "task_id": "S11FULL-O",
+  "base_commit": "252a11ef767069e70b4149e599701431cdbcd909",
+  "candidate_input_commit": "252a11ef767069e70b4149e599701431cdbcd909",
+  "status": "IN_REVIEW",
+  "scope_completed": [
+    "11.01",
+    "11.02",
+    "11.03",
+    "11.04",
+    "11.05"
+  ],
+  "stop_before_stage": "S12",
+  "owner_decisions_applied": [
+    "OWNER-20261105-05"
+  ],
+  "manager_fixes_preserved": {
+    "N01_clock_service_setTestNow": true,
+    "N02_temporal_idempotency_replay": true,
+    "apps/api/src/payments/dto.ts_untouched": true,
+    "apps/api/test/payments/payments-lifecycle.integration.test.ts_untouched": true
+  },
+  "needs_manager_dependency_refresh": false,
+  "summary": "Implemented Stage 11 (11.01-11.05) Cash Shifts, Categorized Cash & Non-Cash Expenses, Director-Only Append-Only Expense Reversals, Promise-to-Pay Supersession & Reminder Candidate Projection, Method-Wise Shift Reconciliation (CASE-18 / T11.04: 0 + 3,200,000 - 150,000 = 3,050,000 cash expected; 1,800,000 card excluded), Stage 11 Unit & Integration Tests (CASH-UNIT-01..05, CASH-IT-01..10), and CI Gate G8.",
+  "verification": {
+    "VERIFY_INPUT.py": "PASS (481 input files verified before edits)",
+    "tools/verify_s01_s02.py": "PASS (72 OpenAPI operations, 16 operation inventory rows, 15 domain events)",
+    "tools/verify_s04.py": "PASS (46 Prisma models, 7 migrations, 55 RBAC rows, 232 SQL INSERT statements, CASH-IT-01..10 verified)",
+    "planning/tools/check_plan.py": "PASS",
+    "planning/tools/test_plan.py": "PASS (15/15 self-tests)",
+    "unit_and_subprocess_tests_babel_node_test": "PASS (45/45 tests across 9 suites including CASH-UNIT-01..05 and PAY-UNIT-01..05)",
+    "npm_run_build_and_typecheck": "NOT_RUN (offline sandbox without node_modules)",
+    "npm_run_test_db_auth_students_academics_billing_adjustments_payments_cash": "NOT_RUN (offline sandbox without local PostgreSQL daemon; wired to CI Gates G1-G8)",
+    "docker_compose_dev_smoke": "NOT_RUN (offline sandbox without Docker daemon)"
+  },
+  "added_files": [
+    "eduerp-v2/apps/api/prisma/migrations/20261105000700_s11_cash_shifts_expenses_promises_reconciliation/migration.sql",
+    "eduerp-v2/apps/api/src/cash/cash.controller.ts",
+    "eduerp-v2/apps/api/src/cash/cash.module.ts",
+    "eduerp-v2/apps/api/src/cash/dto.ts",
+    "eduerp-v2/apps/api/src/cash/expenses.service.ts",
+    "eduerp-v2/apps/api/src/cash/index.ts",
+    "eduerp-v2/apps/api/src/cash/promises.service.ts",
+    "eduerp-v2/apps/api/src/cash/reconciliation.service.ts",
+    "eduerp-v2/apps/api/src/cash/shifts.service.ts",
+    "eduerp-v2/apps/api/test/cash/cash-lifecycle.integration.test.ts",
+    "eduerp-v2/apps/api/test/cash-unit.test.ts",
+    "eduerp-v2/docs/architecture/adr/ADR-011-cash-shifts-expenses-promises-and-reconciliation.md",
+    "eduerp-v2/docs/verification/S11.md",
+    "eduerp-v2/planning/state/handoffs/S11.md",
+    "eduerp-v2/planning/state/steps/11.01.md",
+    "eduerp-v2/planning/state/steps/11.02.md",
+    "eduerp-v2/planning/state/steps/11.03.md",
+    "eduerp-v2/planning/state/steps/11.04.md",
+    "eduerp-v2/planning/state/steps/11.05.md"
+  ],
+  "modified_files": [
+    "eduerp-v2/apps/api/package.json",
+    "eduerp-v2/apps/api/prisma/schema.prisma",
+    "eduerp-v2/apps/api/src/app.module.ts",
+    "eduerp-v2/apps/api/src/payments/allocation.service.ts",
+    "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+    "eduerp-v2/docs/architecture/openapi.yaml",
+    "eduerp-v2/docs/architecture/operation-inventory.csv",
+    "eduerp-v2/docs/security/rbac-matrix.csv",
+    "eduerp-v2/infra/ci/eduerp-ci.yml",
+    "eduerp-v2/package.json",
+    "eduerp-v2/tools/verify_s04.py"
+  ],
+  "files": [
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "change_type": "MODIFIED",
+      "sha256": "7a0ab3778ea659aeb872e829a680fd996ef138a4ad99bd446cfcc5d91d7137d1",
+      "bytes": 1587
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261105000700_s11_cash_shifts_expenses_promises_reconciliation/migration.sql",
+      "change_type": "ADDED",
+      "sha256": "bc78d94ded38baf35592d147f4893551d90be5ae4e60b12b396c7a1b9ab70339",
+      "bytes": 2623
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "change_type": "MODIFIED",
+      "sha256": "0cba872cc3348c786bc2f8f6190290af9e31a55a0f3223e6b2bfbd6b9ee7cf21",
+      "bytes": 70281
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "change_type": "MODIFIED",
+      "sha256": "fda6894abfb0cced150674a7ff4c635d10f1e1848d0b642c465d6849045f6f6b",
+      "bytes": 1492
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/cash.controller.ts",
+      "change_type": "ADDED",
+      "sha256": "9d0aca2bcb9b42529bcba25b37cab521b47a7e60cebea7c11f3cfa1ee1c1e3a4",
+      "bytes": 4185
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/cash.module.ts",
+      "change_type": "ADDED",
+      "sha256": "88b6bfa12b01f40bb0f2fcd7d5355928a630d1bbc35ed315c049d7eae7e46ca3",
+      "bytes": 716
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/dto.ts",
+      "change_type": "ADDED",
+      "sha256": "5be517c4a6e3794b75b78c9bcb617e86bc92ffdf3b646346efa061a6c74d9b66",
+      "bytes": 12332
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/expenses.service.ts",
+      "change_type": "ADDED",
+      "sha256": "979b89f48a6a68fcdbdd1d94dc71c35414b9a8ac9c00b2d4976b1782c032f3c8",
+      "bytes": 27094
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/index.ts",
+      "change_type": "ADDED",
+      "sha256": "783290a655e58d5dac443b23fbc713e7835c13b329881345cdfdda1ab9b9b543",
+      "bytes": 237
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/promises.service.ts",
+      "change_type": "ADDED",
+      "sha256": "fb0e9751d1381abbcb31d232a4dbb2c82257978ddfa8ad46bfa354c2cd1f6ecf",
+      "bytes": 14297
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/reconciliation.service.ts",
+      "change_type": "ADDED",
+      "sha256": "fe81e24f4c64580baa9d0a25190aff8e5c0a93ecf5fc217c9cc9b499c5dc51c7",
+      "bytes": 19386
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/shifts.service.ts",
+      "change_type": "ADDED",
+      "sha256": "33e826d0c20b5127c04f73c575597c6897adc2757c46c72e544d44dda9b5f667",
+      "bytes": 20405
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/allocation.service.ts",
+      "change_type": "MODIFIED",
+      "sha256": "1475520d16f574667977e014938960cbe8825f5cc1b041fe400d121a922db726",
+      "bytes": 29328
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/cash/cash-lifecycle.integration.test.ts",
+      "change_type": "ADDED",
+      "sha256": "706e790647c6460aeda8c81abbb02b24740fabd1a4159cc3cb4687cd7dd1870d",
+      "bytes": 58827
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/cash-unit.test.ts",
+      "change_type": "ADDED",
+      "sha256": "471ef821ff4824db8d68a94183abc878ac6d8f1c78b9975a3c39d20392471c8d",
+      "bytes": 11218
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "change_type": "MODIFIED",
+      "sha256": "c4c291d87ac6228ecd284740339a57b17fe10612aaf9a327a86ca47cd7535a74",
+      "bytes": 13233
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-011-cash-shifts-expenses-promises-and-reconciliation.md",
+      "change_type": "ADDED",
+      "sha256": "60a564a8237557e1f7cba3ec26581949b54ddc1e00e4b8e89712a90300dd2b41",
+      "bytes": 2324
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "change_type": "MODIFIED",
+      "sha256": "754460e13d84c25edc4b5560818aff751982348e32add5b524b4fd5dc601a662",
+      "bytes": 366390
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/operation-inventory.csv",
+      "change_type": "MODIFIED",
+      "sha256": "e792b9b1edc8e6486fcf5c5f5f679c2c19fd81c3f1530e6fedb6d712b9cf8f9d",
+      "bytes": 8022
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "change_type": "MODIFIED",
+      "sha256": "3bc0cbba7c202dffd0910225bb5ddea89ae6997fdc65030b01bc542bb3398d9b",
+      "bytes": 24921
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S11.md",
+      "change_type": "ADDED",
+      "sha256": "54a552c294e556203c35f763ccdc438247d377624a83157622495e2b5be421ad",
+      "bytes": 1310
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "change_type": "MODIFIED",
+      "sha256": "27bc817bc5b96b21a956197bbf63093e5a6c2cba41a828de2007a53e22262c1b",
+      "bytes": 10361
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "change_type": "MODIFIED",
+      "sha256": "6a31b15c37ca421b6493652bf0a528eb5bf21c471b2d89c28edbb7d1ab9a4423",
+      "bytes": 1851
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S11.md",
+      "change_type": "ADDED",
+      "sha256": "1f084e20d23d7e5cf828000d3759ce5d0eed109801679a3f58e26b61f2611fd0",
+      "bytes": 2106
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/11.01.md",
+      "change_type": "ADDED",
+      "sha256": "4cf51b8cb35a747af52d0fe34fff3a1471912517e588c4c67e0c0ad1de05b268",
+      "bytes": 623
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/11.02.md",
+      "change_type": "ADDED",
+      "sha256": "834f78e1dd1ebd1ed15fae956aef0d6fca5be7328fee08f782b27711e295c3f8",
+      "bytes": 654
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/11.03.md",
+      "change_type": "ADDED",
+      "sha256": "06d02252406d2476b169b460f6fc5f1231dfc7003fdac3f8c791cac31b6de179",
+      "bytes": 649
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/11.04.md",
+      "change_type": "ADDED",
+      "sha256": "6144d2f8829117a809457d3da4badd15d9b3be888a931b62921c797e9bd13359",
+      "bytes": 640
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/11.05.md",
+      "change_type": "ADDED",
+      "sha256": "8a015231705ac1a68d4b90d1ca29ac4c38ce9b108df9c8e08cd14fc94aa22f7f",
+      "bytes": 639
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "change_type": "MODIFIED",
+      "sha256": "21a347af24155879902f303cc7268e2057faccfc90c8d9b72dc0ba0a2117da3f",
+      "bytes": 35635
+    }
+  ]
+}
