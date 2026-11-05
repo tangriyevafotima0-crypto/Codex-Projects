@@ -1,0 +1,39 @@
+name: S11 independent ledger completeness and upgrade diagnostics
+on:
+  push:
+    branches: ['codex/s11-o-runtime-review']
+permissions:
+  contents: read
+jobs:
+  database-auth-probes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    defaults:
+      run:
+        working-directory: eduerp-v2
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: eduerp_probe_admin
+          POSTGRES_PASSWORD: TEST_ONLY_PROBE_PASSWORD
+          POSTGRES_DB: eduerp_test_probe_admin
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready -U eduerp_probe_admin -d eduerp_test_probe_admin"
+          --health-interval=3s --health-timeout=3s --health-retries=15
+    env:
+      EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: 'true'
+      TEST_DATABASE_ADMIN_URL: postgresql://eduerp_probe_admin:TEST_ONLY_PROBE_PASSWORD@127.0.0.1:5432/eduerp_test_probe_admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: eduerp-v2/.nvmrc
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run prisma:generate
+      - run: npm run lint && npm run typecheck && npm test
+      - name: Independent ledger completeness and predecessor upgrade probes
+        run: timeout 90s node ../s11-o-probes.cjs
+      - name: Isolated G8 cash acceptance
+        run: timeout 180s npm run test:cash
