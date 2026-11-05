@@ -288,7 +288,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
     const crypto = await import('node:crypto');
     const { Pool } = await import('pg');
 
-    const migrationsRoot = path.resolve(__dirname, '../../prisma/migrations');
+    const migrationsRoot = path.dirname(path.dirname(resolveMigrationSqlPath()));
     const allMigrationDirs = fs
       .readdirSync(migrationsRoot, { withFileTypes: true })
       .filter((d) => d.isDirectory())
@@ -302,7 +302,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
 
     const upgDbName = `eduerp_test_upg07_${crypto.randomBytes(4).toString('hex')}`;
     await env.adminPool.query(`CREATE DATABASE ${upgDbName}`);
-    const upgUrl = new URL(env.adminDatabaseUrl);
+    const upgUrl = new URL(env.superuserCenterAUrl);
     upgUrl.pathname = `/${upgDbName}`;
     const upgPool = new Pool({ connectionString: upgUrl.toString(), max: 4 });
 

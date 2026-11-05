@@ -5,13 +5,29 @@ import type {
 } from '@eduerp/contracts';
 import { ApiHttpException } from '../auth/auth.errors';
 import {
-  assertNoActorSpoofingKeys,
   assertPlainObject,
   assertValidUuid,
   resolveExpectedVersion,
 } from '../auth/validation';
 import { RequestWithCorrelationId } from '../common/request-id.middleware';
 import { parseOptionalStrictBoolean } from '../students/normalization';
+
+const FORBIDDEN_ACTOR_KEYS: ReadonlySet<string> = new Set([
+  'role', 'actor_role', 'actor_id', 'actor_staff_id', 'staff_id',
+  'recorded_by_staff_id', 'center_id', 'principal', 'license_mode',
+]);
+
+function assertNoActorSpoofingKeys(body: Record<string, unknown>): void {
+  for (const key of Object.keys(body)) {
+    if (FORBIDDEN_ACTOR_KEYS.has(key.toLowerCase())) {
+      throw new ApiHttpException({
+        statusCode: 403,
+        errorCode: 'FORBIDDEN_ROLE',
+        message: 'Actor identity and permissions must come from the authenticated session',
+      });
+    }
+  }
+}
 
 export type AttendanceFaultInjectionStep =
   | 'ATTENDANCE_RECORD_WRITE'
