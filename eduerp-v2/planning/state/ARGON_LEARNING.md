@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 9 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 10 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
@@ -78,3 +78,14 @@ L37:newfixtures existingDTOga zid local_ends_time/code, requiredschedulefieldsye
 L38:Clockforward kunlarga tokenexpirationreal, eskiJWTbilan futuretarifftest401bo‘lardi;managerrelogin helper. Next:controlledtime +freshcredentials, securityexpirepolicyunchanged.
 I06yaxshilanish:separatecasesfailureisolation;BigInt/as-of/timezone/revokeparallelassertionspositive. OfflineNOT_RUNhalol,ammonode-transpilePASS strictbuild/PGproofemas.
 Dataset9artifact,statistikmodelaccuracy/tokenbenchmarkemas. Managerfixbirtestfileda,productfixlarArgonniki. UserworkingpreferencekattafullstageKsaqlanadi, pendingpolicymutatsiyalargate.
+
+
+## O‘ninchi artifact — S08FULL-K, 2026-11-05
+Kuchli:32sourcehash/lock/packagediscipline;exactBigIntHALF_UP/rollingclamphelpers;39actualunit/runtimePASS,manager2testassistdan keyinG1–G4PASS. OfflineNOT_RUN halol. S08CHANGES_REQUIRED,91actualPASS/4FAILoverallFAIL.
+L36repeat:ASTidentifiercheck mavjudbo‘lmaganexportni o‘tkazgan;3fakeharnessimport tsc2305. Next:realmoduleexports/APItypedfixture,strictresolvercheck,sourceexistingpatterncopy.
+L37repeat:student400/schedule409fixtures actualfeatureassertionsoldidayiqildi. Next:isolateduniqueDTO-compatiblebuilders,hiddenassertionsNOT_RUN, failuresnotmasked.
+L39:enumliteral25char lekinDBVARCHAR24, actualDirectorpolicy500. Next:allnewenumvaluesSQLwidth/CHECK/Prismaroundtrip; staticcountapprovalemas.
+L40:per-helperformula to‘g‘ri bo‘lsa ham eligibilitymissing:TRIAL0attendanceinvoice200/debt480000;enrollmentNov12→Octinvoice200/debt480000. Next:state×time×entrypoint adversarialdeny+zerorowsbeforepositiveformula. Publicmanual+internalworker+trial raceboundary.
+L41:migrationdefault/mapperlegacyUNKNOWN→CONFIRMEDqulayfallbackfailopen. Next:explicitActor+policyversion+effectivedateconfirmation;oldrowsfailclosed, fixtureconfirmationproductionemas.
+L42:newmigration regressionexpectedcount/upgradeoldsetstale. Managermechanicallyfixed5history+upgrade; nextschema lifecycleallmigrationstestednotcountbumpalone.
+Manager2testfilesassists,productfinancialdefectsArgonfixnextL. Dataset10artifacts,statisticalmodelaccuracy/tokenbenchmarkemas. Invalidwidth/schema+eligibilityheavierthanminorfix; fullS08acceptanceL, S09gated.

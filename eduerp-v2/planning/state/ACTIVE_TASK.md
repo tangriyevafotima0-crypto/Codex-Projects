@@ -1,9 +1,7 @@
 # ACTIVE TASK
 
-- Task:**S08FULL-K**; ownerArgon, managerCodex; **READY_TO_ASSIGN**.
-- Scope:**08.01–08.05** completebillingcore:exactproration/rounding,periods/policies,trialconversion,transactionalinvoice,tests/CI/handoff.
-- Approved:S01–S07,35/120steps(29.17%byplancount); exactcode/evidence in state/reviews/S07-J.md.
-- Read:planning/assignments/S08FULL-K.md,OWNER_DECISIONS.md(includingOWNER-20261104-03),S07handoff/ARGON_LEARNING.
-- Exactbasecommit:rootTASK_INPUT.json. Inputcompleteapprovedsnapshot;nooldZIPrequired.
-- Output:S08FULL_K_SUBMISSION.zip changed/newsource+SUBMISSION.json,IN_REVIEW. Globalregistries/ownerapprovalread-only.
-- Stop:S09adjustments/payment/refund/freeze/payroll,productionandliveTelegram. Pendingpolicycombinationsfailclosed;implementconfirmedpaths.
+- Task:**S08FIX-L**, ownerArgon, managerCodex, **READY_TO_ASSIGN**.
+- S08FULL-K:**CHANGES_REQUIRED**. MainproductsourceS01–S07approved35/120(29.17%byplancount). Candidatebranchsource exists, approvedemas.
+- Scope:K01–K08closure+08.01–08.05fullacceptance; planning/assignments/S08FIX-L.md.
+- Exactbase/candidateSHA:rootTASK_INPUT.json; inputcomplete main+S08candidate+manager2testassistoverlay. ExactdeltaINPUT_MANIFEST.
+- Output:S08FIX_L_SUBMISSION.zip changed/newsource+SUBMISSION.json,IN_REVIEW. StopbeforeS09, livepayments/Telegram/production;ownerapproval/globalregistersreadonly.

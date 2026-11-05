@@ -1,0 +1,50 @@
+{
+  "task_id": "S08FULL-K",
+  "decision": "CHANGES_REQUIRED",
+  "submission_sha256": "b67e96aa5e2631f4c87b6a512aa745b7db26eb544fba69c0af1ee4fef5830270",
+  "base_commit": "4e3dd7b1cc7e8b1fa7e57e370d8b3399d7efda77",
+  "original_commit": "d64a0d0f19a4bb64ae8f5c7c704ecfcd2ae6a4df",
+  "candidate_input_commit": "a7d7d0000e4d62ca0341e60314d3eca5940bae64",
+  "strict_ci": {
+    "run_id": 41969843558,
+    "result": "failure",
+    "g1": "18 PASS",
+    "g2": "14 PASS",
+    "g3": "6 PASS",
+    "g4": "10 PASS",
+    "g5": "4 PASS / 4 FAIL",
+    "unit_runtime": "39 PASS",
+    "docker": "NOT_RUN - upstream G5 failure"
+  },
+  "independent_probes": {
+    "run_id": 41969762691,
+    "legacy_policy_confirmation": "CONFIRMED without explicit Director selection",
+    "trial_zero_attendance": {
+      "http": 200,
+      "invoice_count": 1,
+      "debt": "480000",
+      "expected": "deny/no debt"
+    },
+    "period_before_enrollment": {
+      "enrolled": "2026-11-12",
+      "period": "2026-10-01..2026-10-31",
+      "http": 200,
+      "invoice_count": 1,
+      "debt": "480000",
+      "expected": "deny/no debt"
+    }
+  },
+  "manager_assist_paths": [
+    "apps/api/test/billing/billing-lifecycle.integration.test.ts",
+    "apps/api/test/database/migrations-and-drift.integration.test.ts"
+  ],
+  "open_findings": [
+    "K02 legacy policy default auto-CONFIRMED",
+    "K03 public TRIAL invoice before second attendance",
+    "K04 period wholly before enrollment billed",
+    "K05 accepted 25-char rolling policy stored in VARCHAR(24) -> 500",
+    "K06 G5 fixtures fail before assertions; 4/8 tests fail"
+  ],
+  "approved_steps": 35,
+  "total_steps": 120
+}
