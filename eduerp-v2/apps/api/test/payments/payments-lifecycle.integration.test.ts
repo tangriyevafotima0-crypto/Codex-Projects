@@ -344,7 +344,7 @@ describe('Gate G7 — Stage 10 Manual Payments, Allocations, Promises, Reversals
     clock = app.get(ClockService);
     paymentService = app.get(PaymentService);
     reversalService = app.get(ReversalService);
-    clock.setFixedNowForTesting(new Date('2026-11-05T07:00:00.000Z'));
+    clock.setTestNow(new Date('2026-11-05T07:00:00.000Z'));
 
     await app.listen(0, '127.0.0.1');
     const addr = app.getHttpServer().address() as { port: number };
