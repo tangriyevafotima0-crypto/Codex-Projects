@@ -414,7 +414,6 @@ export class DiscountApprovalService {
               expectedVersion,
               setClauseSql: `"status" = 'REJECTED'`,
               additionalValues: [],
-              returningColumnsSql: '"version"',
             });
             this.maybeInjectTestFault('DISCOUNT_REQUEST_UPDATE', options?.testFaultAfterStep);
 
@@ -771,7 +770,6 @@ export class DiscountApprovalService {
             expectedVersion,
             setClauseSql: `"status" = 'APPROVED', "target_invoice_id" = $4::uuid`,
             additionalValues: [invoice.id],
-            returningColumnsSql: '"version"',
           });
           this.maybeInjectTestFault('DISCOUNT_REQUEST_UPDATE', options?.testFaultAfterStep);
 
@@ -818,7 +816,6 @@ export class DiscountApprovalService {
               formatMoneyUzs(newRemainingDebtUzs),
               newInvoiceStatus,
             ],
-            returningColumnsSql: '"version"',
           });
           this.maybeInjectTestFault('INVOICE_UPDATE', options?.testFaultAfterStep);
 

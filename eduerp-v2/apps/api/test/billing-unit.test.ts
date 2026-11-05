@@ -497,6 +497,8 @@ describe('Stage 08 Billing, Proration, Subscriptions, Trial Conversion & Policy 
       freeze_credit_basis: 'NET_PROPORTIONAL_LESSON',
       refund_debt_mode: 'REOPEN_INVOICE_DEBT',
       policy_confirmation_status: 'CONFIRMED',
+      discount_policy_status: 'UNCONFIGURED',
+      freeze_policy_status: 'UNCONFIGURED',
       effective_from_date: '2026-01-01',
       created_by_staff_id: null,
       created_at_utc: '2026-01-01T00:00:00.000Z',

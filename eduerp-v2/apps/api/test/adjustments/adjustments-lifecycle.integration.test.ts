@@ -6,7 +6,6 @@ import { after, before, describe, it } from 'node:test';
 import { createApiApplication } from '../../src/application';
 import { ClockService } from '../../src/auth/clock.service';
 import { loadApiEnv } from '../../src/config/env';
-import { DatabaseService } from '../../src/database/database.service';
 import {
   executeSyntheticSeed,
   SYNTHETIC_DEMO_CENTER_A as C,
@@ -83,7 +82,6 @@ async function httpJsonRequest(options: {
 
 describe('Gate G6 — Stage 09 Discounts, Stacking, Grants, Freezes & Withdrawals HTTP + PostgreSQL Integration Suite (ADJ-IT-01..08)', () => {
   let env: EphemeralDatabaseEnvironment;
-  let dbService: DatabaseService;
   let app: INestApplication;
   let port = 0;
 
@@ -137,7 +135,7 @@ describe('Gate G6 — Stage 09 Discounts, Stacking, Grants, Freezes & Withdrawal
       NODE_ENV: 'test',
       LOG_LEVEL: 'error',
       API_HOST: '127.0.0.1',
-      API_PORT: '0',
+      API_PORT: '3000',
       CENTER_ID: C.centerId,
       CENTER_SLUG: C.centerSlug,
       CENTER_TIMEZONE: 'Asia/Tashkent',
@@ -149,8 +147,7 @@ describe('Gate G6 — Stage 09 Discounts, Stacking, Grants, Freezes & Withdrawal
       TELEGRAM_WEBHOOK_SECRET: 'TestOnly_TelegramWebhookSecret_24',
     });
 
-    dbService = new DatabaseService(apiConfig);
-    app = await createApiApplication(apiConfig, dbService);
+    app = await createApiApplication(apiConfig);
     app.get(ClockService).setTestNow(new Date('2026-11-04T09:00:00Z'));
     await app.listen(0, '127.0.0.1');
     const addr = app.getHttpServer().address();
@@ -162,9 +159,6 @@ describe('Gate G6 — Stage 09 Discounts, Stacking, Grants, Freezes & Withdrawal
   after(async () => {
     if (app) {
       await app.close();
-    }
-    if (dbService) {
-      await dbService.close();
     }
     if (env) {
       await env.cleanup();
@@ -497,6 +491,11 @@ describe('Gate G6 — Stage 09 Discounts, Stacking, Grants, Freezes & Withdrawal
             role: 'DIRECTOR',
             sessionId: crypto.randomUUID(),
             mustChangePassword: false,
+            familyId: crypto.randomUUID(),
+            staffVersion: 1,
+            transportMode: 'BEARER',
+            csrfTokenHash: null,
+            licenseMode: 'ACTIVE',
           },
           discountRequestId,
           { decision: 'APPROVED', expected_version: 1 },
@@ -1005,6 +1004,11 @@ describe('Gate G6 — Stage 09 Discounts, Stacking, Grants, Freezes & Withdrawal
             role: 'ADMIN',
             sessionId: crypto.randomUUID(),
             mustChangePassword: false,
+            familyId: crypto.randomUUID(),
+            staffVersion: 1,
+            transportMode: 'BEARER',
+            csrfTokenHash: null,
+            licenseMode: 'ACTIVE',
           },
           {
             enrollment_id: enrId,

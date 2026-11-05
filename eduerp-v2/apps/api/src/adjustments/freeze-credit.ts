@@ -852,7 +852,6 @@ export class FreezeCreditService {
             expectedVersion: Number(sourceInvoice.version),
             setClauseSql: `"frozen_credited_lessons" = $4::int`,
             additionalValues: [newFrozenCreditedTotal],
-            returningColumnsSql: '"version"',
           });
           this.maybeInjectTestFault('INVOICE_UPDATE', options?.testFaultAfterStep);
 
@@ -864,7 +863,6 @@ export class FreezeCreditService {
             expectedVersion,
             setClauseSql: `"status" = "status"`,
             additionalValues: [],
-            returningColumnsSql: '"version"',
           });
           this.maybeInjectTestFault('ENROLLMENT_UPDATE', options?.testFaultAfterStep);
 
