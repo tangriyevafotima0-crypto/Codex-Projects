@@ -389,14 +389,10 @@ export function validateRecordPaymentInput(
   let promiseDate: string | null = null;
   if (obj.promise_date !== undefined && obj.promise_date !== null) {
     promiseDate = validateIsoDate(obj.promise_date, 'promise_date');
-    const cleanToday = validateIsoDate(centerTodayDate, 'centerTodayDate');
-    if (promiseDate < cleanToday) {
-      throw new ApiHttpException({
-        statusCode: 422,
-        errorCode: 'VALIDATION_ERROR',
-        message: `promise_date (${promiseDate}) cannot be earlier than center current date (${cleanToday}) (BR-05)`,
-      });
-    }
+    // Parse-only before idempotent replay. New execution enforces the live date
+    // in planPaymentAllocations inside the transaction; an old committed result
+    // must remain replayable after its promise date has passed.
+    validateIsoDate(centerTodayDate, 'centerTodayDate');
   }
 
   const recordedAtDate = new Date(serverNow.getTime());

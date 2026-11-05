@@ -1630,4 +1630,52 @@ describe('Gate G7 — Stage 10 Manual Payments, Allocations, Promises, Reversals
       );
     }
   });
+  it('PAY-IT-11: next-day replay preserves original payment while a new key with an expired promise is rejected without writes', async () => {
+    const initialNow = new Date('2026-11-05T07:00:00.000Z');
+    clock.setTestNow(initialNow);
+    await refreshTokens();
+    const cashShiftId = await ensureOpenCashShift();
+    const fixture = await createIsolatedStudentAndInvoices(['500000']);
+    const key = crypto.randomUUID();
+    const body = {
+      student_id: fixture.studentId, cash_shift_id: cashShiftId,
+      amount_uzs: '300000', currency: 'UZS', payment_method: 'CASH',
+      target_invoice_ids: fixture.invoiceIds, promise_date: '2026-11-05',
+    };
+    const record = (idempotencyKey: string) => httpJsonRequest({
+      port, method: 'POST', path: '/api/v1/payments',
+      headers: { Authorization: `Bearer ${directorToken}`, 'Idempotency-Key': idempotencyKey }, body,
+    });
+    try {
+      const original = await record(key);
+      assert.equal(original.statusCode, 201, original.rawBody);
+      clock.setTestNow(new Date('2026-11-06T07:00:00.000Z'));
+      await refreshTokens();
+      const replay = await record(key);
+      assert.equal(replay.statusCode, 201, replay.rawBody);
+      assert.deepEqual(replay.json, original.json);
+      const before = await env.apiPoolA.query(
+        `SELECT (SELECT COUNT(*)::int FROM payments WHERE student_id=$1) AS payments,
+                (SELECT COUNT(*)::int FROM receipts WHERE student_id=$1) AS receipts,
+                (SELECT COUNT(*)::int FROM promises_to_pay WHERE student_id=$1) AS promises`,
+        [fixture.studentId]);
+      const fresh = await record(crypto.randomUUID());
+      assert.equal(fresh.statusCode, 422, fresh.rawBody);
+      const after = await env.apiPoolA.query(
+        `SELECT (SELECT COUNT(*)::int FROM payments WHERE student_id=$1) AS payments,
+                (SELECT COUNT(*)::int FROM receipts WHERE student_id=$1) AS receipts,
+                (SELECT COUNT(*)::int FROM promises_to_pay WHERE student_id=$1) AS promises`,
+        [fixture.studentId]);
+      assert.deepEqual(after.rows, before.rows);
+      assert.deepEqual(after.rows[0], { payments: 1, receipts: 1, promises: 1 });
+      const invoice = await env.apiPoolA.query(
+        'SELECT allocated_paid_uzs::text AS paid, remaining_debt_uzs::text AS debt FROM invoices WHERE id=$1',
+        [fixture.invoiceIds[0]]);
+      assert.deepEqual(invoice.rows[0], {paid:'300000', debt:'200000'});
+    } finally {
+      clock.setTestNow(initialNow);
+      await refreshTokens();
+    }
+  });
+
 });
