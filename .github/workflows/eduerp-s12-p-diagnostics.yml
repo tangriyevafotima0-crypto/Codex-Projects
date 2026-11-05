@@ -1,0 +1,57 @@
+name: P independent diagnostics (not acceptance)
+on:
+  push:
+    branches: ['codex/s11s12-p-runtime-review']
+permissions:
+  contents: read
+jobs:
+  bounded-diagnostics:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    defaults:
+      run:
+        working-directory: eduerp-v2
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: eduerp_probe_admin
+          POSTGRES_PASSWORD: TEST_ONLY_PROBE_PASSWORD
+          POSTGRES_DB: eduerp_test_probe_admin
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd="pg_isready -U eduerp_probe_admin -d eduerp_test_probe_admin"
+          --health-interval=3s --health-timeout=3s --health-retries=15
+    env:
+      EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: 'true'
+      TEST_DATABASE_ADMIN_URL: postgresql://eduerp_probe_admin:TEST_ONLY_PROBE_PASSWORD@127.0.0.1:5432/eduerp_test_probe_admin
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: eduerp-v2/.nvmrc
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - run: npm run prisma:generate
+      - run: npm --workspace=@eduerp/contracts run build
+      - name: Emit diagnostic JS despite known type errors (NOT a successful build)
+        run: |
+          set +e
+          npm --workspace=@eduerp/api run build > /tmp/p-diagnostic-compile.log 2>&1
+          compile_status=$?
+          cat /tmp/p-diagnostic-compile.log
+          echo "DIAGNOSTIC_COMPILE_EXIT=$compile_status; typecheck remains FAILED"
+          test -f apps/api/dist/src/application.js
+      - name: Isolated attendance unit and SQLite protocol tests
+        continue-on-error: true
+        run: timeout 90s node --test apps/api/dist/test/attendance-unit.test.js
+      - name: G1 database diagnostics
+        continue-on-error: true
+        run: timeout 120s npm run test:db
+      - name: G8 unchanged submitted cash suite diagnostics
+        continue-on-error: true
+        run: timeout 120s npm run test:cash
+      - name: G9 submitted attendance suite diagnostics
+        continue-on-error: true
+        run: timeout 120s npm run test:attendance
+      - name: Independent O02 O03 and attendance HTTP observations
+        run: timeout 120s node ../s12-p-probes.cjs
