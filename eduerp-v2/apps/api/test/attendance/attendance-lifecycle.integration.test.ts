@@ -270,8 +270,8 @@ describe('Gate G9 — Stage 12 Attendance, Stale Excel Conflicts, Offline Sync &
 
     teacher2Id = crypto.randomUUID();
     await env.apiPoolA.query(
-      `INSERT INTO "staff_users" ("id", "center_id", "role", "full_name", "login_username", "password_hash", "status")
-       VALUES ($1::uuid, $2::uuid, 'TEACHER', 'Second Teacher S12', 'teacher2.s12', $3, 'ACTIVE')`,
+      `INSERT INTO "staff_users" ("id", "center_id", "role", "full_name", "login_username", "password_hash", "status", "must_change_password")
+       VALUES ($1::uuid, $2::uuid, 'TEACHER', 'Second Teacher S12', 'teacher2.s12', $3, 'ACTIVE', FALSE)`,
       [teacher2Id, C.centerId, SYNTHETIC_TEACHER_SCRYPT_HASH],
     );
 

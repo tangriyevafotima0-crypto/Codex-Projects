@@ -4,6 +4,8 @@ import { AuthenticatedStaffPrincipal } from '../auth/permissions.guard';
 import { requireIdempotencyKeyHeader } from '../auth/validation';
 import { RequestWithCorrelationId, resolveRequestId } from '../common/request-id.middleware';
 import { DatabaseService } from '../database/database.service';
+import { IdempotencyConflictError } from '../database/idempotency';
+import { OptimisticVersionConflictError } from '../database/transaction';
 import { AttendanceService } from './attendance.service';
 import {
   OfflineAttendanceBatchSyncResponseDto,
@@ -102,6 +104,21 @@ export class SyncService {
           }),
         );
       } catch (err: unknown) {
+        // Database domain errors also belong to this operation's ACK envelope.
+        // Do not abort a mixed batch after earlier operations already committed.
+        if (err instanceof IdempotencyConflictError || err instanceof OptimisticVersionConflictError) {
+          results.push(Object.freeze({
+            client_operation_uuid: op.clientOperationUuid,
+            lesson_id: op.lessonId,
+            ack_status: 'CONFLICT_409',
+            server_version: null,
+            error_code: err.errorCode,
+            conflict_details: err instanceof OptimisticVersionConflictError
+              ? { entity: err.entityName, expected_version: err.expectedVersion }
+              : null,
+          }));
+          continue;
+        }
         if (err instanceof ApiHttpException) {
           if (err.statusCode === 409) {
             const conflictDetails =
