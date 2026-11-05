@@ -455,7 +455,11 @@ describe('PostgreSQL Domain Constraints, Relational Lineage, Race-Safe Last Dire
         WHERE p.proname = 'eduerp_forbid_append_only_mutation'
           AND NOT t.tgisinternal`,
     );
-    assert.equal(trigCheck.rows.length, CANONICAL_IMMUTABLE_TABLES.length);
+    assert.deepEqual(
+      trigCheck.rows.map((row) => row.relname).sort(),
+      [...CANONICAL_IMMUTABLE_TABLES, 'billing_cycle_lesson_allocations'].sort(),
+      'All canonical append-only tables and the package allocation helper must be immutable',
+    );
 
     // Closed payroll snapshot immutability trigger (42501 CLOSED_RECORD_IMMUTABLE)
     const snapId = crypto.randomUUID();
