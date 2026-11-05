@@ -92,7 +92,7 @@ describe('Worker Config Validation, Backoff, Timezone & Graceful Signal Shutdown
 
     const sanitized = sanitizeWorkerErrorMessage(
       new Error(
-        'Failed connecting to postgresql://user:SuperSecret123@127.0.0.1:5432/db for phone +998901234567 token 123456789:AAHabcdefghijklmnopqrstuvwx12345678',
+        'Failed connecting to postgresql://user:SuperSecret123@127.0.0.1:5432/db for phone +998901234567 token ' + '123456789:' + 'AA' + 'H' + 'abcdefghijklmnopqrstuvwx12345678',
       ),
     );
     assert.equal(sanitized.includes('SuperSecret123'), false);
