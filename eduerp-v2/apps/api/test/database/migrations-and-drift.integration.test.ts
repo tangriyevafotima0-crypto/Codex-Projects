@@ -69,13 +69,14 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
          FROM "_prisma_migrations"
         ORDER BY "migration_name" ASC`,
     );
-    assert.equal(migRowsBefore.rows.length, 6);
+    assert.equal(migRowsBefore.rows.length, 7);
     assert.equal(migRowsBefore.rows[0].migration_name, '20261104000100_initial_foundation');
     assert.equal(migRowsBefore.rows[1].migration_name, '20261104000200_s05_auth_and_rbac_foundation');
     assert.equal(migRowsBefore.rows[2].migration_name, '20261104000300_s06_auth_fixes_and_student_foundation');
     assert.equal(migRowsBefore.rows[3].migration_name, '20261104000400_s07_academics_schedule_substitutes_grades');
     assert.equal(migRowsBefore.rows[4].migration_name, '20261104000500_s08_billing_policy_cycles_trials_invoices');
     assert.equal(migRowsBefore.rows[5].migration_name, '20261105000600_s10_payments_allocations_reversals_receipts');
+    assert.equal(migRowsBefore.rows[6].migration_name, '20261105000700_s11_cash_shifts_expenses_promises_reconciliation');
     for (const row of migRowsBefore.rows) {
       assert.equal(row.checksum.length, 64);
       assert.notEqual(row.finished_at, null);
@@ -87,7 +88,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
     const migRowsAfter = await env.apiPoolA.query<{ count: string }>(
       `SELECT COUNT(*)::text AS count FROM "_prisma_migrations"`,
     );
-    assert.equal(Number(migRowsAfter.rows[0]?.count), 6);
+    assert.equal(Number(migRowsAfter.rows[0]?.count), 7);
 
     // Fault injection: a migration batch that fails mid-script in a transaction leaves zero partial tables
     const client = await env.migratorPoolA.connect();
@@ -124,6 +125,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
       const m4Sql = fs.readFileSync(resolveMigrationSqlPath('20261104000400_s07_academics_schedule_substitutes_grades'), 'utf8');
       const m5Sql = fs.readFileSync(resolveMigrationSqlPath('20261104000500_s08_billing_policy_cycles_trials_invoices'), 'utf8');
       const m6Sql = fs.readFileSync(resolveMigrationSqlPath('20261105000600_s10_payments_allocations_reversals_receipts'), 'utf8');
+      const m7Sql = fs.readFileSync(resolveMigrationSqlPath('20261105000700_s11_cash_shifts_expenses_promises_reconciliation'), 'utf8');
 
       // 1. Apply initial S04 foundation snapshot
       await upgradePool.query(m1Sql);
@@ -154,6 +156,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
       await upgradePool.query(m4Sql);
       await upgradePool.query(m5Sql);
       await upgradePool.query(m6Sql);
+      await upgradePool.query(m7Sql);
 
       // 4. Verify pre-existing rows are intact and have valid S05 default columns
       const checkSession = await upgradePool.query<{
@@ -277,5 +280,179 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
       [dbNameA],
     );
     assert.equal(Number(afterDrop.rows[0]?.cnt), 0);
+  });
+
+  it('DB-IT-21 (O03): upgrades populated 6-migration predecessor database with duplicate ACTIVE promises on the same invoice and proves idempotent re-execution of migration 000700', async () => {
+    const fs = await import('node:fs');
+    const path = await import('node:path');
+    const crypto = await import('node:crypto');
+    const { Pool } = await import('pg');
+
+    const migrationsRoot = path.resolve(__dirname, '../../prisma/migrations');
+    const allMigrationDirs = fs
+      .readdirSync(migrationsRoot, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name)
+      .sort();
+    assert.equal(allMigrationDirs.length, 7);
+
+    const predecessorDirs = allMigrationDirs.slice(0, 6);
+    const s11Dir = allMigrationDirs[6];
+    assert.ok(s11Dir.includes('000700_s11_cash_shifts_expenses_promises_reconciliation'));
+
+    const upgDbName = `eduerp_test_upg07_${crypto.randomBytes(4).toString('hex')}`;
+    await env.adminPool.query(`CREATE DATABASE ${upgDbName}`);
+    const upgUrl = new URL(env.adminDatabaseUrl);
+    upgUrl.pathname = `/${upgDbName}`;
+    const upgPool = new Pool({ connectionString: upgUrl.toString(), max: 4 });
+
+    try {
+      for (const dir of predecessorDirs) {
+        const sql = fs.readFileSync(path.join(migrationsRoot, dir, 'migration.sql'), 'utf8');
+        await upgPool.query(sql);
+      }
+
+      await executeSyntheticSeed(upgPool, SYNTHETIC_DEMO_CENTER_A, {
+        ...process.env,
+        NODE_ENV: 'test',
+        BOT_OUTBOUND_ENABLED: 'false',
+      });
+
+      const enrollmentId = crypto.randomUUID();
+      const cycleId = crypto.randomUUID();
+      const invoiceId = crypto.randomUUID();
+      const shiftId = crypto.randomUUID();
+      const payment1Id = crypto.randomUUID();
+      const payment2Id = crypto.randomUUID();
+      const olderPromiseId = crypto.randomUUID();
+      const newerPromiseId = crypto.randomUUID();
+
+      await upgPool.query(
+        `INSERT INTO "enrollments" ("id", "center_id", "student_id", "group_id", "status", "enrolled_at_date")
+         VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, 'ACTIVE', '2026-11-01')`,
+        [
+          enrollmentId,
+          SYNTHETIC_DEMO_CENTER_A.centerId,
+          SYNTHETIC_DEMO_CENTER_A.studentId,
+          SYNTHETIC_DEMO_CENTER_A.groupId,
+        ],
+      );
+
+      await upgPool.query(
+        `INSERT INTO "billing_cycles" (
+           "id", "center_id", "enrollment_id", "cycle_type", "cycle_key", "cycle_seq",
+           "period_start_date", "period_end_date", "planned_lessons", "billable_lessons", "policy_version_id"
+         ) VALUES (
+           $1::uuid, $2::uuid, $3::uuid, 'CALENDAR_MONTH', '2026-11', 1,
+           '2026-11-01', '2026-11-30', 12, 12, $4::uuid
+         )`,
+        [
+          cycleId,
+          SYNTHETIC_DEMO_CENTER_A.centerId,
+          enrollmentId,
+          SYNTHETIC_DEMO_CENTER_A.billingPolicyId,
+        ],
+      );
+
+      await upgPool.query(
+        `INSERT INTO "invoices" (
+           "id", "center_id", "invoice_number", "student_id", "enrollment_id",
+           "billing_cycle_id", "policy_version_id", "tariff_snapshot_uzs",
+           "base_pro_rata_charge_uzs", "approved_discount_uzs", "credit_note_adjustments_uzs",
+           "effective_net_charge_uzs", "allocated_paid_uzs", "remaining_debt_uzs",
+           "billed_lessons", "status", "due_date", "version"
+         ) VALUES (
+           $1::uuid, $2::uuid, 'INV-UPG-000700', $3::uuid, $4::uuid,
+           $5::uuid, $6::uuid, 500000,
+           500000, 0, 0,
+           500000, 200000, 300000,
+           12, 'PARTIALLY_PAID', '2026-11-10', 1
+         )`,
+        [
+          invoiceId,
+          SYNTHETIC_DEMO_CENTER_A.centerId,
+          SYNTHETIC_DEMO_CENTER_A.studentId,
+          enrollmentId,
+          cycleId,
+          SYNTHETIC_DEMO_CENTER_A.billingPolicyId,
+        ],
+      );
+
+      await upgPool.query(
+        `INSERT INTO "cash_shifts" (
+           "id", "center_id", "shift_date", "opened_by_admin_id",
+           "opening_cash_uzs", "cash_receipts_uzs", "expected_closing_cash_uzs", "status", "version"
+         ) VALUES ($1::uuid, $2::uuid, '2026-11-05', $3::uuid, 0, 200000, 200000, 'OPEN', 1)`,
+        [shiftId, SYNTHETIC_DEMO_CENTER_A.centerId, SYNTHETIC_DEMO_CENTER_A.adminId],
+      );
+
+      await upgPool.query(
+        `INSERT INTO "payments" (
+           "id", "center_id", "student_id", "cash_shift_id", "amount_uzs",
+           "currency", "payment_method", "recorded_by_admin_id", "idempotency_key"
+         ) VALUES
+         ($1::uuid, $3::uuid, $4::uuid, $5::uuid, 100000, 'UZS', 'CASH', $6::uuid, 'idem-upg-pay-1'),
+         ($2::uuid, $3::uuid, $4::uuid, $5::uuid, 100000, 'UZS', 'CASH', $6::uuid, 'idem-upg-pay-2')`,
+        [
+          payment1Id,
+          payment2Id,
+          SYNTHETIC_DEMO_CENTER_A.centerId,
+          SYNTHETIC_DEMO_CENTER_A.studentId,
+          shiftId,
+          SYNTHETIC_DEMO_CENTER_A.adminId,
+        ],
+      );
+
+      // In 6-migration predecessor schema, idx_promises_active_invoice did not exist yet
+      await upgPool.query(
+        `INSERT INTO "promises_to_pay" (
+           "id", "center_id", "student_id", "invoice_id", "trigger_payment_id",
+           "promised_amount_uzs", "promise_date", "status", "version", "created_at", "updated_at"
+         ) VALUES
+         ($1::uuid, $3::uuid, $4::uuid, $5::uuid, $6::uuid, 400000, '2026-11-12', 'ACTIVE', 1, '2026-11-05T07:00:00Z', '2026-11-05T07:00:00Z'),
+         ($2::uuid, $3::uuid, $4::uuid, $5::uuid, $7::uuid, 300000, '2026-11-15', 'ACTIVE', 1, '2026-11-05T08:00:00Z', '2026-11-05T08:00:00Z')`,
+        [
+          olderPromiseId,
+          newerPromiseId,
+          SYNTHETIC_DEMO_CENTER_A.centerId,
+          SYNTHETIC_DEMO_CENTER_A.studentId,
+          invoiceId,
+          payment1Id,
+          payment2Id,
+        ],
+      );
+
+      const s11Sql = fs.readFileSync(path.join(migrationsRoot, s11Dir, 'migration.sql'), 'utf8');
+      await upgPool.query(s11Sql);
+      // Re-run migration 000700 a second time to prove idempotent re-execution!
+      await upgPool.query(s11Sql);
+
+      const promisesAfter = await upgPool.query<{
+        id: string;
+        status: string;
+        cancel_reason: string | null;
+        superseded_by_promise_id: string | null;
+      }>(
+        `SELECT "id"::text AS id, "status"::text AS status, "cancel_reason", "superseded_by_promise_id"::text AS superseded_by_promise_id
+           FROM "promises_to_pay"
+          WHERE "invoice_id" = $1::uuid
+          ORDER BY "created_at" ASC`,
+        [invoiceId],
+      );
+      assert.equal(promisesAfter.rows.length, 2);
+      assert.equal(promisesAfter.rows[0].id, olderPromiseId);
+      assert.equal(promisesAfter.rows[0].status, 'CANCELLED');
+      assert.equal(
+        promisesAfter.rows[0].cancel_reason,
+        'SUPERSEDED_BY_NEW_PARTIAL_PAYMENT_PROMISE',
+      );
+      assert.equal(promisesAfter.rows[0].superseded_by_promise_id, newerPromiseId);
+
+      assert.equal(promisesAfter.rows[1].id, newerPromiseId);
+      assert.equal(promisesAfter.rows[1].status, 'ACTIVE');
+    } finally {
+      await upgPool.end();
+      await env.adminPool.query(`DROP DATABASE IF EXISTS ${upgDbName} WITH (FORCE)`);
+    }
   });
 });

@@ -767,6 +767,7 @@ model CashShift {
   cashRefundsUzs         BigInt    @default(0) @map("cash_refunds_uzs") @db.BigInt
   nonCashRefundsUzs      BigInt    @default(0) @map("non_cash_refunds_uzs") @db.BigInt
   cashExpensesUzs        BigInt    @default(0) @map("cash_expenses_uzs") @db.BigInt
+  nonCashExpensesUzs     BigInt    @default(0) @map("non_cash_expenses_uzs") @db.BigInt
   expectedClosingCashUzs BigInt    @default(0) @map("expected_closing_cash_uzs") @db.BigInt
   countedClosingCashUzs  BigInt?   @map("counted_closing_cash_uzs") @db.BigInt
   discrepancyUzs         BigInt?   @map("discrepancy_uzs") @db.BigInt
@@ -964,8 +965,10 @@ model PromiseToPay {
   triggerPaymentId  String    @map("trigger_payment_id") @db.Uuid
   promisedAmountUzs BigInt    @map("promised_amount_uzs") @db.BigInt
   promiseDate       DateTime  @map("promise_date") @db.Date
-  status            String    @db.VarChar(16)
-  reminderSentAt    DateTime? @map("reminder_sent_at") @db.Timestamptz(6)
+  status                String    @db.VarChar(16)
+  cancelReason          String?   @map("cancel_reason") @db.VarChar(255)
+  supersededByPromiseId String?   @map("superseded_by_promise_id") @db.Uuid
+  reminderSentAt        DateTime? @map("reminder_sent_at") @db.Timestamptz(6)
   version           Int       @default(1)
   createdAt         DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt         DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)

@@ -714,6 +714,28 @@ export class AllocationService {
         if (!primaryPromiseId) {
           primaryPromiseId = promiseId;
         }
+        // 11.03: Supersede any prior ACTIVE PromiseToPay on the same invoice before inserting the new ACTIVE promise
+        const priorActiveRes = await tx.query<{ id: string; version: number }>(
+          `SELECT "id"::text AS id, "version"
+             FROM "promises_to_pay"
+            WHERE "center_id" = $1::uuid
+              AND "invoice_id" = $2::uuid
+              AND "status" = 'ACTIVE'
+            ORDER BY "id" ASC
+            FOR UPDATE`,
+          [params.centerId, pt.invoiceId],
+        );
+        for (const oldPromise of priorActiveRes.rows) {
+          await executeOptimisticUpdate(tx, {
+            tableName: 'promises_to_pay',
+            entityName: 'PromiseToPay',
+            id: oldPromise.id,
+            centerId: params.centerId,
+            expectedVersion: Number(oldPromise.version),
+            setClauseSql: `"status" = 'CANCELLED', "cancel_reason" = 'SUPERSEDED_BY_NEW_PARTIAL_PAYMENT_PROMISE', "superseded_by_promise_id" = $4::uuid`,
+            additionalValues: [promiseId],
+          });
+        }
         await tx.query(
           `INSERT INTO "promises_to_pay" (
              "id",

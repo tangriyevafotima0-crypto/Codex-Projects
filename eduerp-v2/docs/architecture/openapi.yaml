@@ -2194,6 +2194,8 @@
             "enum": [
               "CASH",
               "CARD",
+              "CLICK",
+              "PAYME",
               "TRANSFER"
             ]
           },
@@ -2201,6 +2203,16 @@
             "type": "string",
             "minLength": 3,
             "maxLength": 255
+          },
+          "reverses_expense_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -2277,6 +2289,9 @@
           "version": {
             "type": "integer",
             "minimum": 1
+          },
+          "non_cash_expenses_uzs": {
+            "$ref": "#/components/schemas/NonNegativeMoneyUzs"
           }
         }
       },
@@ -4704,6 +4719,54 @@
             }
           }
         }
+      },
+      "ReverseExpenseRequest": {
+        "type": "object",
+        "required": [
+          "reason_and_doc"
+        ],
+        "properties": {
+          "cash_shift_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "reason_and_doc": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 255
+          }
+        }
+      },
+      "DebtorsAndPromisesListResponse": {
+        "type": "object",
+        "required": [
+          "center_date",
+          "debtors",
+          "promises",
+          "due_reminder_candidates"
+        ],
+        "properties": {
+          "center_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          },
+          "debtors": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "promises": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          },
+          "due_reminder_candidates": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            }
+          }
+        }
       }
     }
   },
@@ -6301,8 +6364,9 @@
           }
         ],
         "x-allowed-roles": [
-          "TEACHER",
-          "ADMIN"
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
         ],
         "x-object-scope": {
           "trust_plane": "CENTER_DATA_PLANE",
@@ -6399,8 +6463,9 @@
           }
         ],
         "x-allowed-roles": [
-          "TEACHER",
-          "ADMIN"
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
         ],
         "x-object-scope": {
           "trust_plane": "CENTER_DATA_PLANE",
@@ -11070,6 +11135,514 @@
           },
           "409": {
             "$ref": "#/components/schemas/ErrorEnvelope"
+          }
+        }
+      }
+    },
+    "/api/v1/cash-shifts/{shift_id}": {
+      "parameters": [
+        {
+          "name": "shift_id",
+          "in": "path",
+          "required": true,
+          "description": "CashShift UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getCashShiftReconciliation",
+        "summary": "Read REPEATABLE READ cash shift reconciliation snapshot and method-wise breakdown (T11.04, CASE-18)",
+        "tags": [
+          "CashShiftsAndExpenses"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "ADMIN",
+          "DIRECTOR"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['ADMIN', 'DIRECTOR']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        },
+        "x-read-only-license-policy": "ALLOWED_IN_READ_ONLY",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Cash shift reconciliation report",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashShiftReconciliationResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/cash-expenses/{expense_id}/reverse": {
+      "parameters": [
+        {
+          "name": "expense_id",
+          "in": "path",
+          "required": true,
+          "description": "CashExpense UUID to reverse",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "reverseExpenseById",
+        "summary": "Director-only append-only reversal of a recorded cash or non-cash expense (T11.02)",
+        "tags": [
+          "CashShiftsAndExpenses"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role == 'DIRECTOR'; ADMIN and TEACHER roles are strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        },
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": false,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReverseExpenseRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Append-only expense reversal recorded",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CashShiftReconciliationResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/promises": {
+      "get": {
+        "operationId": "listDebtorsAndPromises",
+        "summary": "List center-scoped debtors, promises-to-pay, and due reminder candidates (T11.03, CASE-22)",
+        "tags": [
+          "CashShiftsAndExpenses"
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "ADMIN",
+          "DIRECTOR"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to target resource(s) where resource.center_id == jwt.center_id and actor role in ['ADMIN', 'DIRECTOR']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        },
+        "x-read-only-license-policy": "ALLOWED_IN_READ_ONLY",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Center-scoped debtors and promises-to-pay projection",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DebtorsAndPromisesListResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          }
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ]
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/attendance": {
+      "parameters": [
+        {
+          "name": "lesson_id",
+          "in": "path",
+          "required": true,
+          "description": "LessonOccurrence UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getLessonAttendanceDraftOrSubmitted",
+        "summary": "Get lesson attendance draft roster (defaults PRESENT) or submitted records and revision history (T12.01, T12.04)",
+        "tags": [
+          "AttendanceAndOfflineSync"
+        ],
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz"
+          }
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN",
+          "TEACHER"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries filter by center_id == jwt.center_id matching Host center_slug; cross-center UUID returns 404.",
+          "object_ownership_rule": "For TEACHER: AcademicAccessService verifies course_groups.primary_teacher_id == jwt.staff_id OR active substitute_assignments.substitute_teacher_id == jwt.staff_id for lesson_id (else 403 FORBIDDEN_OBJECT_SCOPE); returns zero guardian phone or financial fields.",
+          "conditional_role_policy": "Enforces confirmed role grant; allowed in READ_ONLY license mode."
+        },
+        "x-read-only-license-policy": "ALLOWED_IN_READ_ONLY",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Lesson attendance draft or submitted roster and append-only revisions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSubmitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/attendance/override": {
+      "parameters": [
+        {
+          "name": "lesson_id",
+          "in": "path",
+          "required": true,
+          "description": "LessonOccurrence UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "overrideLessonAttendance",
+        "summary": "Admin/Director reason-based attendance override preserving untouched students and appending AttendanceRevision + AttendanceCorrected outbox (BR-11, D07, T12.03, T12.04)",
+        "tags": [
+          "AttendanceAndOfflineSync"
+        ],
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz"
+          }
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center UUID returns 404.",
+          "object_ownership_rule": "DIRECTOR/ADMIN only (TEACHER denied 403 FORBIDDEN_ROLE); requires override_reason and expected_version; updates only included student records.",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter defaults to fail-closed."
+        },
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitAttendanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Attendance override committed with append-only revision and AttendanceCorrected outbox",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSubmitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
+      }
+    },
+    "/api/v1/lessons/{lesson_id}/attendance/excel-import": {
+      "parameters": [
+        {
+          "name": "lesson_id",
+          "in": "path",
+          "required": true,
+          "description": "LessonOccurrence UUID",
+          "schema": {
+            "$ref": "#/components/schemas/Uuid"
+          }
+        }
+      ],
+      "post": {
+        "operationId": "importExcelLessonAttendance",
+        "summary": "Import lesson attendance from Excel when no prior teacher/admin submission exists; rejects stale overwrite with 409 STALE_EXCEL_CONFLICT (D07, CASE-16, T12.03)",
+        "tags": [
+          "AttendanceAndOfflineSync"
+        ],
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz"
+          }
+        ],
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center UUID returns 404.",
+          "object_ownership_rule": "DIRECTOR/ADMIN only (TEACHER denied 403 FORBIDDEN_ROLE); rejects overwrite when attendance records already exist with 409 STALE_EXCEL_CONFLICT.",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter defaults to fail-closed."
+        },
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": true,
+          "same_key_different_body_status": 409
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IfMatchVersionHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitAttendanceRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Initial Excel attendance import committed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttendanceSubmitResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound404"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict409"
+          },
+          "422": {
+            "$ref": "#/components/responses/Unprocessable422"
           }
         }
       }
