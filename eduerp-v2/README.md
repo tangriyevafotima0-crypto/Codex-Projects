@@ -1,3 +1,5 @@
+> Current manager status: S01–S09 approved (45/120 =37.5% plan steps). Next S10FULL-N; source/evidence planning/state/reviews/S08-S09-M.md. No production release approval.
+
 # EduERP v2.0 — B2B Turnkey O‘quv Markazi Platformasi (`eduerp-v2/`)
 
 Ishchi loyiha rooti: ushbu `eduerp-v2/` papkasi. Git repozitoriy rooti `Codex-Projects` bo‘lib, barcha npm workspace, Prisma, Docker Compose va tekshiruv buyruqlari `eduerp-v2/` ichidan ishga tushiriladi.

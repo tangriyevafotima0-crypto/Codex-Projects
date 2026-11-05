@@ -4,6 +4,7 @@ import * as http from 'node:http';
 import { AddressInfo } from 'node:net';
 import { after, before, describe, it } from 'node:test';
 import { createApiApplication } from '../../src/application';
+import { ClockService } from '../../src/auth/clock.service';
 import { loadApiEnv } from '../../src/config/env';
 import {
   executeSyntheticSeed,
@@ -111,6 +112,7 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
     });
 
     app = await createApiApplication(config);
+    app.get(ClockService).setTestNow(new Date('2026-11-04T09:00:00Z'));
     await app.listen(0, '127.0.0.1');
     port = ((app.getHttpServer() as http.Server).address() as AddressInfo).port;
 
@@ -883,7 +885,7 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
         'Idempotency-Key': `idem-wd-pol-${crypto.randomUUID()}`,
       },
       body: {
-        left_at_date: '2026-11-10',
+        left_at_date: '2026-11-04',
         churn_reason_code: 1,
         expected_version: 1,
         forgive_remaining_debt: true,
@@ -902,7 +904,7 @@ describe('Stage 06 Students, Guardians, Phone Revocation, Enrollments, Transfers
         'Idempotency-Key': `idem-wd-ok-${crypto.randomUUID()}`,
       },
       body: {
-        left_at_date: '2026-11-10',
+        left_at_date: '2026-11-04',
         churn_reason_code: 1,
         churn_notes: 'Temporary financial pause',
         expected_version: 1,

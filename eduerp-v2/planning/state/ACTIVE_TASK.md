@@ -1,8 +1,3 @@
 # ACTIVE TASK
 
-- Task:**S08FIX-S09FULL-M**; ownerArgon,managerCodex;**READY_TO_ASSIGN**.
-- MainS01–S07approved35/120. S08FIX-LCHANGES_REQUIRED;L02durablepackageownershipvaL03fixtureochiq.
-- Scope:avvalS08L01–L03closure/fullacceptance,keyinS09/09.01–09.05fullcandidate. Explicitcombineddraftpermission;S08/S09approvalglobalstatuso‘zgartirilmaydi.
-- Read:planning/assignments/S08FIX-S09FULL-M.md,state/reviews/S08-L.md,OWNER_DECISIONS(04included),USER_WORKING_PREFERENCES/ARGON_LEARNING.
-- Exactbase/candidatecomposition:rootTASK_INPUT;deltaINPUT_MANIFEST. Main+S08candidate+onemanagerfixtureassist inputda.
-- Output:S08FIX_S09FULL_M_SUBMISSION.zip changed/newsource+SUBMISSION.json,IN_REVIEW. StopS10/livepayment/Telegram/production. Globalmanagerregistrlarreadonly.
+Task: **S10FULL-N**, Argon executor, Codex manager; READY_TO_ASSIGN. S01–S09 APPROVED,45/120steps,9/24stages. Review state/reviews/S08-S09-M.md. Scope10.01–10.05 full candidate: manual external payment records/allocation/correction/receipt, no gateway/transfer. Owner05 applies. RootTASK_INPUT exactbase/inputmanifest; read assignment and owner/learning/preferences. Single complete batch, no internal manager waits. Global approval/registers read-only. Output S10FULL_N_SUBMISSION.zip, IN_REVIEW; stop S11.

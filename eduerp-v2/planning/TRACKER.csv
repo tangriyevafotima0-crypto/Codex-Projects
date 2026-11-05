@@ -34,16 +34,16 @@ step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
 07.03,07,Faqat bitta dars uchun vaqtinchalik Teacher huquqi va haq egasini yozish,apps/api/src/academics/substitutions.service.ts,07.02,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
 07.04,07,"O‘z guruhida imtihon bali va izohlarni yozish, tarixni saqlash",apps/api/src/academics/grades.service.ts,07.03,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
 07.05,07,"Review, regressiya va handoff",planning/state/handoffs/S07.md,07.04,APPROVED,state/reviews/S07-J.md,ce9b99decf4d70d40f51cf3d42791b5d72b1bec7
-08.01,08,Qolgan/to‘liq rejalashtirilgan dars ulushi bo‘yicha pro-rata va yaxlitlashni yozish,apps/api/src/billing/calendar-proration.ts,07.05,NOT_STARTED,,
-08.02,08,"Kalendar oy, rolling month va 12-dars paketini alohida siyosat sifatida yozish",apps/api/src/billing/subscriptions.ts,08.01,NOT_STARTED,,
-08.03,08,Ikkinchi haqiqiy qatnashuvda birinchi trialdan hisobni bir marta chiqarish,apps/api/src/billing/trial-conversion.ts,08.02,NOT_STARTED,,
-08.04,08,"Davr uchun idempotent invoice, line item, narx snapshot va kredit qoldig‘ini yozish",apps/api/src/billing/invoice-generator.ts,08.03,NOT_STARTED,,
-08.05,08,"Review, regressiya va handoff",planning/state/handoffs/S08.md,08.04,NOT_STARTED,,
-09.01,09,"Foiz/fiks chegirma, sabab, muddat va oilaviy taklif yaratish",apps/api/src/adjustments/discount-requests.ts,08.05,NOT_STARTED,,
-09.02,09,Faqat rahbar tasdig‘i bilan qo‘llash; qo‘shilish tartibi va limitlarni yozish,apps/api/src/adjustments/discount-approval.ts,09.01,NOT_STARTED,,
-09.03,09,"Freeze interval, dars kesishmasi va keyingi davr kreditini hisoblash",apps/api/src/adjustments/freeze-credit.ts,09.02,NOT_STARTED,,
-09.04,09,"Chiqish sanasi, besh sabab va yakuniy hisobni yozish",apps/api/src/adjustments/withdrawal.ts,09.03,NOT_STARTED,,
-09.05,09,"Review, regressiya va handoff",planning/state/handoffs/S09.md,09.04,NOT_STARTED,,
+08.01,08,Qolgan/to‘liq rejalashtirilgan dars ulushi bo‘yicha pro-rata va yaxlitlashni yozish,apps/api/src/billing/calendar-proration.ts,07.05,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+08.02,08,"Kalendar oy, rolling month va 12-dars paketini alohida siyosat sifatida yozish",apps/api/src/billing/subscriptions.ts,08.01,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+08.03,08,Ikkinchi haqiqiy qatnashuvda birinchi trialdan hisobni bir marta chiqarish,apps/api/src/billing/trial-conversion.ts,08.02,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+08.04,08,"Davr uchun idempotent invoice, line item, narx snapshot va kredit qoldig‘ini yozish",apps/api/src/billing/invoice-generator.ts,08.03,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+08.05,08,"Review, regressiya va handoff",planning/state/handoffs/S08.md,08.04,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+09.01,09,"Foiz/fiks chegirma, sabab, muddat va oilaviy taklif yaratish",apps/api/src/adjustments/discount-requests.ts,08.05,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+09.02,09,Faqat rahbar tasdig‘i bilan qo‘llash; qo‘shilish tartibi va limitlarni yozish,apps/api/src/adjustments/discount-approval.ts,09.01,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+09.03,09,"Freeze interval, dars kesishmasi va keyingi davr kreditini hisoblash",apps/api/src/adjustments/freeze-credit.ts,09.02,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+09.04,09,"Chiqish sanasi, besh sabab va yakuniy hisobni yozish",apps/api/src/adjustments/withdrawal.ts,09.03,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
+09.05,09,"Review, regressiya va handoff",planning/state/handoffs/S09.md,09.04,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
 10.01,10,Naqd/karta/Click/Payme/transfer qaydini pulning kichik birligida va tranzaksiyada yozish,apps/api/src/payments/payment.service.ts,09.05,NOT_STARTED,,
 10.02,10,"Qisman, ortiqcha va ko‘p invoicega taqsimlangan to‘lovni hisoblash",apps/api/src/payments/allocation.service.ts,10.01,NOT_STARTED,,
 10.03,10,"Sababli tuzatish so‘rovi, rahbar tasdig‘i va append-only reversal yaratish",apps/api/src/payments/reversal.service.ts,10.02,NOT_STARTED,,

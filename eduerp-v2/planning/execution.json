@@ -799,11 +799,11 @@
       "test_id": "T08.01",
       "acceptance": "480000×7/12=280000. Qolgan 0 dars →0; total=0 →hisob chiqarish bloklanadi. Yaxlitlash va narx effective sanasi ACCEPTED policyga mos.",
       "prompt": "prompts/S08/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "08.02",
@@ -822,11 +822,11 @@
       "test_id": "T08.02",
       "acceptance": "12 dars va rolling month alohida: 31-yanvar renewal hamda cancelled lesson holati misollar bilan; calendar oy rejimi 1-sanaga bog‘langan.",
       "prompt": "prompts/S08/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "08.03",
@@ -845,11 +845,11 @@
       "test_id": "T08.03",
       "acceptance": "Birinchi trial present qarz yaratmaydi; ikkinchi distinct attended lesson bir marta activation beradi; attendance retry yangi invoice bermaydi. Correction uchun reversal siyosati bor.",
       "prompt": "prompts/S08/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "08.04",
@@ -868,11 +868,11 @@
       "test_id": "T08.04",
       "acceptance": "Bir enrollment/davr/generator versiya qayta yugursa dublikat yo‘q; price/policy snapshot saqlanadi; service keyingi discount/freeze adjustmentlarini qabul qiladigan kontraktga ega.",
       "prompt": "prompts/S08/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "08.05",
@@ -889,11 +889,11 @@
       "test_id": "T08.05",
       "acceptance": "480000 × 7/12 = 280000; qayta ishga tushirishda ikkinchi qarz yozilmaydi",
       "prompt": "prompts/S08/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "09.01",
@@ -912,11 +912,11 @@
       "test_id": "T09.01",
       "acceptance": "Admin so‘rov yaratadi lekin invoice o‘zgarmaydi; reason va expiry majburiy; percent 0–100; fixed discount summasi manfiy invoice yaratmaydi.",
       "prompt": "prompts/S09/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "09.02",
@@ -935,11 +935,11 @@
       "test_id": "T09.02",
       "acceptance": "Faqat Director approve; parallel ikki approve bitta effect; eskirgan/revoked request rad; stacking tartibi va tarixiy invoicega ta’sir siyosati testlangan.",
       "prompt": "prompts/S09/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "09.03",
@@ -958,11 +958,11 @@
       "test_id": "T09.03",
       "acceptance": "Overlap freeze double credit bermaydi; cancelled lesson uchun ikki kredit yo‘q; grant uchun sun’iy cash refund yo‘q; keyingi davr kredit allocationi auditda.",
       "prompt": "prompts/S09/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "09.04",
@@ -981,11 +981,11 @@
       "test_id": "T09.04",
       "acceptance": "Chiqishning besh sababi majburiy; effective sanadan keyin yangi charge yo‘q; oldingi qarz saqlanadi; re-enrollment yangi tarix beradi.",
       "prompt": "prompts/S09/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "09.05",
@@ -1002,11 +1002,11 @@
       "test_id": "T09.05",
       "acceptance": "Tasdiqsiz chegirma ishlamaydi; overlapping freeze ikki kredit bermaydi; grant qarzi nol",
       "prompt": "prompts/S09/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S08-S09-M.md",
+      "reviewed_revision": "92f30d623371df306acca5d209340ebafac892da",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "10.01",

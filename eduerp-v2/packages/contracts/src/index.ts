@@ -92,3 +92,53 @@ export type BillingMode = 'CALENDAR_PRO_RATA' | 'ROLLING_MONTH' | 'LESSON_PACKAG
 
 export type DueDateRule = 'ENROLLMENT_ANNIVERSARY' | 'CENTER_FIXED_DAY';
 export type CollectionTiming = 'ADVANCE' | 'ARREARS';
+
+export type BillingCycleType = 'CALENDAR_MONTH' | 'ROLLING_MONTH' | 'LESSON_PACKAGE_12';
+export type FirstPartialChargeMode = 'UNCONFIGURED' | 'PRORATE_REMAINING_LESSONS' | 'FULL_CYCLE';
+export type RoundingMode = 'HALF_UP_UZS_INT';
+export type RollingMonthEndMode = 'CLAMP_LAST_DAY' | 'CONTINUE_FROM_CLAMPED_DAY' | 'RESTORE_ANCHOR_31' | 'UNCONFIGURED';
+export type PackageCancelMode = 'PRESERVE_BALANCE' | 'CREDIT_NEXT_CYCLE' | 'UNCONFIGURED';
+export type CancelledLessonProrationMode = 'UNCONFIGURED' | 'EXCLUDE_CANCELLED_FROM_PLANNED' | 'COUNT_SCHEDULED_BASELINE';
+export type PolicyConfirmationStatus = 'UNCONFIGURED' | 'CONFIRMED';
+export type InvoiceStatus = 'ISSUED_OPEN' | 'PARTIALLY_PAID' | 'PAID' | 'GRANT_ZERO' | 'VOID_COMPENSATED';
+
+export type DiscountKind =
+  | 'FAMILY_DISCOUNT'
+  | 'SPECIAL_50_PERCENT'
+  | 'CUSTOM_PERCENT'
+  | 'CUSTOM_FIXED'
+  | 'FULL_GRANT_100';
+
+export type DiscountRequestStatus =
+  | 'PENDING_APPROVAL'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'EXPIRED'
+  | 'REVOKED';
+
+export type DiscountDecision = 'APPROVED' | 'REJECTED';
+
+export type DiscountStackingMode =
+  | 'UNCONFIGURED'
+  | 'MAX_SINGLE'
+  | 'MAX_SINGLE_DISCOUNT'
+  | 'HIGHEST_ONLY'
+  | 'SEQUENTIAL'
+  | 'SEQUENTIAL_APPROVAL_ORDER'
+  | 'PERCENT_THEN_FIXED'
+  | 'SEQUENTIAL_PERCENT_THEN_FIXED'
+  | 'FIXED_THEN_PERCENT'
+  | 'SEQUENTIAL_FIXED_THEN_PERCENT';
+
+export type FreezeReasonType = 'MEDICAL_CERTIFICATE' | 'PRIOR_NOTICE';
+
+export type FreezeCreditBasis =
+  | 'UNCONFIGURED'
+  | 'NET_PROPORTIONAL_LESSON'
+  | 'NET_EARNED_PROPORTIONAL'
+  | 'LESSON_PROPORTIONAL'
+  | 'DISABLED'
+  | 'NO_FREEZE_CREDIT'
+  | 'GROSS_PROPORTIONAL'
+  | 'CALENDAR_DAY_PROPORTIONAL'
+  | 'CASH_REFUND';

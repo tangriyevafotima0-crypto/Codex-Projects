@@ -1,0 +1,87 @@
+{
+  "task_id": "S08FIX-S09FULL-M",
+  "status": "REVIEW_PASS_MANAGER_ASSISTED",
+  "base_commit": "e96f0462ae94c7187c8a6cc2474cc418e419f371",
+  "original_candidate_commit": "8e86e5e52dc45e8cf2ca993d6fb7fc79f92ae642",
+  "tested_revision": "92f30d623371df306acca5d209340ebafac892da",
+  "strict_run_id": 41986428281,
+  "strict_conclusion": "success",
+  "strict_jobs": [
+    127108130238,
+    127108184619,
+    127109210283
+  ],
+  "docker_conclusion": "success",
+  "independent_run_id": 41986428266,
+  "independent_conclusion": "success",
+  "tests": {
+    "contracts": 1,
+    "api_unit": 44,
+    "worker": 4,
+    "G1_database": 18,
+    "G2_auth": 14,
+    "G3_students": 6,
+    "G4_academics": 10,
+    "G5_billing": 13,
+    "G6_adjustments": 6,
+    "total": 116,
+    "failed": 0
+  },
+  "probe": {
+    "legacy_policy": {
+      "policy_confirmation_status": "UNCONFIGURED",
+      "first_partial_charge_mode": "UNCONFIGURED"
+    },
+    "trial_without_attendance": {
+      "status": 422,
+      "error": "VALIDATION_ERROR",
+      "invoice_count": 0,
+      "debt": "0"
+    },
+    "active_period_before_enrollment": {
+      "status": 403,
+      "error": "POLICY_DECISION_NOT_CONFIRMED",
+      "invoice_count": 0,
+      "debt": "0"
+    },
+    "explicit_policy_status": 201,
+    "confirmed_trial": {
+      "status": 422,
+      "error": "VALIDATION_ERROR",
+      "invoice_count": 0,
+      "debt": "0"
+    },
+    "confirmed_before_enrollment": {
+      "status": 422,
+      "error": "VALIDATION_ERROR",
+      "invoice_count": 0,
+      "debt": "0"
+    },
+    "confirmed_positive": {
+      "status": 200,
+      "invoice_count": 1,
+      "debt": "480000"
+    },
+    "package_policy_status": 201,
+    "package_first_status": 200,
+    "package_first_remaining": 0,
+    "package_second_status": 200,
+    "package_second_remaining_after_backdated_insert": 2,
+    "expected_package_second_remaining": 2,
+    "freeze_combined": "25000",
+    "freeze_split": "25000",
+    "future_withdraw": {
+      "clock": "2026-11-04",
+      "requested": "2027-01-01",
+      "http": 403,
+      "status": "ACTIVE",
+      "left_at_date": null
+    }
+  },
+  "limitations": [
+    "Only stage foundation acceptance; no production/pilot approval",
+    "Local PostgreSQL/Docker unavailable; real executions on GitHub Actions",
+    "S10 manual external payment record; no gateways; unresolved service refund policies stay gated"
+  ],
+  "manager_fix_project_files": 10
+}

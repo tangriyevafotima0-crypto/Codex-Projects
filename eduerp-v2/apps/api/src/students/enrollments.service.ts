@@ -1,6 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import type { BillingMode } from '@eduerp/contracts';
 import * as crypto from 'node:crypto';
+import {
+  assertWithdrawalEffectiveDate,
+  buildWithdrawalFinalAccountSummary,
+  validateWithdrawalRequestInput,
+  WithdrawalFaultStep,
+} from '../adjustments/withdrawal';
 import { ApiHttpException } from '../auth/auth.errors';
 import { ClockService } from '../auth/clock.service';
 import { AuthenticatedStaffPrincipal } from '../auth/permissions.guard';
@@ -22,7 +28,6 @@ export type EnrollmentStatus = 'TRIAL' | 'ACTIVE' | 'FROZEN' | 'LEFT';
 export type ChurnReasonCode = 1 | 2 | 3 | 4 | 5;
 
 const ALLOWED_INITIAL_STATUSES: ReadonlySet<string> = new Set(['TRIAL', 'ACTIVE']);
-const ALLOWED_CHURN_REASONS: ReadonlySet<number> = new Set([1, 2, 3, 4, 5]);
 
 export interface EnrollmentResponseDto {
   readonly enrollment_id: string;
@@ -141,7 +146,6 @@ export class EnrollmentsService {
     const initialStatus = initialStatusRaw as 'TRIAL' | 'ACTIVE';
     const enrolledAtDate = validateIsoDate(obj.enrolled_at_date, 'enrolled_at_date');
 
-    // 06.03 Policy Gate: billing/pro-rata invoice calculation belongs to Stage 08 and requires confirmed D01-D04 policy
     if (parseOptionalStrictBoolean(obj.auto_issue_pro_rata_invoice, 'auto_issue_pro_rata_invoice', false)) {
       throw new ApiHttpException({
         statusCode: 403,
@@ -330,52 +334,11 @@ export class EnrollmentsService {
     principal: AuthenticatedStaffPrincipal,
     rawEnrollmentId: string,
     rawBody: unknown,
+    options?: { readonly testFaultAfterStep?: WithdrawalFaultStep },
   ): Promise<EnrollmentResponseDto> {
     const idempotencyKey = requireIdempotencyKeyHeader(req);
-    const enrollmentId = assertValidUuid(rawEnrollmentId, 'enrollment_id');
-    const obj = assertPlainObject(rawBody, [
-      'left_at_date',
-      'churn_reason_code',
-      'churn_notes',
-      'expected_version',
-      'apply_retroactive_prorata_adjustment',
-      'forgive_remaining_debt',
-    ]);
-
-    const leftAtDate = validateIsoDate(obj.left_at_date, 'left_at_date');
-    const churnReasonCode = Number(obj.churn_reason_code);
-    if (!Number.isInteger(churnReasonCode) || !ALLOWED_CHURN_REASONS.has(churnReasonCode)) {
-      throw new ApiHttpException({
-        statusCode: 400,
-        errorCode: 'VALIDATION_ERROR',
-        message: 'churn_reason_code is required and must be an integer in 1..5',
-      });
-    }
-    let churnNotes: string | null = null;
-    if (obj.churn_notes !== undefined && obj.churn_notes !== null) {
-      if (typeof obj.churn_notes !== 'string' || obj.churn_notes.length > 500) {
-        throw new ApiHttpException({
-          statusCode: 400,
-          errorCode: 'VALIDATION_ERROR',
-          message: 'churn_notes must be a string up to 500 characters',
-        });
-      }
-      churnNotes = obj.churn_notes.trim() || null;
-    }
-    const expectedVersion = resolveExpectedVersion(req, obj.expected_version);
-
-    // 06.03 Policy Gate: retroactive invoice pro-rata/refund or automatic debt forgiveness is forbidden
-    const applyRetroProrata = parseOptionalStrictBoolean(obj.apply_retroactive_prorata_adjustment, 'apply_retroactive_prorata_adjustment', false);
-    const forgiveDebt = parseOptionalStrictBoolean(obj.forgive_remaining_debt, 'forgive_remaining_debt', false);
-    if (applyRetroProrata || forgiveDebt) {
-      throw new ApiHttpException({
-        statusCode: 403,
-        errorCode: 'POLICY_DECISION_NOT_CONFIRMED',
-        message:
-          'Retroactive invoice pro-rata adjustment or automatic debt forgiveness on withdrawal is gated by unconfirmed policy decisions (D03/D21/D22)',
-      });
-    }
-
+    const parsed = validateWithdrawalRequestInput(req, rawEnrollmentId, rawBody);
+    assertWithdrawalEffectiveDate(parsed.leftAtDate, this.clock.now(), this.config.centerTimezone);
     const requestId = req.requestId ?? resolveRequestId(req.headers['x-request-id']);
     const now = this.clock.now();
 
@@ -387,11 +350,28 @@ export class EnrollmentsService {
         operationType: 'WITHDRAW_ENROLLMENT',
         idempotencyKey,
         requestPayload: {
-          enrollment_id: enrollmentId,
-          left_at_date: leftAtDate,
-          churn_reason_code: churnReasonCode,
-          churn_notes: churnNotes,
-          expected_version: expectedVersion,
+          enrollment_id: parsed.enrollmentId,
+          left_at_date: parsed.leftAtDate,
+          churn_reason_code: parsed.churnReasonCode,
+          churn_notes: parsed.churnNotes,
+          expected_version: parsed.expectedVersion,
+        },
+        authorizeBeforeReplayOrExecute: async (tx) => {
+          const enrCheck = await tx.query<{ id: string }>(
+            `SELECT "id"::text AS id
+               FROM "enrollments"
+              WHERE "id" = $1::uuid
+                AND "center_id" = $2::uuid
+              FOR UPDATE`,
+            [parsed.enrollmentId, principal.centerId],
+          );
+          if (!enrCheck.rows[0]) {
+            throw new ApiHttpException({
+              statusCode: 404,
+              errorCode: 'NOT_FOUND',
+              message: 'Enrollment not found in this center',
+            });
+          }
         },
         handler: async (tx) => {
           const enrRes = await tx.query<{
@@ -417,7 +397,7 @@ export class EnrollmentsService {
               WHERE e."id" = $1::uuid
                 AND e."center_id" = $2::uuid
               FOR UPDATE OF e`,
-            [enrollmentId, principal.centerId],
+            [parsed.enrollmentId, principal.centerId],
           );
 
           const before = enrRes.rows[0];
@@ -438,11 +418,11 @@ export class EnrollmentsService {
           }
 
           const enrolledDateStr = formatPgDate(before.enrolled_at_date) ?? '1970-01-01';
-          if (leftAtDate < enrolledDateStr) {
+          if (parsed.leftAtDate < enrolledDateStr) {
             throw new ApiHttpException({
               statusCode: 422,
               errorCode: 'VALIDATION_ERROR',
-              message: `left_at_date (${leftAtDate}) cannot be earlier than enrolled_at_date (${enrolledDateStr})`,
+              message: `left_at_date (${parsed.leftAtDate}) cannot be earlier than enrolled_at_date (${enrolledDateStr})`,
             });
           }
 
@@ -460,24 +440,69 @@ export class EnrollmentsService {
           }>(tx, {
             tableName: 'enrollments',
             entityName: 'Enrollment',
-            id: enrollmentId,
+            id: parsed.enrollmentId,
             centerId: principal.centerId,
-            expectedVersion,
+            expectedVersion: parsed.expectedVersion,
             setClauseSql: `"status" = 'LEFT', "left_at_date" = $4::date, "churn_reason_code" = $5::smallint, "churn_attributed_teacher_id" = $6::uuid, "churn_notes" = $7`,
             additionalValues: [
-              leftAtDate,
-              churnReasonCode,
+              parsed.leftAtDate,
+              parsed.churnReasonCode,
               before.primary_teacher_id,
-              churnNotes,
+              parsed.churnNotes,
             ],
           });
 
-          // Snapshot student's lossless BigInt remaining debt without modifying or forgiving any invoice/ledger
-          const debtSnapshotUzs = await this.queryStudentRemainingDebtSnapshotUzs(
-            tx,
-            principal.centerId,
-            before.student_id,
+          if (this.config.nodeEnv === 'test' && options?.testFaultAfterStep === 'ENROLLMENT_UPDATE') {
+            throw new Error('SIMULATED_S09_WITHDRAWAL_FAULT_AFTER_ENROLLMENT_UPDATE');
+          }
+
+          // 09.04: Automatically revoke any PENDING_APPROVAL discount requests on this withdrawn enrollment
+          await tx.query(
+            `UPDATE "discount_requests"
+                SET "status" = 'REVOKED',
+                    "version" = "version" + 1,
+                    "updated_at" = $1::timestamptz
+              WHERE "center_id" = $2::uuid
+                AND "enrollment_id" = $3::uuid
+                AND "status" = 'PENDING_APPROVAL'`,
+            [now.toISOString(), principal.centerId, parsed.enrollmentId],
           );
+
+          if (this.config.nodeEnv === 'test' && options?.testFaultAfterStep === 'REVOKE_PENDING_DISCOUNTS') {
+            throw new Error('SIMULATED_S09_WITHDRAWAL_FAULT_AFTER_REVOKE_PENDING_DISCOUNTS');
+          }
+
+          const debtRes = await tx.query<{
+            student_total_debt: string;
+            enrollment_open_debts: string[] | null;
+          }>(
+            `SELECT COALESCE(
+                      (SELECT SUM("remaining_debt_uzs")
+                         FROM "invoices"
+                        WHERE "center_id" = $1::uuid
+                          AND "student_id" = $2::uuid
+                          AND "status" IN ('ISSUED_OPEN', 'PARTIALLY_PAID')),
+                      0
+                    )::text AS student_total_debt,
+                    ARRAY(
+                      SELECT "remaining_debt_uzs"::text
+                        FROM "invoices"
+                       WHERE "center_id" = $1::uuid
+                         AND "enrollment_id" = $3::uuid
+                         AND "status" IN ('ISSUED_OPEN', 'PARTIALLY_PAID')
+                         AND "remaining_debt_uzs" > 0
+                    ) AS enrollment_open_debts`,
+            [principal.centerId, before.student_id, parsed.enrollmentId],
+          );
+
+          const finalSummary = buildWithdrawalFinalAccountSummary({
+            enrollmentId: parsed.enrollmentId,
+            studentId: before.student_id,
+            leftAtDate: parsed.leftAtDate,
+            churnReasonCode: parsed.churnReasonCode,
+            openEnrollmentInvoicesDebtUzs: debtRes.rows[0]?.enrollment_open_debts ?? [],
+            totalStudentRemainingDebtUzs: debtRes.rows[0]?.student_total_debt ?? '0',
+          });
 
           await tx.query(
             `INSERT INTO "audit_logs" (
@@ -494,16 +519,19 @@ export class EnrollmentsService {
               principal.centerId,
               principal.staffId,
               principal.role,
-              enrollmentId,
+              parsed.enrollmentId,
               JSON.stringify({
                 status: before.status,
                 version: before.version,
               }),
               JSON.stringify({
                 status: 'LEFT',
-                left_at_date: leftAtDate,
-                churn_reason_code: churnReasonCode,
-                preserved_debt_snapshot_uzs: debtSnapshotUzs,
+                left_at_date: parsed.leftAtDate,
+                churn_reason_code: parsed.churnReasonCode,
+                churn_reason_label: parsed.churnReasonLabel,
+                preserved_debt_snapshot_uzs: finalSummary.preservedStudentTotalDebtUzs,
+                preserved_enrollment_debt_uzs: finalSummary.preservedEnrollmentDebtUzs,
+                open_invoice_count: finalSummary.openInvoiceCount,
                 version: Number(updated.version),
               }),
               requestId,
@@ -511,9 +539,13 @@ export class EnrollmentsService {
             ],
           );
 
+          if (this.config.nodeEnv === 'test' && options?.testFaultAfterStep === 'AUDIT_LOG') {
+            throw new Error('SIMULATED_S09_WITHDRAWAL_FAULT_AFTER_AUDIT_LOG');
+          }
+
           return {
             statusCode: 200,
-            body: mapEnrollmentRowToDto(updated, debtSnapshotUzs),
+            body: mapEnrollmentRowToDto(updated, finalSummary.preservedStudentTotalDebtUzs),
           };
         },
       },
@@ -684,7 +716,6 @@ export class EnrollmentsService {
             });
           }
 
-          // 1. Close old enrollment (status='LEFT', churn_reason_code=3 for schedule/group transfer), preserving all invoice/ledger references
           const closedRow = await executeOptimisticUpdate<{
             id: string;
             student_id: string;
@@ -710,7 +741,6 @@ export class EnrollmentsService {
             throw new Error('INJECTED_FAULT_AFTER_CLOSING_SOURCE_ENROLLMENT');
           }
 
-          // 2. Create new linked enrollment in target group
           const newEnrollmentId = crypto.randomUUID();
           const packageLessonsRemaining =
             targetGroup.billing_mode === 'LESSON_PACKAGE_12'

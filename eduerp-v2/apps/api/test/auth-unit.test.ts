@@ -51,6 +51,7 @@ import {
   executeIdempotentOperation,
 } from '../src/database/idempotency';
 import { CoursesController } from '../src/academics/courses.controller';
+import { BillingController } from '../src/billing/billing.controller';
 import { GradesController } from '../src/academics/grades.controller';
 import { GroupsController } from '../src/academics/groups.controller';
 import { LessonsController } from '../src/academics/lessons.controller';
@@ -248,6 +249,7 @@ describe('Stage 05 Auth, Scrypt Cost Parity (G06), Keyed Idempotency (G01/G05), 
       LessonsController,
       SubstitutionsController,
       GradesController,
+      BillingController,
     ];
     const publicActions: string[] = [];
     const protectedPolicies: RoutePolicyConfig[] = [];
@@ -285,7 +287,7 @@ describe('Stage 05 Auth, Scrypt Cost Parity (G06), Keyed Idempotency (G01/G05), 
       'loginStaff',
       'refreshStaffSession',
     ]);
-    assert.equal(protectedPolicies.length, 33);
+    assert.equal(protectedPolicies.length, 38);
   });
 
   it('fails closed with 503 DATABASE_UNAVAILABLE and zero secret leakage when shared rate-limit store is unavailable (AUTH-UNIT-04 / R1)', async () => {

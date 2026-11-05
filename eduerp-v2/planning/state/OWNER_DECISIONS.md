@@ -45,3 +45,15 @@ Holat:**ACCEPTED_REQUIREMENT**, faqat quyidagi configurable behavior uchun. Manb
 - Freezecreditmisoli480000−20%=384000,12darsdan3freeze→96000nextperiodcredit taklifiga ham:“Har markaz o‘zi tanlasin”. Shu net-proportionalvariantmarkaztanlashimumkin; uglobalmajburiyformulaemas. Creditbasis/enablemodeexplicitpolicy’da. Boshqabasismisol/formula yoki cashrefundbu javobdanACCEPTEDbo‘lmaydi; unsupportedvariantgated.
 - Owner03HALF_UPnonnegativeintegerUZS saqlanadi. Policyversion/effectiveboundary/audit bo‘lsin, oldissuedfinancialsnapshotrewritemas. Directorapprovalchegirmaga saqlanadi; Admino‘zichegirmanitasdiqlamaydi.
 - BuD14/D21/refund/payrollqarorlarininghammasini yopmaydi. S09typedconfigurationva confirmedvariantpositivepath, undefinedcombination403 bilanimplementqilinadi. Realpayment/Telegram/deployruxsatiemas.
+
+
+## OWNER-20261105-05 — to‘lov ilovadan tashqarida, faqat qayd
+
+Holat:**ACCEPTED_REQUIREMENT**, userning Mreviewdavomidagi bevositajavobi.
+
+User:“click paymelar kiritilmaydi. agar click qilinsa ham buni baribir ro‘yxat qilishadi click, naqdligini ... ammo to‘lovlar app bilan o‘tmaydi faqat kiritiladigan qism bo‘ladi, qanday to‘lov qilganini.”
+
+- EduERPmoneytransfer/checkout/gatewayemas. Appoutsideqilinganto‘lovningamount/date/method/reference’ini staffqaydetadi; Click/Paymehammanualmethodlabel, API/webhook/autochargingintegrationyo‘q.
+- S10paymentrecordmanualledgercommand, receiptichkielektronkvitansiya. Realpulqaytarish/bankoperatsiyasi appbilanbajarilmaydi. Edit/deleteso‘rovi accountingrecordcorrectionappend-onlyreversal, originalhistorysaqlanadi.
+- Qarzgaoidfollow-upga user“birinchi aytgan gapimdan tushunib ol”dedi; bundan barchaexternalrefund/xizmatcancellationpolicyACCEPTEDdebxulosaqilinmaydi. Erroneouspaymentrecordreversalledgerarithmeticsource’dagireceivable’ni restorationqiladi; servicerefund/cancelcharge uchun alohidaapprovedadjustmentboundary, D22ochiqqismi saqlanadi. GatewayrefundAPI/realtransfer/gatewaycostyo‘q.
+- Realcustomerpaymentdataimport/deploy/liveTelegramruxsatiemas. Existingowner01staffroles/owner02–04policiesunchanged.
