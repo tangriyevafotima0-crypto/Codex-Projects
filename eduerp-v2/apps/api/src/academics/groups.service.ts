@@ -177,6 +177,7 @@ export class GroupsService {
       'due_date_rule',
       'fixed_due_day',
       'collection_timing',
+      'billing_policy_version_id',
       'current_fee_uzs',
       'lessons_per_cycle',
       'schedule_days',
@@ -228,6 +229,10 @@ export class GroupsService {
       rawFixedDueDay: obj.fixed_due_day,
       rawCollectionTiming: obj.collection_timing,
     });
+    const billingPolicyVersionId =
+      obj.billing_policy_version_id !== undefined && obj.billing_policy_version_id !== null
+        ? assertValidUuid(obj.billing_policy_version_id, 'billing_policy_version_id')
+        : null;
 
     const currentFeeUzs = parseNonNegativeMoneyUzs(obj.current_fee_uzs, 'current_fee_uzs');
     const lessonsPerCycle =
@@ -337,12 +342,14 @@ export class GroupsService {
             `INSERT INTO "course_groups" (
                "id", "center_id", "course_id", "name", "primary_teacher_id",
                "billing_mode", "due_date_rule", "fixed_due_day", "collection_timing",
+               "billing_policy_version_id",
                "current_fee_uzs", "lessons_per_cycle", "schedule_days_json",
                "starts_time", "duration_minutes", "timezone", "status",
                "version", "created_at", "updated_at"
              ) VALUES (
                $1::uuid, $2::uuid, $3::uuid, $4, $5::uuid,
                $6, $7, $8::smallint, $9,
+               $17::uuid,
                $10::bigint, $11::int, $12::jsonb,
                $13, $14::int, $15, 'ACTIVE',
                1, $16::timestamptz, $16::timestamptz
@@ -380,6 +387,7 @@ export class GroupsService {
               durationMinutes,
               timezone,
               now.toISOString(),
+              billingPolicyVersionId,
             ],
           );
 

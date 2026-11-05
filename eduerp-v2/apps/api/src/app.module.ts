@@ -8,6 +8,7 @@ import { DatabaseService } from './database/database.service';
 import { HealthController } from './health/health.controller';
 import { ReadinessController } from './health/readiness.controller';
 import { AcademicsModule } from './academics/academics.module';
+import { BillingModule } from './billing/billing.module';
 import { StudentsModule } from './students/students.module';
 
 @Module({})
@@ -15,7 +16,7 @@ export class AppModule {
   static register(config: ApiEnvConfig, customDatabaseService?: DatabaseService): DynamicModule {
     return {
       module: AppModule,
-      imports: [DatabaseModule.register(config, customDatabaseService), AuthModule, StudentsModule, AcademicsModule],
+      imports: [DatabaseModule.register(config, customDatabaseService), AuthModule, StudentsModule, AcademicsModule, BillingModule],
       controllers: [HealthController, ReadinessController],
       providers: [
         {

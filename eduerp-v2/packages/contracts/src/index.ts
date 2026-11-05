@@ -92,3 +92,12 @@ export type BillingMode = 'CALENDAR_PRO_RATA' | 'ROLLING_MONTH' | 'LESSON_PACKAG
 
 export type DueDateRule = 'ENROLLMENT_ANNIVERSARY' | 'CENTER_FIXED_DAY';
 export type CollectionTiming = 'ADVANCE' | 'ARREARS';
+
+export type BillingCycleType = 'CALENDAR_MONTH' | 'ROLLING_MONTH' | 'LESSON_PACKAGE_12';
+export type FirstPartialChargeMode = 'UNCONFIGURED' | 'PRORATE_REMAINING_LESSONS' | 'FULL_CYCLE';
+export type RoundingMode = 'HALF_UP_UZS_INT';
+export type RollingMonthEndMode = 'CLAMP_LAST_DAY' | 'CONTINUE_FROM_CLAMPED_DAY' | 'RESTORE_ANCHOR_31' | 'UNCONFIGURED';
+export type PackageCancelMode = 'PRESERVE_BALANCE' | 'CREDIT_NEXT_CYCLE' | 'UNCONFIGURED';
+export type CancelledLessonProrationMode = 'UNCONFIGURED' | 'EXCLUDE_CANCELLED_FROM_PLANNED' | 'COUNT_SCHEDULED_BASELINE';
+export type PolicyConfirmationStatus = 'UNCONFIGURED' | 'CONFIRMED';
+export type InvoiceStatus = 'ISSUED_OPEN' | 'PARTIALLY_PAID' | 'PAID' | 'GRANT_ZERO' | 'VOID_COMPENSATED';

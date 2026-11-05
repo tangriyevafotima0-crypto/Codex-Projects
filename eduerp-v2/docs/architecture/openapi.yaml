@@ -1079,6 +1079,16 @@
           "timezone": {
             "type": "string",
             "maxLength": 64
+          },
+          "billing_policy_version_id": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -1434,8 +1444,12 @@
           },
           "period_end_date": {
             "$ref": "#/components/schemas/IsoDate"
+          },
+          "apply_available_credit_notes": {
+            "type": "boolean"
           }
-        }
+        },
+        "additionalProperties": false
       },
       "InvoiceResponse": {
         "type": "object",
@@ -4253,6 +4267,167 @@
               "string",
               "null"
             ]
+          }
+        }
+      },
+      "CreateBillingPolicyVersionRequest": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "billing_mode"
+        ],
+        "properties": {
+          "billing_mode": {
+            "$ref": "#/components/schemas/BillingMode"
+          },
+          "first_partial_charge_mode": {
+            "type": "string",
+            "enum": [
+              "UNCONFIGURED",
+              "PRORATE_REMAINING_LESSONS",
+              "FULL_CYCLE"
+            ]
+          },
+          "rounding_mode": {
+            "type": "string",
+            "enum": [
+              "HALF_UP_UZS_INT"
+            ]
+          },
+          "rolling_month_end_mode": {
+            "type": "string",
+            "enum": [
+              "CLAMP_LAST_DAY",
+              "CONTINUE_FROM_CLAMPED_DAY",
+              "RESTORE_ANCHOR_31",
+              "UNCONFIGURED"
+            ]
+          },
+          "package_cancel_mode": {
+            "type": "string",
+            "enum": [
+              "PRESERVE_BALANCE",
+              "CREDIT_NEXT_CYCLE",
+              "UNCONFIGURED"
+            ]
+          },
+          "cancelled_lesson_proration_mode": {
+            "type": "string",
+            "enum": [
+              "UNCONFIGURED",
+              "EXCLUDE_CANCELLED_FROM_PLANNED",
+              "COUNT_SCHEDULED_BASELINE"
+            ]
+          },
+          "discount_stacking_mode": {
+            "type": "string"
+          },
+          "freeze_credit_basis": {
+            "type": "string"
+          },
+          "refund_debt_mode": {
+            "type": "string"
+          },
+          "policy_confirmation_status": {
+            "type": "string",
+            "enum": [
+              "UNCONFIGURED",
+              "CONFIRMED"
+            ]
+          },
+          "effective_from_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          }
+        }
+      },
+      "BillingPolicyVersionResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "center_id",
+          "version_number",
+          "billing_mode",
+          "first_partial_charge_mode",
+          "rounding_mode",
+          "rolling_month_end_mode",
+          "package_cancel_mode",
+          "policy_confirmation_status",
+          "effective_from_date",
+          "created_at_utc"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "center_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "version_number": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "billing_mode": {
+            "$ref": "#/components/schemas/BillingMode"
+          },
+          "first_partial_charge_mode": {
+            "type": "string"
+          },
+          "rounding_mode": {
+            "type": "string"
+          },
+          "rolling_month_end_mode": {
+            "type": "string"
+          },
+          "package_cancel_mode": {
+            "type": "string"
+          },
+          "cancelled_lesson_proration_mode": {
+            "type": "string"
+          },
+          "discount_stacking_mode": {
+            "type": "string"
+          },
+          "freeze_credit_basis": {
+            "type": "string"
+          },
+          "refund_debt_mode": {
+            "type": "string"
+          },
+          "policy_confirmation_status": {
+            "type": "string"
+          },
+          "effective_from_date": {
+            "$ref": "#/components/schemas/IsoDate"
+          },
+          "created_by_staff_id": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at_utc": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "BillingPolicyVersionListResponse": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "items"
+        ],
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BillingPolicyVersionResponse"
+            }
           }
         }
       }
@@ -10477,6 +10652,150 @@
           },
           "422": {
             "$ref": "#/components/responses/Unprocessable422"
+          }
+        }
+      }
+    },
+    "/api/v1/billing/policies": {
+      "get": {
+        "tags": [
+          "BillingAndInvoices"
+        ],
+        "summary": "List center billing policy versions (OWNER-20261104-02, OWNER-20261104-03, T08.01, T08.02)",
+        "operationId": "listBillingPolicyVersions",
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR",
+          "ADMIN"
+        ],
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Scoped to billing_policy_versions.center_id == jwt.center_id and actor role in ['DIRECTOR', 'ADMIN']; TEACHER role is strictly denied (403 FORBIDDEN_ROLE).",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200 OK — center billing policy versions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingPolicyVersionListResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "BillingAndInvoices"
+        ],
+        "summary": "Create a new immutable center billing policy version (DIRECTOR only — OWNER-20261104-02, OWNER-20261104-03)",
+        "operationId": "createBillingPolicyVersion",
+        "security": [
+          {
+            "StaffBearerAuth": []
+          }
+        ],
+        "x-allowed-roles": [
+          "DIRECTOR"
+        ],
+        "x-read-only-license-policy": "BLOCKED_403_LICENSE_READ_ONLY_MODE",
+        "x-write-concurrency": {
+          "requires_idempotency_key": true,
+          "requires_expected_version": false,
+          "same_key_different_body_status": 409
+        },
+        "x-plane": "CENTER_DATA_PLANE",
+        "servers": [
+          {
+            "url": "https://{center_slug}.eduerp.uz",
+            "description": "Isolated Per-Center Data Plane API (Staff Web, Flutter Mobile, Locked Excel, Bot Command API)",
+            "variables": {
+              "center_slug": {
+                "default": "guliston-ilm",
+                "description": "Unique center slug bound to isolated Docker Compose stack and PostgreSQL DB"
+              }
+            }
+          }
+        ],
+        "x-object-scope": {
+          "trust_plane": "CENTER_DATA_PLANE",
+          "actor_source": "STAFF_JWT",
+          "center_isolation_rule": "All SQL queries/mutations filter by center_id == jwt.center_id matching Host center_slug; cross-center token or UUID returns 403/404.",
+          "object_ownership_rule": "Restricted strictly to DIRECTOR in jwt.center_id; ADMIN and TEACHER are denied with 403 FORBIDDEN_ROLE.",
+          "conditional_role_policy": "Enforces confirmed role grant; any unconfirmed policy parameter in x-conditional-decisions defaults to fail-closed."
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/RequestIdHeader"
+          },
+          {
+            "$ref": "#/components/parameters/IdempotencyKeyHeader"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBillingPolicyVersionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "201 Created — new center billing policy version",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillingPolicyVersionResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest400"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized401"
+          },
+          "403": {
+            "$ref": "#/components/responses/Forbidden403"
+          },
+          "409": {
+            "$ref": "#/components/schemas/ErrorEnvelope"
           }
         }
       }

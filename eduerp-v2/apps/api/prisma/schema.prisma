@@ -255,9 +255,10 @@ model CourseGroup {
   name             String   @db.VarChar(100)
   primaryTeacherId String   @map("primary_teacher_id") @db.Uuid
   billingMode      String   @map("billing_mode") @db.VarChar(24)
-  dueDateRule      String   @default("ENROLLMENT_ANNIVERSARY") @map("due_date_rule") @db.VarChar(32)
-  fixedDueDay      Int?     @map("fixed_due_day") @db.SmallInt
-  collectionTiming String   @default("ARREARS") @map("collection_timing") @db.VarChar(16)
+  dueDateRule            String   @default("ENROLLMENT_ANNIVERSARY") @map("due_date_rule") @db.VarChar(32)
+  fixedDueDay            Int?     @map("fixed_due_day") @db.SmallInt
+  collectionTiming       String   @default("ARREARS") @map("collection_timing") @db.VarChar(16)
+  billingPolicyVersionId String?  @map("billing_policy_version_id") @db.Uuid
   currentFeeUzs    BigInt   @map("current_fee_uzs") @db.BigInt
   lessonsPerCycle  Int      @default(12) @map("lessons_per_cycle")
   scheduleDaysJson Json     @map("schedule_days_json")
@@ -269,7 +270,8 @@ model CourseGroup {
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt        DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
 
-  course            Course             @relation(fields: [courseId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  course            Course                @relation(fields: [courseId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
+  billingPolicy     BillingPolicyVersion? @relation(fields: [billingPolicyVersionId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
   primaryTeacher    StaffUser          @relation("GroupPrimaryTeacher", fields: [primaryTeacherId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
   enrollments       Enrollment[]
   lessonOccurrences LessonOccurrence[]
@@ -472,12 +474,18 @@ model BillingPolicyVersion {
   discountStackingMode String  @map("discount_stacking_mode") @db.VarChar(24)
   freezeCreditBasis   String   @map("freeze_credit_basis") @db.VarChar(32)
   rollingMonthEndMode String   @map("rolling_month_end_mode") @db.VarChar(24)
-  packageCancelMode   String   @map("package_cancel_mode") @db.VarChar(24)
-  refundDebtMode      String   @map("refund_debt_mode") @db.VarChar(24)
-  createdAt           DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  packageCancelMode            String   @map("package_cancel_mode") @db.VarChar(24)
+  refundDebtMode               String   @map("refund_debt_mode") @db.VarChar(24)
+  firstPartialChargeMode       String   @default("UNCONFIGURED") @map("first_partial_charge_mode") @db.VarChar(32)
+  cancelledLessonProrationMode String   @default("EXCLUDE_CANCELLED_FROM_PLANNED") @map("cancelled_lesson_proration_mode") @db.VarChar(32)
+  policyConfirmationStatus     String   @default("CONFIRMED") @map("policy_confirmation_status") @db.VarChar(24)
+  effectiveFromDate            DateTime @default(dbgenerated("DATE '2026-01-01'")) @map("effective_from_date") @db.Date
+  createdByStaffId             String?  @map("created_by_staff_id") @db.Uuid
+  createdAt                    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   billingCycles BillingCycle[]
   invoices      Invoice[]
+  courseGroups  CourseGroup[]
 
   @@unique([id, centerId])
   @@unique([centerId, versionNumber])
@@ -516,10 +524,15 @@ model BillingCycle {
   cycleSeq        Int       @map("cycle_seq")
   periodStartDate DateTime  @map("period_start_date") @db.Date
   periodEndDate   DateTime? @map("period_end_date") @db.Date
-  plannedLessons  Int       @map("planned_lessons")
-  billableLessons Int       @map("billable_lessons")
-  policyVersionId String    @map("policy_version_id") @db.Uuid
-  createdAt       DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  plannedLessons                 Int       @map("planned_lessons")
+  billableLessons                Int       @map("billable_lessons")
+  policyVersionId                String    @map("policy_version_id") @db.Uuid
+  dueDateRuleSnapshot            String    @default("ENROLLMENT_ANNIVERSARY") @map("due_date_rule_snapshot") @db.VarChar(32)
+  fixedDueDaySnapshot            Int?      @map("fixed_due_day_snapshot") @db.SmallInt
+  collectionTimingSnapshot       String    @default("ARREARS") @map("collection_timing_snapshot") @db.VarChar(16)
+  firstPartialChargeModeSnapshot String    @default("PRORATE_REMAINING_LESSONS") @map("first_partial_charge_mode_snapshot") @db.VarChar(32)
+  calculationVersion             String    @default("s08-v1") @map("calculation_version") @db.VarChar(32)
+  createdAt                      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   enrollment    Enrollment           @relation(fields: [enrollmentId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
   policyVersion BillingPolicyVersion @relation(fields: [policyVersionId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
@@ -548,9 +561,12 @@ model Invoice {
   remainingDebtUzs         BigInt   @map("remaining_debt_uzs") @db.BigInt
   billedLessons            Int      @map("billed_lessons")
   frozenCreditedLessons    Int      @default(0) @map("frozen_credited_lessons")
-  status                   String   @db.VarChar(24)
-  dueDate                  DateTime @map("due_date") @db.Date
-  version                  Int      @default(1)
+  status                      String    @db.VarChar(24)
+  dueDate                     DateTime  @map("due_date") @db.Date
+  tariffEffectiveFromSnapshot DateTime? @map("tariff_effective_from_snapshot") @db.Date
+  collectionTimingSnapshot    String    @default("ARREARS") @map("collection_timing_snapshot") @db.VarChar(16)
+  calculationVersion          String    @default("s08-v1") @map("calculation_version") @db.VarChar(32)
+  version                     Int       @default(1)
   issuedAt                 DateTime @default(now()) @map("issued_at") @db.Timestamptz(6)
   updatedAt                DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
 
