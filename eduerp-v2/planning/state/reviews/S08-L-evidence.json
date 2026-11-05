@@ -1,0 +1,97 @@
+{
+  "task_id": "S08FIX-L",
+  "decision": "CHANGES_REQUIRED",
+  "submission_sha256": "1ec488263bcf647e7b4568f9271232dd025e6bdb0be9524e8b3edec129f6869d",
+  "base_commit": "31de5080dbd3a55231fb499cf08f6da7e9ba2c4e",
+  "original_commit": "facb4ecc5d79be14d9222b56f4ff53fc80df8763",
+  "candidate_input_commit": "89037deee40ae5cbb86b5c8093cc02937680cfd4",
+  "manager_assist_paths": [
+    "apps/api/test/billing/billing-lifecycle.integration.test.ts"
+  ],
+  "strict_ci": {
+    "run_id": 41974431246,
+    "conclusion": "failure",
+    "unit_runtime": 41,
+    "db": 18,
+    "auth": 14,
+    "students": 6,
+    "academics": 10,
+    "billing": {
+      "pass": 11,
+      "fail": 1
+    },
+    "total_pass": 100,
+    "total_fail": 1,
+    "docker": "NOT_RUN - G5 upstream failure"
+  },
+  "probe": {
+    "run_id": 41974431434,
+    "conclusion": "execution success, semantic package invariant failed",
+    "observed": {
+      "legacy_policy": {
+        "policy_confirmation_status": "UNCONFIGURED",
+        "first_partial_charge_mode": "UNCONFIGURED"
+      },
+      "trial_without_attendance": {
+        "status": 422,
+        "error": "VALIDATION_ERROR",
+        "invoice_count": 0,
+        "debt": "0"
+      },
+      "active_period_before_enrollment": {
+        "status": 403,
+        "error": "POLICY_DECISION_NOT_CONFIRMED",
+        "invoice_count": 0,
+        "debt": "0"
+      },
+      "explicit_policy_status": 201,
+      "confirmed_trial": {
+        "status": 422,
+        "error": "VALIDATION_ERROR",
+        "invoice_count": 0,
+        "debt": "0"
+      },
+      "confirmed_before_enrollment": {
+        "status": 422,
+        "error": "VALIDATION_ERROR",
+        "invoice_count": 0,
+        "debt": "0"
+      },
+      "confirmed_positive": {
+        "status": 200,
+        "invoice_count": 1,
+        "debt": "480000"
+      },
+      "package_policy_status": 201,
+      "package_first_status": 200,
+      "package_first_remaining": 0,
+      "package_second_status": 200,
+      "package_second_remaining_after_backdated_insert": 1,
+      "expected_package_second_remaining": 2
+    }
+  },
+  "closed_findings": [
+    "K02 legacy/default policy gate",
+    "K03 TRIAL premature invoice",
+    "K04 prior-service-period charge",
+    "K05 rolling VARCHAR width"
+  ],
+  "open_findings": [
+    {
+      "id": "L02",
+      "severity": "P1",
+      "issue": "Package lesson ownership recomputed from mutable schedule; old consumed lesson charged to next package",
+      "expected_remaining": 2,
+      "actual_remaining": 1
+    },
+    {
+      "id": "L03",
+      "severity": "P2",
+      "issue": "BILL-IT-11 zero-lesson fixture ignores Nov30 Monday in MWF fallback; actual1 expected0"
+    }
+  ],
+  "next_task": "S08FIX-S09FULL-M",
+  "approved_steps": 35,
+  "total_steps": 120,
+  "owner_decision": "OWNER-20261105-04"
+}

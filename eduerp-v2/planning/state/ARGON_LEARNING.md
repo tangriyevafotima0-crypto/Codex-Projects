@@ -1,5 +1,5 @@
 # Argon review kuzatuvlari
-Holat: 2026-11-04. Dataset: 10 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
+Holat: 2026-11-04. Dataset: 11 ta review qilingan artifact — ARGON-01.01-A, S01-FULL-C, S01-FIX-S02-FULL-D , S02FIX-S03FULL-E  , S04FULL-F , S04FIX-S05FULL-G va S04S05FIX-S06FULL-H. Quyidagi bo‘limlar tarixiy review tartibida; eng so‘nggi kuzatuvlar pastda. Model aniqligi yoki token sarfi bo‘yicha statistik o‘lchov yo‘q.
 
 | ID | Kuzatuv | Hozirgi dalil | Keyingi promptga moslashuv |
 |---|---|---|---|
@@ -89,3 +89,12 @@ L40:per-helperformula to‘g‘ri bo‘lsa ham eligibilitymissing:TRIAL0attendan
 L41:migrationdefault/mapperlegacyUNKNOWN→CONFIRMEDqulayfallbackfailopen. Next:explicitActor+policyversion+effectivedateconfirmation;oldrowsfailclosed, fixtureconfirmationproductionemas.
 L42:newmigration regressionexpectedcount/upgradeoldsetstale. Managermechanicallyfixed5history+upgrade; nextschema lifecycleallmigrationstestednotcountbumpalone.
 Manager2testfilesassists,productfinancialdefectsArgonfixnextL. Dataset10artifacts,statisticalmodelaccuracy/tokenbenchmarkemas. Invalidwidth/schema+eligibilityheavierthanminorfix; fullS08acceptanceL, S09gated.
+
+
+## O‘n birinchi artifact — S08FIX-L, 2026-11-05
+Kuchli:K02legacygate/K03TRIAL/K04priorperiod/K05widthactualclosed;explicitconfirmednegative+positivecontrolownerboundaryto‘g‘ri. LoriginalstrictcompilePASS,41actualunit/runtimePASS. Managerone-testfileenumsfixdan keyin100PASS/1FAILoverallFAIL,1newP1independentpackageprobe.
+L37repeat:SQLenumliteralotherdomain’danborrowqilingan(STAFF_WEB/creditreasonPRIOR_FREEZE_CREDIT). Next:canonicalconstraint-backedtypedfixtures; invoiceLineenumCreditNoteenumemas. Managerfixedtestonly.
+L43:oldownershipruntimecalendarprefix’danrecompute;backdatedlessoninsert PKG2alreadyconsumeddarsniyana hisoblagan,remaining1expected2. Next:immutablepersistedcyclemembership, post-issuancehistorymutationadversarialtests;namealreadyAllocatedhistoryproofemas.
+L44:calendarfixtureweekdayassumptionNov30Mondaynitutmagan;Nov29latejoin0debdayer1lessonvalid. Next:calendardatescompute/assert,realzerolessonfixture; productvalidationni testassertionga moslabyumshatmang.
+L05coverage:staticPKG1→PKG2pass, schedulemutatedsequencefail. Next:statebefore/aftermutation,durableDBownershipandcompoundfeaturematrix;countsnotapproval.
+Userowner04harcenterdiscountstacking/freezecreditchoice. NextM explicitlyS08fix+S09fullcandidate,feature-specificpolicyconfirmation(oldS08CONFIRMEDnewS09approvalemas). Dataset11artifact,statisticalmodelbenchmarkemas.

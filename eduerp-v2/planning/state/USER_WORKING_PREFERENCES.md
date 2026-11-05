@@ -43,3 +43,7 @@ S01–S07approved35/120(29.17%),7/24stages;81tests+strictCI41852850189. NextS08F
 
 ## Kreview — currentstate2026-11-05
 S08FULL-KCHANGES_REQUIRED:91PASS/4FAILoverallFAIL,TRIAL/pre-enrollmentillegaldebt+legacyconfirm+enumwidthopen. Approved35/120=29.17%unchanged. NextS08FIX-Lsinglecompletepackage,K01–K08closureandfullS08acceptance;currentcandidate+2managermechanicaltestfixesinputda. Criticalfinancialinvariantto‘g‘rilanmagunchaS09boshlanmaydi. Paketkattaligiapprovalemas.
+
+
+## Lreview — currentstate2026-11-05
+Old4financialdefectsclosed;S08overallCHANGES_REQUIREDpackagehistoryP1+calendarfixtureP2.100PASS/1FAILaftermanagerfixturefix. Approved35/120unchanged. Userko‘proqishbirpaketdaafzalligigamosMexplicitS08fix+S09fullcandidate:stage09draftauthorizedonlynewassignment,approvalCodexda. Owner04discount/freezepercenterchoiceacceptedrequirement.

@@ -1,0 +1,156 @@
+{
+  "schema_version": "1.1",
+  "task_id": "S08FIX-L",
+  "base_commit": "31de5080dbd3a55231fb499cf08f6da7e9ba2c4e",
+  "candidate_input_commit": "a7d7d0000e4d62ca0341e60314d3eca5940bae64",
+  "status": "IN_REVIEW",
+  "completed_steps": [
+    "08.01",
+    "08.02",
+    "08.03",
+    "08.04",
+    "08.05"
+  ],
+  "closed_findings": [
+    "K01",
+    "K02",
+    "K03",
+    "K04",
+    "K05",
+    "K06",
+    "K07",
+    "K08"
+  ],
+  "needs_manager_dependency_refresh": false,
+  "summary": "Closed S08-K findings K01-K08 on top of candidate input a7d7d0000e4d62ca0341e60314d3eca5940bae64 while preserving manager test fixes (K01) and package-lock.json untouched. K02: Default/legacy billing policy fails closed (UNCONFIGURED, effective_from_date NULL); assertConfirmedPolicyForBillingExecution enforces explicit CONFIRMED policy, effective_from_date <= periodStartDate, and first_partial_charge_mode != UNCONFIGURED across all billing execution paths (full-month, partial-month, rolling, package, worker, and trial conversion). K03: Public/manual and worker invoice issuance reject TRIAL enrollments with 422 VALIDATION_ERROR and zero DB side effects; only TrialConversionService converts TRIAL -> ACTIVE and issues the initial invoice atomically after >= 2 distinct PRESENT/LATE attendance records. K04: assertServicePeriodEligibleForEnrollmentBegin blocks billing periods wholly before serviceBeginDate (422 VALIDATION_ERROR, zero financial rows) while preserving mid-month partial CALENDAR_MONTH joins. K05: Widened billing_policy_versions mode columns to VARCHAR(32) in migration 000500 and schema.prisma so CONTINUE_FROM_CLAMPED_DAY (25 chars) persists without PostgreSQL 22001. K06: Fixed BILL-IT-01/07 student onboarding flat payloads and moved BILL-IT-07 schedule to 11:00..12:30; added BILL-IT-09..12. K07: Hardened buildLessonPackage12CycleSpec and alreadyAllocatedLessonIds across PKG:1 -> PKG:2. K08: Added docs/verification/S08-L.md and updated S08 docs, step records, handoff, and verify_s04.py.",
+  "changed_files": [
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql",
+      "sha256": "5a7f0365a30e6c7a1d15e8a7f3da42d0e0b96a53fc900718f3e8afa2085824e6",
+      "bytes": 5972
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "305aa3ca64a422be2af3b3884081d7a8c53e4c8cb6f5ec21f8de1caf07aea429",
+      "bytes": 67770
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/invoice-generator.ts",
+      "sha256": "0aac77bc80b126a4aec02a15533aa8dad0e72021ab69899a8e22a849e5b80aa2",
+      "bytes": 50999
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/policy.ts",
+      "sha256": "be48e31bd76aeaa1f0c7bd39e10015f2a93c5b9d5250160e23adc64bfc9a3217",
+      "bytes": 30551
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/subscriptions.ts",
+      "sha256": "e14dd062a90c69d85290df6a11b52f9ba2d81a002c0c990292d7b0562a05a852",
+      "bytes": 23040
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/billing-unit.test.ts",
+      "sha256": "a15e7bb92fdfe33ebe68a2d9ba23baffa93c8cef41bbc2f5ac94851de1036971",
+      "bytes": 27365
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/billing/billing-lifecycle.integration.test.ts",
+      "sha256": "c5744b6e88acd12d563d04a08729a1945ad5661639397859a5ebdee35689005f",
+      "bytes": 85660
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-008-billing-proration-subscriptions-trial-and-invoices.md",
+      "sha256": "edc61ee09836f665a9f909ab2ac64febc2dc4c21d31169db4884b4a68edcbb12",
+      "bytes": 8462
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "sha256": "5c6392d06ec0e4b65db7909cdcb9e280a873b0c0504891ea5a7816a601abab5e",
+      "bytes": 348714
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S08-L.md",
+      "sha256": "41a85a92e216916b4cfe19ed4818d05bd824978b10d10483578e7c132059049e",
+      "bytes": 6961
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S08.md",
+      "sha256": "4f35b693fd0bcedbfecba2c44cb24ed60538da5065c0f87aa38f4971042eede6",
+      "bytes": 7348
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S08.md",
+      "sha256": "cdae40c70d0779d7ac21559bc9dc5796548017d5495be58e46f425bfda7092ba",
+      "bytes": 7225
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.01.md",
+      "sha256": "d6275e0e67f75d8cfd84108f2d8b4ae86856e7e708f96e2ba7a092f944c0041d",
+      "bytes": 1351
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.02.md",
+      "sha256": "3f6c2a3bfb3cd64547c063a3951278f6e6476f96ca35ef1f60d3c3b8357891bb",
+      "bytes": 1515
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.03.md",
+      "sha256": "2402eb2e2b785a55bfcad131a14dafef1f2ce7df3dfeae2ee1dcc7ddac32b393",
+      "bytes": 1417
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.04.md",
+      "sha256": "32055ed0ea9aa009417ff83a6cc2a93b201ef0805ae50bc70a5513f36608b5bc",
+      "bytes": 1560
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.05.md",
+      "sha256": "8990bc22dd5f930b2b494df241e51b40e3d47971f46d75b4790f0203993372a1",
+      "bytes": 1468
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "5b0e2bc06b41df1d60ebcbcdefe453e870acdfe0b3bd53d3fbd9006a512ec524",
+      "bytes": 32274
+    }
+  ],
+  "checks": [
+    {
+      "name": "input_manifest_sha256_verification",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B VERIFY_INPUT.py",
+      "status": "PASS",
+      "notes": "Verified all 433 files in INPUT_MANIFEST.json match exact SHA-256 digests."
+    },
+    {
+      "name": "s01_s02_architecture_openapi_verifier",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B tools/verify_s01_s02.py",
+      "status": "PASS",
+      "notes": "69 OpenAPI operations, 1010 $ref targets, 0 nullable keywords, 12 negative self-tests passed."
+    },
+    {
+      "name": "s04_s08_schema_sql_rbac_ast_verifier",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B tools/verify_s04.py",
+      "status": "PASS",
+      "notes": "46 Prisma models, 46 SQL tables across 5 migrations, VARCHAR(32) mode columns, UNCONFIGURED policy defaults, 12 BILL-IT scenarios (BILL-IT-01..12), 42 RBAC rows, 173 SQL INSERT column/value checks passed."
+    },
+    {
+      "name": "planning_state_verifiers",
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B planning/tools/check_plan.py && PYTHONDONTWRITEBYTECODE=1 python3 -B planning/tools/test_plan.py",
+      "status": "PASS",
+      "notes": "All planning step records (08.01..08.05) and handoffs verified while keeping global governance registries untouched."
+    },
+    {
+      "name": "ast_scope_export_and_unit_tests",
+      "command": "node --test billing-unit.test.js academics-unit.test.js students-unit.test.js config.test.js worker.test.js process.test.js contracts.test.js",
+      "status": "PASS",
+      "notes": "85 TypeScript files verified for zero undeclared identifiers or broken relative exports; 28/28 unit and subprocess tests passed (including BILL-UNIT-01..08)."
+    },
+    {
+      "name": "nestjs_build_typecheck_and_postgresql_integration_tests",
+      "command": "npm run build && npm run typecheck && npm test",
+      "status": "NOT_RUN",
+      "notes": "No local node_modules or running PostgreSQL instance in offline sandbox; ready for manager/CI execution with preserved package-lock.json."
+    }
+  ]
+}
