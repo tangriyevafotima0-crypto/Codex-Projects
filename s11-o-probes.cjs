@@ -26,7 +26,7 @@ const obs={missing_ledger:{ledger_rows:ledger.rows[0].n,get_http:read.status,pro
 // Reconstruct a legitimate predecessor state: S10 allowed repeated partial payments to leave multiple ACTIVE promises.
 await e.migratorPoolA.query('DROP INDEX idx_promises_active_invoice');
 for(let n=0;n<2;n++)await e.apiPoolA.query(`INSERT INTO promises_to_pay(id,center_id,student_id,invoice_id,trigger_payment_id,promised_amount_uzs,promise_date,status) VALUES($1,$2,$3,$4,$5,400000,'2026-11-10','ACTIVE')`,[crypto.randomUUID(),C.centerId,C.studentId,invoice,payment]);
-const fs=require('node:fs');const sql=fs.readFileSync('./eduerp-v2/apps/api/prisma/migrations/20261105000700_s11_cash_shifts_expenses_promises_reconciliation/migration.sql','utf8');
+const fs=require('node:fs');const sql=fs.readFileSync('apps/api/prisma/migrations/20261105000700_s11_cash_shifts_expenses_promises_reconciliation/migration.sql','utf8');
 try{await e.migratorPoolA.query(sql);obs.predecessor_duplicate_promises_upgrade={unexpected:'success'};}catch(err){obs.predecessor_duplicate_promises_upgrade={code:err.code,message:err.message};}
 console.log('O_MANAGER_BOUNDARIES '+JSON.stringify(obs));
 }finally{if(app)await app.close();await e.cleanup()}})().catch(e=>{console.error({probe_error:e.message,code:e.code});process.exitCode=1});
