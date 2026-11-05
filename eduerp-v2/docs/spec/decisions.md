@@ -89,7 +89,7 @@ Har bir `D01`–`D25` qaror uchun `Muammo`, `Manba (Source)`, `Alternativalar`, 
 - **Decision Owner:** `Product Owner (User)` / `Markaz Rahbari`
 - **Affected Steps:** `01.02`, `01.04`, `08.01`, `08.02`, `08.04`, `15.03`, `23.01`
 - **Due Before:** `08.01` (`Stage 08`)
-- **Evidence:** `NONE_YET`
+- **Evidence:** `PARTIAL_ACCEPTED via OWNER-20261104-02 & OWNER-20261104-03 (per-center configurable billing_mode, due_date_rule ENROLLMENT_ANNIVERSARY vs CENTER_FIXED_DAY, collection_timing ADVANCE vs ARREARS, and per-center first_partial_charge_mode PRORATE_REMAINING_LESSONS vs FULL_CYCLE confirmed; initial prepaid fixed-day period and fixed-day short-month edge cases remain DECISION_REQUIRED fail-closed)`
 
 <a id="D04"></a>
 ### `D04` — Edge Cases Soni (`8 ta` Deyilgan, Matnda `4.1`–`4.6` Oltita Bo‘lim Bor)
@@ -245,7 +245,7 @@ Har bir `D01`–`D25` qaror uchun `Muammo`, `Manba (Source)`, `Alternativalar`, 
 - **Decision Owner:** `Product Owner (User)` / `Markaz Rahbari`
 - **Affected Steps:** `01.02`, `01.04`, `08.01`, `08.03`, `08.04`, `09.01`, `09.02`, `09.03`, `09.04`, `12.04`, `13.04`, `23.01`
 - **Due Before:** `08.01` (`Stage 08`) / `09.01` (`Stage 09`)
-- **Evidence:** `NONE_YET`
+- **Evidence:** `PARTIAL_ACCEPTED via OWNER-20261104-03 #2 and OWNER-20261105-04 (non-negative UZS scale=0 rational integer HALF_UP rounding and per-center configurable discount stacking / freeze credit basis confirmed; unconfigured/unsupported variants and trial no-show follow-up remain DECISION_REQUIRED fail-closed)`
 
 <a id="D15"></a>
 ### `D15` — Staff Mobil Ilova Texnologiyasi (`Flutter + SQLite` vs `PWA`)
@@ -343,7 +343,7 @@ Har bir `D01`–`D25` qaror uchun `Muammo`, `Manba (Source)`, `Alternativalar`, 
 - **Decision Owner:** `Product Owner (User)` / `Markaz Rahbari`
 - **Affected Steps:** `01.02`, `01.04`, `07.02`, `08.02`, `08.04`
 - **Due Before:** `08.02` (`Stage 08`)
-- **Evidence:** `NONE_YET`
+- **Evidence:** `PARTIAL_ACCEPTED via OWNER-20261104-03 #3 (rolling-month short-month renewal clamp continues from clamped day Jan31->Feb28/29->Mar28/29 without restoring 31 anchor; 12-lesson package cancelled-lesson CreditNote adjustment remains DECISION_REQUIRED fail-closed)`
 
 <a id="D22"></a>
 ### `D22` — Refund Qarzni Qayta Ochishi va `Invoice` / `CreditNote` / `Cash Refund` Tartibi

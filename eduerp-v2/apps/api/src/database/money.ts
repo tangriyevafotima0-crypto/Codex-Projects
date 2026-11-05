@@ -149,3 +149,29 @@ export function subtractMoneyUzs(a: bigint, b: bigint, fieldName: string = 'amou
   const diff = a - b;
   return assertWithinPgBigIntBounds(diff, fieldName);
 }
+
+
+/**
+ * Exact non-negative rational division with HALF_UP rounding to integer UZS (scale = 0):
+ * floor((2 * numerator + denominator) / (2 * denominator))
+ */
+export function divideAndRoundHalfUpUzs(
+  numerator: bigint,
+  denominator: bigint,
+  fieldName: string = "amount_uzs",
+): bigint {
+  if (typeof numerator !== "bigint" || typeof denominator !== "bigint") {
+    throw new MoneyValidationError(fieldName, "numerator and denominator must be bigint");
+  }
+  if (denominator <= 0n) {
+    throw new MoneyValidationError(fieldName, "denominator must be > 0");
+  }
+  if (numerator < 0n) {
+    throw new MoneyValidationError(fieldName, "numerator must be >= 0");
+  }
+  if (numerator === 0n) {
+    return 0n;
+  }
+  const quotient = (numerator * 2n + denominator) / (denominator * 2n);
+  return assertWithinPgBigIntBounds(quotient, fieldName);
+}

@@ -1,10 +1,10 @@
 # EduERP v2.0 — GitHub Actions CI Workflow Template (infra/ci/eduerp-ci.yml)
-# Stages 04–05 (04.04, 04.05, 05.04, 05.05 / T04.04, T04.05, T05.04, T05.05):
-# - Verifies S01/S02 contracts and S04/S05 schema/migration/role/RBAC invariants + secret scan.
+# Stages 04–09 (04.04..09.05):
+# - Verifies S01/S02 contracts and S04..S09 schema/migration/role/RBAC invariants + secret scan.
 # - Runs Prisma 7 generate, ESLint 9, TypeScript 5.9 strict typecheck, workspace build, and unit/bootstrap tests.
 # - Provisions PostgreSQL 16 service container, verifies real Prisma migrate deploy idempotency (`eduerp_migrator`),
-#   applies least-privilege DB roles (`02-apply-runtime-grants.sql`), and runs blocking Gate G1 (`npm run test:db`)
-#   and blocking Gate G2 (`npm run test:auth`) with zero diagnostic bypasses.
+#   applies least-privilege DB roles (`02-apply-runtime-grants.sql`), and runs blocking Gates G1 (`test:db`),
+#   G2 (`test:auth`), G3 (`test:students`), G4 (`test:academics`), G5 (`test:billing`), and G6 (`test:adjustments`).
 # - Smoke-tests the Docker Compose dev stack (`migrator` + `/api/v1/health` + `/api/v1/ready`).
 
 name: eduerp-v2-ci
@@ -32,7 +32,7 @@ permissions:
 
 jobs:
   verify-contracts-and-secrets:
-    name: "S01/S02/S04/S05 Contract Verification & Secret Scan"
+    name: "S01/S02/S04..S09 Contract Verification & Secret Scan"
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -44,7 +44,7 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Compile and run S01/S02 and S04/S05 contract & schema verifiers
+      - name: Compile and run S01/S02 and S04..S09 contract & schema verifiers
         run: |
           python3 -m py_compile tools/verify_s01_s02.py tools/verify_s04.py
           python3 tools/verify_s01_s02.py
@@ -90,9 +90,9 @@ jobs:
           PY
 
   build-lint-typecheck-test:
-    name: "JS Workspace Lint, Typecheck, Build, Unit, DB (G1) & Auth/RBAC (G2) Tests"
+    name: "JS Workspace Lint, Typecheck, Build, Unit & Gates G1..G6 Tests"
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 18
     needs: verify-contracts-and-secrets
     services:
       postgres:
@@ -164,12 +164,26 @@ jobs:
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:students
 
-      - name: Gate G4 — Run real HTTP + PostgreSQL Academics, Schedule, Substitute & Grades integration test suite (ACAD-IT-01..ACAD-IT-10 & R1/R2)
+      - name: Gate G4 — Run real HTTP + PostgreSQL Academics, Schedule, Substitute & Grades integration test suite (ACAD-IT-01..ACAD-IT-13 & R1/R2)
         timeout-minutes: 3
         env:
           EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:academics
+
+      - name: Gate G5 — Run real HTTP + PostgreSQL Billing, Proration, Subscriptions, Trial Conversion & Invoices integration test suite (BILL-IT-01..BILL-IT-13)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:billing
+
+      - name: Gate G6 — Run real HTTP + PostgreSQL Discounts, Stacking, Grants, Freezes & Withdrawals integration test suite (ADJ-IT-01..ADJ-IT-10)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:adjustments
 
   docker-dev-smoke:
     name: "Build and smoke-test the dev Compose stack (migrator + /health + /ready)"

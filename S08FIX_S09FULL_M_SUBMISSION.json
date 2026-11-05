@@ -1,0 +1,487 @@
+{
+  "task_id": "S08FIX-S09FULL-M",
+  "base_commit": "e96f0462ae94c7187c8a6cc2474cc418e419f371",
+  "candidate_input_commit": "89037deee40ae5cbb86b5c8093cc02937680cfd4",
+  "status": "IN_REVIEW",
+  "scope_completed": [
+    "L01",
+    "L02",
+    "L03",
+    "08.01",
+    "08.02",
+    "08.03",
+    "08.04",
+    "08.05",
+    "09.01",
+    "09.02",
+    "09.03",
+    "09.04",
+    "09.05"
+  ],
+  "stop_before": "S10",
+  "needs_manager_dependency_refresh": false,
+  "dependency_refresh_notes": "No new npm dependencies required; existing package-lock.json preserved intact.",
+  "findings_closed": {
+    "L01": "Preserved K02-K05 closures and manager SQL enum test fixes (TEACHER_WEB on attendance_records.source_channel, FREEZE_NEXT_PERIOD_CREDIT on credit_notes.credit_reason, and PRIOR_FREEZE_CREDIT on invoice_lines.line_type).",
+    "L02": "Added durable billing_cycle_lesson_allocations table (UNIQUE(enrollment_id, lesson_id)) + immutability triggers + allocated_lesson_ids_json / consumed_lesson_ids_json on billing_cycles inside the financial transaction so backdated lesson inserts, attendance retries, or schedule edits never shift prior package cycle ownership or consume prior lessons in PKG:2. Covered by BILL-UNIT-09 and BILL-IT-13.",
+    "L03": "Fixed BILL-IT-11 fixture calendar assumption: verified 2026-11-29 (Sunday before Monday 2026-11-30) has 1 remaining lesson under [MON, WED, FRI] and added true 0-remaining-lesson assertion on 2026-10-31 (Saturday after Friday 2026-10-30 -> 422 BILLING_ZERO_BILLABLE_LESSONS with zero financial writes)."
+  },
+  "owner_decisions_applied": {
+    "OWNER-20261105-03": "Applied center-selected first_partial_charge_mode, integer UZS HALF_UP rounding, and rolling month-end continuation.",
+    "OWNER-20261105-04": "Enforced separate S09 policy confirmation boundary (discount_policy_status=CONFIRMED with explicit discount_stacking_mode and freeze_policy_status=CONFIRMED with explicit freeze_credit_basis, effective_from_date <= period_start_date) so general S08 billing confirmation never implicitly confirms S09 discounts or freezes."
+  },
+  "executed_checks": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B VERIFY_INPUT.py",
+      "status": "PASS",
+      "details": "Verified all 438 input files match INPUT_MANIFEST.json SHA256 before changes."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B tools/verify_s01_s02.py",
+      "status": "PASS",
+      "details": "Verified 69 OpenAPI operations, 45 RBAC rows, 16 operation-inventory rows, 15 domain events, and 46 canonical entities."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B tools/verify_s04.py",
+      "status": "PASS",
+      "details": "Verified 46 Prisma models, 46 canonical SQL tables + helper tables across 5 migrations, 13 BILL-IT scenarios, 8 ADJ-IT scenarios, 45 RBAC rows, and 193 SQL INSERT statements."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B planning/tools/check_plan.py && PYTHONDONTWRITEBYTECODE=1 python3 -B planning/tools/test_plan.py",
+      "status": "PASS",
+      "details": "Plan structure, step dependencies, and 15 plan tool self-tests passed."
+    },
+    {
+      "command": "NODE_PATH=/tmp/s09m_babel_out/node_modules:/usr/share/nodejs node --test (billing-unit, adjustments-unit, academics-unit, students-unit, config, worker, process)",
+      "status": "PASS",
+      "details": "Transpiled all 93 TypeScript source/test files cleanly via @babel/core and passed 33 unit and OS-signal subprocess tests (0 failures), including BILL-UNIT-01..09 and ADJ-UNIT-01..05."
+    }
+  ],
+  "not_run_checks": [
+    {
+      "command": "npm run test:billing --workspace @eduerp/api",
+      "status": "NOT_RUN",
+      "reason": "Offline execution environment has no running PostgreSQL 16 daemon or Docker daemon; wired to blocking CI Gate G5."
+    },
+    {
+      "command": "npm run test:adjustments --workspace @eduerp/api",
+      "status": "NOT_RUN",
+      "reason": "Offline execution environment has no running PostgreSQL 16 daemon or Docker daemon; wired to blocking CI Gate G6."
+    },
+    {
+      "command": "npm run test:db / test:auth / test:students / test:academics --workspace @eduerp/api",
+      "status": "NOT_RUN",
+      "reason": "Offline execution environment has no running PostgreSQL 16 daemon or Docker daemon; wired to blocking CI Gates G1-G4."
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "sha256": "0706be5ffda684df3f4bc77dc14db6134bfc3ef2618690a737e4c2ead7c9961e",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql",
+      "sha256": "7abeea436561f974a519582ab99da0633b6c0c2acd9d25c05b32f4b25ce1be84",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "321eeeb1ac53aeda13308bfd6444ff00573d312f8af0d35a8d68627f57bddef7",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/adjustments.controller.ts",
+      "sha256": "f20cc5bf7611118827040309360a5642b1a33f7c3e48789d597ad12e060edf6d",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/adjustments.module.ts",
+      "sha256": "90a2f2f95b28172c3f9aa10c70b7977b053b8997689750f256b1ff34e0e31437",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/discount-approval.ts",
+      "sha256": "dbda1aa44c1eef40b1e6bdb86c59c452685561b2c936f959197afecb2dd325bb",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/discount-requests.ts",
+      "sha256": "b78a3301daefc18ada2b333c748051c0f113192eaa4655de2c3e01bd80422086",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/freeze-credit.ts",
+      "sha256": "c342bf69e40545306bd47dea92751767fb080978edc0859f8a1b08e08791a28f",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/index.ts",
+      "sha256": "97e0de41834a3c0aad1be8ef0687969758bd848a40822cabc608bb8b37c9e09c",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/withdrawal.ts",
+      "sha256": "6816103972bfb2e4e942071c444c8c90bd7dd1b0ee8c30e2a05d15416f5e8c57",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "sha256": "43745ef5394be72e6ee9e2a8dc7e07f8d389e5e015da002a945bf288e8549d39",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/invoice-generator.ts",
+      "sha256": "217764dddcdad71dbdac9dfe30eaab7e8f20b73ed6b287e42016e2ef99cc628b",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/policy.ts",
+      "sha256": "230ba8478165971fbff28a7ed33904dc3ba6274cdee2c2381e33fb4018d0592d",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/subscriptions.ts",
+      "sha256": "bfbbbc46a1183704d551c97bff6a50db72213bdafbfbc41dd76a9be0a24bfbf3",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/database/money.ts",
+      "sha256": "0cbf4526bbc49608db09aeea50f2024d997401072b9091cb48cd63bf942b1992",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/enrollments.service.ts",
+      "sha256": "c8b7fb3dcacb5b5ebb57fc5fc73161dbf352b612983fb36cce2212e689f32916",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/adjustments-unit.test.ts",
+      "sha256": "9c51836daf07d118180d141ce57c151805b1948546d3540cc59616b7f251056a",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/adjustments/adjustments-lifecycle.integration.test.ts",
+      "sha256": "a79f49979205901fa7ada355764031da3359f6b02e10009840c6b259ccd7b583",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/billing-unit.test.ts",
+      "sha256": "db002898b2cdafcea095ceb379482edb19c11f5388c51cc399303510f8629cbb",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/billing/billing-lifecycle.integration.test.ts",
+      "sha256": "0d8d5bd96222cda1c0138f3c1cec5d4fae7356d051b8816d88823d2a95659b61",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-008-billing-proration-subscriptions-trial-and-invoices.md",
+      "sha256": "e1b6284a2d59875adb0f519440a8a0f551baf887787ee5cf0e7b6ec8222347e6",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-009-discounts-stacking-grants-freezes-and-withdrawals.md",
+      "sha256": "34972e69e82c8956d92f00487c1803a2b6696837048a806cddeae19da266326f",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "sha256": "97d5f0ea2262e6c72819cf50b567540f8806bdbdecd7618b39efd7cf6396cd22",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/operation-inventory.csv",
+      "sha256": "00b8aa5f4faf48bb8e9b0da07d166cf14b682d812b125ec49e595eff54ae566f",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "sha256": "8badd33084a99fe9d0be4b076dc51fd60f1100494a02da77969a079c513bbd20",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/spec/decisions.md",
+      "sha256": "592f70ae9412bb4d912853d9cd2fb0391e6d08a480d69182baf2b5ca2e559453",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S08-M.md",
+      "sha256": "40e96192e1a7141e5bb11d99ce4900949405c2c187f0dbba0dbcc242e9960507",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S08.md",
+      "sha256": "c77c584fbd63f7db5b79506fc285278de4a4934448fbe4cfe0ca66b8e31f7da1",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S09.md",
+      "sha256": "6002bd3e6646634edee087944b1f5ec3a793a2afe49a25486c04490d4260d788",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "sha256": "35e6d059614099541936e1cb42ff9b7b5e671aba74922421bed6ff8938d9cd37",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "sha256": "d619bfbe2d11840bcf1270742675e4ce9faf8d3337b9850464d9650842dcd624",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/index.ts",
+      "sha256": "3aa0e4694d0ff766d43379742f852029d2afd2efa0b1a0eb7e86ce99a41c3571",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S08.md",
+      "sha256": "320c7bc0247a15e0d7d5871f5cefbec909ffb7c069ac054d48d6626a7af56162",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S09.md",
+      "sha256": "929c8f31fc07f6af356a6a604d724951655590341ecf1f519e4e5989b2b456f3",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.01.md",
+      "sha256": "fae63d9b59747b9a044c4a7b87401dca44794c24ddbdddcc53e3753385fd5650",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.02.md",
+      "sha256": "eb307893ceb74a0b39ad17aac36acf181afbc6a6645cbc70d5998c83f59cc040",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.03.md",
+      "sha256": "c8b35de34bc94cab45e1e4cc02bb12f3a5861a32f7da87235948fe945ecffb68",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.04.md",
+      "sha256": "d22a6cc2aa8c322c5308dfe6993ff6087f6a37f53f0213b87a65542722a7f018",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.05.md",
+      "sha256": "8a4d970c0273c12b3972fad3e78bc6d005cdb418dbea4f129a8042092fc9e6ba",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.01.md",
+      "sha256": "4a70e196f1df9f5dff7630b589bad71ffd13b0e75dd86eafff4368acaeb17c8b",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.02.md",
+      "sha256": "630a9deb5e965193d6ee73770211a9c30dcd193458bb653c428df06504e19fe4",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.03.md",
+      "sha256": "62cee9ea070c39d2c69be29e41ae86d8ed1432c508098ed07991a4977a6a08f2",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.04.md",
+      "sha256": "a61fc11e6fd9fe887b367d07c2be18fd63f27637d10f535c7ccc06f82579dae4",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.05.md",
+      "sha256": "83d2499b6333ea7da38c346a754d5916f3be085ac5819007737c48b5790c782e",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "738db72d402d263da3b46784e2df310bce42bee5d14b3e0af999a46d1781dbc1",
+      "change_type": "MODIFIED"
+    }
+  ],
+  "files": [
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "sha256": "0706be5ffda684df3f4bc77dc14db6134bfc3ef2618690a737e4c2ead7c9961e"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql",
+      "sha256": "7abeea436561f974a519582ab99da0633b6c0c2acd9d25c05b32f4b25ce1be84"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "321eeeb1ac53aeda13308bfd6444ff00573d312f8af0d35a8d68627f57bddef7"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/adjustments.controller.ts",
+      "sha256": "f20cc5bf7611118827040309360a5642b1a33f7c3e48789d597ad12e060edf6d"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/adjustments.module.ts",
+      "sha256": "90a2f2f95b28172c3f9aa10c70b7977b053b8997689750f256b1ff34e0e31437"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/discount-approval.ts",
+      "sha256": "dbda1aa44c1eef40b1e6bdb86c59c452685561b2c936f959197afecb2dd325bb"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/discount-requests.ts",
+      "sha256": "b78a3301daefc18ada2b333c748051c0f113192eaa4655de2c3e01bd80422086"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/freeze-credit.ts",
+      "sha256": "c342bf69e40545306bd47dea92751767fb080978edc0859f8a1b08e08791a28f"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/index.ts",
+      "sha256": "97e0de41834a3c0aad1be8ef0687969758bd848a40822cabc608bb8b37c9e09c"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/adjustments/withdrawal.ts",
+      "sha256": "6816103972bfb2e4e942071c444c8c90bd7dd1b0ee8c30e2a05d15416f5e8c57"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "sha256": "43745ef5394be72e6ee9e2a8dc7e07f8d389e5e015da002a945bf288e8549d39"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/invoice-generator.ts",
+      "sha256": "217764dddcdad71dbdac9dfe30eaab7e8f20b73ed6b287e42016e2ef99cc628b"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/policy.ts",
+      "sha256": "230ba8478165971fbff28a7ed33904dc3ba6274cdee2c2381e33fb4018d0592d"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/subscriptions.ts",
+      "sha256": "bfbbbc46a1183704d551c97bff6a50db72213bdafbfbc41dd76a9be0a24bfbf3"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/database/money.ts",
+      "sha256": "0cbf4526bbc49608db09aeea50f2024d997401072b9091cb48cd63bf942b1992"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/students/enrollments.service.ts",
+      "sha256": "c8b7fb3dcacb5b5ebb57fc5fc73161dbf352b612983fb36cce2212e689f32916"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/adjustments-unit.test.ts",
+      "sha256": "9c51836daf07d118180d141ce57c151805b1948546d3540cc59616b7f251056a"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/adjustments/adjustments-lifecycle.integration.test.ts",
+      "sha256": "a79f49979205901fa7ada355764031da3359f6b02e10009840c6b259ccd7b583"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/billing-unit.test.ts",
+      "sha256": "db002898b2cdafcea095ceb379482edb19c11f5388c51cc399303510f8629cbb"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/billing/billing-lifecycle.integration.test.ts",
+      "sha256": "0d8d5bd96222cda1c0138f3c1cec5d4fae7356d051b8816d88823d2a95659b61"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-008-billing-proration-subscriptions-trial-and-invoices.md",
+      "sha256": "e1b6284a2d59875adb0f519440a8a0f551baf887787ee5cf0e7b6ec8222347e6"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-009-discounts-stacking-grants-freezes-and-withdrawals.md",
+      "sha256": "34972e69e82c8956d92f00487c1803a2b6696837048a806cddeae19da266326f"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "sha256": "97d5f0ea2262e6c72819cf50b567540f8806bdbdecd7618b39efd7cf6396cd22"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/operation-inventory.csv",
+      "sha256": "00b8aa5f4faf48bb8e9b0da07d166cf14b682d812b125ec49e595eff54ae566f"
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "sha256": "8badd33084a99fe9d0be4b076dc51fd60f1100494a02da77969a079c513bbd20"
+    },
+    {
+      "path": "eduerp-v2/docs/spec/decisions.md",
+      "sha256": "592f70ae9412bb4d912853d9cd2fb0391e6d08a480d69182baf2b5ca2e559453"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S08-M.md",
+      "sha256": "40e96192e1a7141e5bb11d99ce4900949405c2c187f0dbba0dbcc242e9960507"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S08.md",
+      "sha256": "c77c584fbd63f7db5b79506fc285278de4a4934448fbe4cfe0ca66b8e31f7da1"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S09.md",
+      "sha256": "6002bd3e6646634edee087944b1f5ec3a793a2afe49a25486c04490d4260d788"
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "sha256": "35e6d059614099541936e1cb42ff9b7b5e671aba74922421bed6ff8938d9cd37"
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "sha256": "d619bfbe2d11840bcf1270742675e4ce9faf8d3337b9850464d9650842dcd624"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/index.ts",
+      "sha256": "3aa0e4694d0ff766d43379742f852029d2afd2efa0b1a0eb7e86ce99a41c3571"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S08.md",
+      "sha256": "320c7bc0247a15e0d7d5871f5cefbec909ffb7c069ac054d48d6626a7af56162"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S09.md",
+      "sha256": "929c8f31fc07f6af356a6a604d724951655590341ecf1f519e4e5989b2b456f3"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.01.md",
+      "sha256": "fae63d9b59747b9a044c4a7b87401dca44794c24ddbdddcc53e3753385fd5650"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.02.md",
+      "sha256": "eb307893ceb74a0b39ad17aac36acf181afbc6a6645cbc70d5998c83f59cc040"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.03.md",
+      "sha256": "c8b35de34bc94cab45e1e4cc02bb12f3a5861a32f7da87235948fe945ecffb68"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.04.md",
+      "sha256": "d22a6cc2aa8c322c5308dfe6993ff6087f6a37f53f0213b87a65542722a7f018"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/08.05.md",
+      "sha256": "8a4d970c0273c12b3972fad3e78bc6d005cdb418dbea4f129a8042092fc9e6ba"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.01.md",
+      "sha256": "4a70e196f1df9f5dff7630b589bad71ffd13b0e75dd86eafff4368acaeb17c8b"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.02.md",
+      "sha256": "630a9deb5e965193d6ee73770211a9c30dcd193458bb653c428df06504e19fe4"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.03.md",
+      "sha256": "62cee9ea070c39d2c69be29e41ae86d8ed1432c508098ed07991a4977a6a08f2"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.04.md",
+      "sha256": "a61fc11e6fd9fe887b367d07c2be18fd63f27637d10f535c7ccc06f82579dae4"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/09.05.md",
+      "sha256": "83d2499b6333ea7da38c346a754d5916f3be085ac5819007737c48b5790c782e"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "738db72d402d263da3b46784e2df310bce42bee5d14b3e0af999a46d1781dbc1"
+    }
+  ],
+  "deleted_paths": []
+}

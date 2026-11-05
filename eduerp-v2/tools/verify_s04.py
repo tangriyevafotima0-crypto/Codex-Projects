@@ -1,27 +1,18 @@
 #!/usr/bin/env python3
-"""EduERP v2.0 — Stage 04 (F01–F10 Remediation) & Stage 05 Offline Structural, Schema, SQL & Test Verifier (tools/verify_s04.py).
+"""EduERP v2.0 — Stage 04..09 Offline Structural, Schema, SQL, RBAC & Test Verifier (tools/verify_s04.py).
 
-Verifies all Stage 04 (`04.01`..`04.05`, `F01`..`F10`) and Stage 05 (`05.01`..`05.05`) artifacts honestly:
-1. `04.01` & `F01`: `apps/api/prisma/schema.prisma` maps all 46 canonical entities, has ZERO `P1012` 1-to-1 composite
-   relation uniqueness errors (every 1-to-1 `fields: [...]` is backed by `@id` or `@@unique` on the exact field tuple),
-   defines composite `@id([centerId, actorId, operationType, clientOperationUuid])` on `ClientOperationLog` (`F10`),
-   and includes Stage 05 additive fields on `StaffUser` and `StaffSession`.
-2. `04.02`, `F08`, `F09`, `F10`:
-   - `20261104000100_initial_foundation/migration.sql` defines all 46 tables, `ON DELETE RESTRICT` FKs, 9 named CHECKs,
-     5 partial unique indexes, 24 immutability triggers (`F08` race-safe `FOR UPDATE` in `eduerp_guard_last_active_director`),
-     11 relational lineage triggers (`F09` `eduerp_enforce_relational_lineage`), and composite PK on `client_operation_logs` (`F10`).
-   - `20261104000200_s05_auth_and_rbac_foundation/migration.sql` additively adds Stage 05 `staff_users` and `staff_sessions`
-     columns, CHECK constraints, and indexes.
-3. `04.03`, `F02`, `F03`, `F04`, `F06`:
-   - `apps/api/src/types/pg.d.ts` is removed (`F02`); `DatabaseService` instantiates real `PrismaClient` (`PrismaPg` adapter)
-     and verifies non-superuser, non-schema-owner, enabled triggers (`tgenabled != 'D'`), and runtime ACLs in `checkReadiness()`.
-   - `DatabaseModule` is the single provider of `DatabaseService` (`F03`); `ApiEnvConfig` does NOT expose `migrationDatabaseUrl` (`F06`).
-4. `04.04`, `F05`, `F07` & `05.04`:
-   - `apps/api/test/database/*.integration.test.ts` cover `DB-IT-01`..`DB-IT-25`, and `apps/api/test/auth/*.integration.test.ts`
-     cover `AUTH-IT-01`..`AUTH-IT-17`.
-   - Every SQL `INSERT INTO` statement in TypeScript source/tests references valid columns from the cumulative SQL migrations.
-5. `05.01`..`05.05`:
-   - `docs/security/rbac-matrix.csv` covers all 11 Stage 03–05 operations including `OWNER-20261104-01`.
+Verifies all Stage 04 (`04.01`..`04.05`, `F01`..`F10`), Stage 05 (`05.01`..`05.05`), Stage 06 (`06.01`..`06.05`),
+Stage 07 (`07.01`..`07.05`), Stage 08 (`08.01`..`08.05`, `K01`..`K08`, `L01`..`L03`), and Stage 09 (`09.01`..`09.05`,
+`OWNER-20261105-04`) artifacts honestly:
+1. `apps/api/prisma/schema.prisma` maps all 46 canonical entities, has ZERO `P1012` 1-to-1 composite relation uniqueness errors,
+   defines composite `@id([centerId, actorId, operationType, clientOperationUuid])` on `ClientOperationLog`, and includes
+   `L02` package allocation snapshot fields on `BillingCycle` and `OWNER-20261105-04` S09 policy confirmation fields on
+   `BillingPolicyVersion`, `DiscountApproval`, and `FreezeRecord`.
+2. Cumulative PostgreSQL migrations (`000100`..`000500`) define all 46 canonical tables plus technical helper tables
+   (`auth_rate_limit_buckets`, `billing_cycle_lesson_allocations`), `ON DELETE RESTRICT` FKs, 9 named CHECKs,
+   5 partial unique indexes, immutability triggers, relational lineage triggers, and least-privilege role grants.
+3. Every SQL `INSERT INTO` statement in TypeScript source/tests references valid columns from the cumulative SQL migrations.
+4. `docs/security/rbac-matrix.csv` covers all 45 Stage 03–09 operations.
 """
 from __future__ import annotations
 
@@ -122,7 +113,7 @@ LINEAGE_TRIGGER_TABLES = [
 ]
 
 
-def parse_migration_table_columns(mig_sql: str, s05_sql: str = "", s06_sql: str = "", s07_sql: str = "") -> dict[str, set[str]]:
+def parse_migration_table_columns(mig_sql: str, *extra_sqls: str) -> dict[str, set[str]]:
     table_cols: dict[str, set[str]] = {}
     for m in re.finditer(r'CREATE TABLE IF NOT EXISTS "([a-z0-9_]+)"\s*\((.*?)\n\);', mig_sql, flags=re.S):
         tbl_name = m.group(1)
@@ -137,7 +128,7 @@ def parse_migration_table_columns(mig_sql: str, s05_sql: str = "", s06_sql: str 
                 cols.add(cm.group(1))
         table_cols[tbl_name] = cols
 
-    for m in re.finditer(r'ALTER TABLE "([a-z0-9_]+)"(.*?);', s05_sql + "\n" + s06_sql + "\n" + s07_sql, flags=re.S):
+    for m in re.finditer(r'ALTER TABLE "([a-z0-9_]+)"(.*?);', "\n".join(extra_sqls), flags=re.S):
         tbl_name = m.group(1)
         body = m.group(2)
         if tbl_name in table_cols:
@@ -147,7 +138,6 @@ def parse_migration_table_columns(mig_sql: str, s05_sql: str = "", s06_sql: str 
 
 
 def verify_prisma_1to1_relations(model_blocks: dict[str, str]) -> int:
-    """F01 check: Ensure every 1-to-1 relation with fields: [...] is backed by @unique, @@unique, or @@id on that exact tuple."""
     models: dict[str, dict] = {}
     for mname, body in model_blocks.items():
         unique_sets: set[tuple[str, ...]] = set()
@@ -237,10 +227,20 @@ def verify_prisma_schema_and_coverage(
 
     checked_1to1 = verify_prisma_1to1_relations(model_blocks)
 
-    # F10: Verify ClientOperationLog uses composite @@id([centerId, actorId, operationType, clientOperationUuid])
     col_block = model_blocks["ClientOperationLog"]
     if "@@id([centerId, actorId, operationType, clientOperationUuid])" not in col_block:
         raise ValueError("[ERR_S04_F10_CLIENT_OP_LOG_PK] ClientOperationLog must declare @@id([centerId, actorId, operationType, clientOperationUuid])")
+
+    # Verify S08 L02 & S09 OWNER-20261105-04 fields on BillingPolicyVersion and BillingCycle
+    bpv_block = model_blocks["BillingPolicyVersion"]
+    for req_field in ["discountPolicyStatus", "freezePolicyStatus", "policyConfirmationStatus"]:
+        if req_field not in bpv_block:
+            raise ValueError(f"[ERR_S09_MISSING_POLICY_FIELD] BillingPolicyVersion missing {req_field}")
+
+    bc_block = model_blocks["BillingCycle"]
+    for req_field in ["allocatedLessonIdsJson", "consumedLessonIdsJson"]:
+        if req_field not in bc_block:
+            raise ValueError(f"[ERR_S08_L02_MISSING_CYCLE_FIELD] BillingCycle missing {req_field}")
 
     for ent, tbl in MUTABLE_ENTITIES.items():
         blk = model_blocks[ent]
@@ -302,27 +302,27 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
             root / "apps/api/prisma/migrations/20261104000100_initial_foundation/migration.sql"
         ).read_text(encoding="utf-8")
     s05_mig_path = root / "apps/api/prisma/migrations/20261104000200_s05_auth_and_rbac_foundation/migration.sql"
-    if not s05_mig_path.exists():
-        raise ValueError("[ERR_S05_MISSING_MIGRATION] Missing Stage 05 additive migration 20261104000200_s05_auth_and_rbac_foundation/migration.sql")
-    s05_sql = s05_mig_path.read_text(encoding="utf-8")
-
     s06_mig_path = root / "apps/api/prisma/migrations/20261104000300_s06_auth_fixes_and_student_foundation/migration.sql"
-    if not s06_mig_path.exists():
-        raise ValueError("[ERR_S06_MISSING_MIGRATION] Missing Stage 06 additive migration 20261104000300_s06_auth_fixes_and_student_foundation/migration.sql")
-    s06_sql = s06_mig_path.read_text(encoding="utf-8")
-
     s07_mig_path = root / "apps/api/prisma/migrations/20261104000400_s07_academics_schedule_substitutes_grades/migration.sql"
-    if not s07_mig_path.exists():
-        raise ValueError("[ERR_S07_MISSING_MIGRATION] Missing Stage 07 additive migration 20261104000400_s07_academics_schedule_substitutes_grades/migration.sql")
-    s07_sql = s07_mig_path.read_text(encoding="utf-8")
+    s08_mig_path = root / "apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql"
 
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql)
+    s05_sql = s05_mig_path.read_text(encoding="utf-8")
+    s06_sql = s06_mig_path.read_text(encoding="utf-8")
+    s07_sql = s07_mig_path.read_text(encoding="utf-8")
+    s08_sql = s08_mig_path.read_text(encoding="utf-8")
+
+    if '"billing_cycle_lesson_allocations"' not in s08_sql or '"uq_bcla_enrollment_lesson"' not in s08_sql:
+        raise ValueError("[ERR_S08_L02_MISSING_BCLA] Migration 000500 must define billing_cycle_lesson_allocations with uq_bcla_enrollment_lesson")
+    if '"discount_policy_status"' not in s08_sql or '"freeze_policy_status"' not in s08_sql:
+        raise ValueError("[ERR_S09_MISSING_POLICY_STATUS_COLS] Migration 000500 must define discount_policy_status and freeze_policy_status")
+
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql)
     expected_tables = set(ALL_ENTITIES.values())
     if set(table_cols.keys()) != expected_tables:
         diff = set(table_cols.keys()) ^ expected_tables
         raise ValueError(f"[ERR_S04_SQL_TABLE_MISMATCH] migration.sql table set mismatch: {diff}")
 
-    if "ON DELETE CASCADE" in mig_sql.upper() or "ON DELETE CASCADE" in s05_sql.upper():
+    if "ON DELETE CASCADE" in mig_sql.upper() or "ON DELETE CASCADE" in s05_sql.upper() or "ON DELETE CASCADE" in s08_sql.upper():
         raise ValueError("[ERR_S04_SQL_CASCADE] migration.sql must not contain ON DELETE CASCADE")
 
     fk_count = mig_sql.count("ON DELETE RESTRICT ON UPDATE RESTRICT")
@@ -351,11 +351,9 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
         if f"CREATE TRIGGER {special_trig}" not in mig_sql:
             raise ValueError(f"[ERR_S04_MISSING_SPECIAL_TRIGGER] Missing trigger {special_trig} in migration.sql")
 
-    # F08: Verify FOR UPDATE center-level director lock in eduerp_guard_last_active_director
     if "FROM \"staff_users\"" not in mig_sql or "FOR UPDATE" not in mig_sql:
         raise ValueError("[ERR_S04_F08_DIRECTOR_LOCK] eduerp_guard_last_active_director must lock active directors FOR UPDATE")
 
-    # F09: Verify eduerp_enforce_relational_lineage trigger function and 11 lineage triggers
     if "CREATE OR REPLACE FUNCTION eduerp_enforce_relational_lineage()" not in mig_sql:
         raise ValueError("[ERR_S04_F09_LINEAGE_FN] Missing eduerp_enforce_relational_lineage() in migration.sql")
     if "CREATE TRIGGER trg_lineage_%I" not in mig_sql:
@@ -364,7 +362,6 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
         if f"'{l_tbl}'" not in mig_sql:
             raise ValueError(f"[ERR_S04_F09_LINEAGE_TRIGGER] Missing lineage table {l_tbl} in migration.sql")
 
-    # F10: Verify composite PK on client_operation_logs
     if 'CONSTRAINT "pk_client_operation_logs" PRIMARY KEY ("center_id", "actor_id", "operation_type", "client_operation_uuid")' not in mig_sql:
         raise ValueError("[ERR_S04_F10_SQL_PK] client_operation_logs must have composite PRIMARY KEY (center_id, actor_id, operation_type, client_operation_uuid)")
 
@@ -391,7 +388,7 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
 
     return {
         "sql_tables_created": len(table_cols),
-        "migrations_verified": 4,
+        "migrations_verified": 5,
         "foreign_keys_restrict": fk_count,
         "named_check_constraints_verified": len(REQUIRED_CHECK_CONSTRAINTS),
         "partial_unique_indexes_verified": len(REQUIRED_PARTIAL_INDEXES),
@@ -413,14 +410,16 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
     s07_sql = (
         root / "apps/api/prisma/migrations/20261104000400_s07_academics_schedule_substitutes_grades/migration.sql"
     ).read_text(encoding="utf-8")
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql)
+    s08_sql = (
+        root / "apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql"
+    ).read_text(encoding="utf-8")
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql)
     table_cols.update(parse_migration_table_columns(s06_sql))
+    table_cols.update(parse_migration_table_columns(s08_sql))
 
-    # F02: Ensure handwritten src/types/pg.d.ts is removed
     if (root / "apps/api/src/types/pg.d.ts").exists():
         raise ValueError("[ERR_S04_F02_CUSTOM_PG_DTS] Handwritten apps/api/src/types/pg.d.ts must be deleted in favor of @types/pg")
 
-    # F06: Ensure ApiEnvConfig does not include migrationDatabaseUrl
     env_ts = (root / "apps/api/src/config/env.ts").read_text(encoding="utf-8")
     if "migrationDatabaseUrl" in env_ts:
         raise ValueError("[ERR_S04_F06_API_MIGRATION_ENV] apps/api/src/config/env.ts must not expose migrationDatabaseUrl")
@@ -456,6 +455,21 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "apps/api/src/academics/grades.service.ts",
         "apps/api/test/academics-unit.test.ts",
         "apps/api/test/academics/academics-lifecycle.integration.test.ts",
+        "apps/api/src/billing/policy.ts",
+        "apps/api/src/billing/calendar-proration.ts",
+        "apps/api/src/billing/subscriptions.ts",
+        "apps/api/src/billing/invoice-generator.ts",
+        "apps/api/src/billing/trial-conversion.ts",
+        "apps/api/src/billing/billing.controller.ts",
+        "apps/api/test/billing-unit.test.ts",
+        "apps/api/test/billing/billing-lifecycle.integration.test.ts",
+        "apps/api/src/adjustments/discount-requests.ts",
+        "apps/api/src/adjustments/discount-approval.ts",
+        "apps/api/src/adjustments/freeze-credit.ts",
+        "apps/api/src/adjustments/withdrawal.ts",
+        "apps/api/src/adjustments/adjustments.controller.ts",
+        "apps/api/test/adjustments-unit.test.ts",
+        "apps/api/test/adjustments/adjustments-lifecycle.integration.test.ts",
     ]
     if test_corpus is None:
         test_corpus = "\n".join((root / rel).read_text(encoding="utf-8") for rel in ts_files)
@@ -479,6 +493,16 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         code = f"ACAD-IT-{i:02d}"
         if code not in test_corpus:
             raise ValueError(f"[ERR_S07_MISSING_ACAD_IT] Missing required Stage 07 integration test scenario {code}")
+
+    for i in range(1, 14):
+        code = f"BILL-IT-{i:02d}"
+        if code not in test_corpus:
+            raise ValueError(f"[ERR_S08_MISSING_BILL_IT] Missing required Stage 08 integration test scenario {code}")
+
+    for i in range(1, 9):
+        code = f"ADJ-IT-{i:02d}"
+        if code not in test_corpus:
+            raise ValueError(f"[ERR_S09_MISSING_ADJ_IT] Missing required Stage 09 integration test scenario {code}")
 
     if "EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS" not in test_corpus or "eduerp_test_" not in test_corpus:
         raise ValueError("[ERR_S04_HARNESS_GUARD] Missing destructive test harness safety guards")
@@ -524,14 +548,16 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         raise ValueError("[ERR_S05_MISSING_RBAC_CSV] docs/security/rbac-matrix.csv does not exist")
     with rbac_csv_path.open(encoding="utf-8") as f:
         rbac_rows = list(csv.DictReader(f))
-    if len(rbac_rows) < 36:
-        raise ValueError("[ERR_S07_RBAC_CSV_ROWS] docs/security/rbac-matrix.csv must cover all 36 Stage 03-07 operations")
+    if len(rbac_rows) < 45:
+        raise ValueError("[ERR_S09_RBAC_CSV_ROWS] docs/security/rbac-matrix.csv must cover all 45 Stage 03-09 operations")
 
     return {
         "db_integration_scenarios_verified": 21,
         "auth_integration_scenarios_verified": 17,
         "students_integration_scenarios_verified": 9,
         "academics_integration_scenarios_verified": 13,
+        "billing_integration_scenarios_verified": 13,
+        "adjustments_integration_scenarios_verified": 8,
         "rbac_matrix_rows_verified": len(rbac_rows),
         "ts_sql_insert_statements_verified": inserts_verified,
         "node_target": nvmrc,
@@ -630,11 +656,11 @@ def main() -> int:
     summary = {
         "s04_prisma_schema_and_coverage": s04_schema,
         "s04_migration_and_db_roles": s04_sql,
-        "s04_s05_integration_tests_and_tooling": s04_tests,
+        "s04_s09_integration_tests_and_tooling": s04_tests,
         "s04_negative_self_tests": neg,
     }
     print(json.dumps(summary, indent=2, ensure_ascii=False))
-    print("PASS: tools/verify_s04.py verified all Stage 04 (F01-F10) and Stage 05 schema, migration, DB role, RBAC, and test invariants.")
+    print("PASS: tools/verify_s04.py verified all Stage 04..09 schema, migration, DB role, RBAC, and test invariants.")
     return 0
 
 
