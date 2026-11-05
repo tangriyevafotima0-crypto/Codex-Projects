@@ -34,3 +34,7 @@ jobs:
       - run: npm ci --ignore-scripts --no-audit --no-fund
       - run: npm run prisma:generate && npm run build
       - run: node ../s08-k-probes.cjs
+      - name: Independently run actual G5 billing suite
+        if: ${{ !cancelled() }}
+        timeout-minutes: 3
+        run: npm run test:billing
