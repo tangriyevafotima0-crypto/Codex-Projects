@@ -1196,7 +1196,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
       `INSERT INTO "attendance_records" (
          "id", "center_id", "lesson_id", "student_id", "enrollment_id",
          "status", "source_channel", "recorded_by_staff_id", "client_operation_uuid"
-       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'ABSENT', 'STAFF_WEB', $6::uuid, $7::uuid)`,
+       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'ABSENT', 'TEACHER_WEB', $6::uuid, $7::uuid)`,
       [
         absentAttId,
         C.centerId,
@@ -1221,7 +1221,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
       `INSERT INTO "attendance_records" (
          "id", "center_id", "lesson_id", "student_id", "enrollment_id",
          "status", "source_channel", "recorded_by_staff_id", "client_operation_uuid"
-       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'PRESENT', 'STAFF_WEB', $6::uuid, $7::uuid)`,
+       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'PRESENT', 'TEACHER_WEB', $6::uuid, $7::uuid)`,
       [
         crypto.randomUUID(),
         C.centerId,
@@ -1261,7 +1261,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
       `INSERT INTO "attendance_records" (
          "id", "center_id", "lesson_id", "student_id", "enrollment_id",
          "status", "source_channel", "recorded_by_staff_id", "client_operation_uuid"
-       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'LATE', 'STAFF_WEB', $6::uuid, $7::uuid)`,
+       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'LATE', 'TEACHER_WEB', $6::uuid, $7::uuid)`,
       [
         crypto.randomUUID(),
         C.centerId,
@@ -1419,7 +1419,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
          "credit_reason", "amount_uzs", "source_event_key", "actor_type", "actor_staff_id"
        ) VALUES (
          $1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid,
-         'PRIOR_FREEZE_CREDIT', 750000, $6, 'STAFF', $7::uuid
+         'FREEZE_NEXT_PERIOD_CREDIT', 750000, $6, 'STAFF', $7::uuid
        )`,
       [
         creditNoteId,
@@ -1819,7 +1819,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
         `INSERT INTO "attendance_records" (
            "id", "center_id", "lesson_id", "student_id", "enrollment_id",
            "status", "source_channel", "recorded_by_staff_id", "client_operation_uuid"
-         ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, $6, 'STAFF_WEB', $7::uuid, $8::uuid)`,
+         ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, $6, 'TEACHER_WEB', $7::uuid, $8::uuid)`,
         [
           crypto.randomUUID(),
           C.centerId,
@@ -1870,7 +1870,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
       `INSERT INTO "attendance_records" (
          "id", "center_id", "lesson_id", "student_id", "enrollment_id",
          "status", "source_channel", "recorded_by_staff_id", "client_operation_uuid"
-       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'PRESENT', 'STAFF_WEB', $6::uuid, $7::uuid)`,
+       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'PRESENT', 'TEACHER_WEB', $6::uuid, $7::uuid)`,
       [
         crypto.randomUUID(),
         C.centerId,
@@ -2220,7 +2220,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
         `INSERT INTO "attendance_records" (
            "id", "center_id", "lesson_id", "student_id", "enrollment_id",
            "status", "source_channel", "recorded_by_staff_id", "client_operation_uuid"
-         ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'PRESENT', 'STAFF_WEB', $6::uuid, $7::uuid)`,
+         ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, $5::uuid, 'PRESENT', 'TEACHER_WEB', $6::uuid, $7::uuid)`,
         [
           crypto.randomUUID(),
           C.centerId,

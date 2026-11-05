@@ -25,7 +25,7 @@ const {ClockService}=require('./eduerp-v2/apps/api/dist/src/auth/clock.service')
  await e.apiPoolA.query(`UPDATE course_groups SET billing_mode='LESSON_PACKAGE_12',lessons_per_cycle=2 WHERE id=$1`,[C.groupId]);
  const enr=crypto.randomUUID();await e.apiPoolA.query(`INSERT INTO enrollments(id,center_id,student_id,group_id,status,enrolled_at_date) VALUES($1,$2,$3,$4,'ACTIVE','2026-10-01')`,[enr,C.centerId,C.studentId,C.groupId]);
  const attended=await e.apiPoolA.query(`SELECT id FROM lesson_occurrences WHERE group_id=$1 AND lesson_date IN ('2026-10-02','2026-10-03') ORDER BY lesson_date`,[C.groupId]);
- for(const row of attended.rows)await e.apiPoolA.query(`INSERT INTO attendance_records(id,center_id,lesson_id,student_id,enrollment_id,status,source_channel,recorded_by_staff_id,client_operation_uuid) VALUES($1,$2,$3,$4,$5,'PRESENT','STAFF_WEB',$6,$7)`,[crypto.randomUUID(),C.centerId,row.id,C.studentId,enr,C.teacherId,crypto.randomUUID()]);
+ for(const row of attended.rows)await e.apiPoolA.query(`INSERT INTO attendance_records(id,center_id,lesson_id,student_id,enrollment_id,status,source_channel,recorded_by_staff_id,client_operation_uuid) VALUES($1,$2,$3,$4,$5,'PRESENT','TEACHER_WEB',$6,$7)`,[crypto.randomUUID(),C.centerId,row.id,C.studentId,enr,C.teacherId,crypto.randomUUID()]);
  const pkg=async(seq)=>call('/api/v1/billing/cycles/invoice',{enrollment_id:enr,cycle_type:'LESSON_PACKAGE_12',cycle_key:'PKG:'+seq,period_start_date:'2026-10-01',apply_available_credit_notes:false},token);
  const p1=await pkg(1);out.package_first_status=p1.status;
  const b1=await e.apiPoolA.query('SELECT package_lessons_remaining FROM enrollments WHERE id=$1',[enr]);out.package_first_remaining=b1.rows[0].package_lessons_remaining;
