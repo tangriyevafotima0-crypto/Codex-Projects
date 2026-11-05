@@ -1773,8 +1773,8 @@ describe('Gate G8 — Stage 11 Cash Shifts, Categorized Expenses, Promise-to-Pay
     await env.apiPoolA.query(
       `INSERT INTO "payments" (
          "id", "center_id", "student_id", "cash_shift_id", "amount_uzs",
-         "currency", "payment_method", "recorded_by_admin_id", "idempotency_key"
-       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, 100000, 'UZS', 'CASH', $5::uuid, 'idem-unledgered-pay')`,
+         "currency", "payment_method", "recorded_by_admin_id", "idempotency_key", "request_hash"
+       ) VALUES ($1::uuid, $2::uuid, $3::uuid, $4::uuid, 100000, 'UZS', 'CASH', $5::uuid, 'idem-unledgered-pay', repeat('a',64))`,
       [unledgeredPaymentId, C.centerId, fixture.studentId, shiftId, C.adminId],
     );
     await env.apiPoolA.query(

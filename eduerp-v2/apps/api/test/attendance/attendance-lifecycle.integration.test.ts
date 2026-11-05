@@ -268,15 +268,6 @@ describe('Gate G9 — Stage 12 Attendance, Stale Excel Conflicts, Offline Sync &
       BOT_OUTBOUND_ENABLED: 'false',
     });
 
-    await env.apiPoolA.query(
-      `UPDATE "billing_policy_versions"
-          SET "first_partial_charge_mode" = 'PRORATE_REMAINING_LESSONS',
-              "cancelled_lesson_proration_mode" = 'EXCLUDE_CANCELLED_FROM_PLANNED',
-              "policy_confirmation_status" = 'CONFIRMED'
-        WHERE "center_id" = $1::uuid`,
-      [C.centerId],
-    );
-
     teacher2Id = crypto.randomUUID();
     await env.apiPoolA.query(
       `INSERT INTO "staff_users" ("id", "center_id", "role", "full_name", "login_username", "password_hash", "status")
@@ -310,6 +301,14 @@ describe('Gate G9 — Stage 12 Attendance, Stale Excel Conflicts, Offline Sync &
     port = Number(addr.port);
 
     await refreshTokens();
+    const confirmedPolicy = await httpJsonRequest({
+      port, method: 'POST', path: '/api/v1/billing/policies',
+      headers: { Authorization: `Bearer ${directorToken}`, 'Idempotency-Key': 's12-test-confirmed-policy' },
+      body: { billing_mode: 'CALENDAR_PRO_RATA', first_partial_charge_mode: 'PRORATE_REMAINING_LESSONS',
+        cancelled_lesson_proration_mode: 'EXCLUDE_CANCELLED_FROM_PLANNED',
+        policy_confirmation_status: 'CONFIRMED', effective_from_date: '2026-01-01' },
+    });
+    assert.equal(confirmedPolicy.statusCode, 201, confirmedPolicy.rawBody);
   });
 
   after(async () => {
