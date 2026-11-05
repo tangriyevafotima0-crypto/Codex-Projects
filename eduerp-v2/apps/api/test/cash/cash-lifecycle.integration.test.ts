@@ -1538,6 +1538,9 @@ describe('Gate G8 — Stage 11 Cash Shifts, Categorized Expenses, Promise-to-Pay
       centerId: C.centerId,
       role: 'DIRECTOR',
       sessionId: crypto.randomUUID(),
+      familyId: crypto.randomUUID(), centerSlug: C.centerSlug,
+      staffVersion: 1, mustChangePassword: false, transportMode: 'BEARER',
+      csrfTokenHash: null, licenseMode: 'ACTIVE',
     };
 
     for (const step of ['SHIFT_INSERT', 'AUDIT_LOG'] as const) {

@@ -315,7 +315,7 @@ export class PromisesService {
           const isOverdue = centerTodayDate > dueDate;
           const needsNewPromise =
             activePromise === null ||
-            activePromise.status === 'BROKEN' ||
+            activePromise.status === 'OVERDUE_NOTIFIED' ||
             centerTodayDate > activePromise.promise_date;
 
           const invSummary: DebtorInvoiceSummaryDto = Object.freeze({
