@@ -16,9 +16,8 @@ import {
   SYNTHETIC_TEST_ONLY_PASSWORD,
 } from '../../src/database/seed-contract';
 import {
-  bootstrapIsolatedTestDatabases,
-  IsolatedTestDbEnv,
-  teardownIsolatedTestDatabases,
+  createEphemeralTestDbEnv,
+  EphemeralDatabaseEnvironment,
 } from '../database/harness';
 
 interface HttpJsonResponse {
@@ -88,7 +87,7 @@ function httpJsonRequest(params: {
 }
 
 describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscriptions, Trial Conversion & Invoice Atomicity Integration Suite (BILL-IT-01..08)', () => {
-  let env: IsolatedTestDbEnv;
+  let env: EphemeralDatabaseEnvironment;
   let app: INestApplication;
   let clock: ClockService;
   let invoiceGenerator: InvoiceGeneratorService;
@@ -126,7 +125,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
   }
 
   before(async () => {
-    env = await bootstrapIsolatedTestDatabases('s08_billing');
+    env = await createEphemeralTestDbEnv();
     await executeSyntheticSeed(env.apiPoolA, SYNTHETIC_DEMO_CENTER_A, {
       ...process.env,
       NODE_ENV: 'test',
@@ -167,7 +166,7 @@ describe('Gate G5 — Real HTTP + PostgreSQL Stage 08 Billing, Proration, Subscr
       await app.close();
     }
     if (env) {
-      await teardownIsolatedTestDatabases(env);
+      await env.cleanup();
     }
   });
 
