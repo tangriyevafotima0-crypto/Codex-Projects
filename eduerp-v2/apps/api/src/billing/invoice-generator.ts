@@ -827,7 +827,8 @@ export class InvoiceGeneratorService {
       });
     }
 
-    // 12. Resolve available existing unconsumed CreditNotes on this enrollment (locked FOR UPDATE, capped at baseProRataChargeUzs)
+    // 12. The enrollment FOR UPDATE lock above serializes all credit applications.
+    // CreditNotes are append-only: row locking them requires forbidden UPDATE privilege.
     const applyCredits = params.applyAvailableCreditNotes ?? true;
     const baseChargeUzs = chargeResult.chargeUzs;
     const approvedDiscountUzs = 0n;
@@ -858,8 +859,7 @@ export class InvoiceGeneratorService {
            FROM "credit_notes" cn
           WHERE cn."center_id" = $1::uuid
             AND cn."enrollment_id" = $2::uuid
-          ORDER BY cn."created_at" ASC, cn."id" ASC
-          FOR UPDATE OF cn`,
+          ORDER BY cn."created_at" ASC, cn."id" ASC`,
         [params.centerId, params.enrollmentId],
       );
 
