@@ -17,7 +17,10 @@
     "test:academics": "node --test dist/test/academics/*.integration.test.js",
     "test:billing": "node --test dist/test/billing/*.integration.test.js",
     "test:adjustments": "node --test dist/test/adjustments/*.integration.test.js",
-    "test:payments": "node --test dist/test/payments/*.integration.test.js"
+    "test:payments": "node --test dist/test/payments/*.integration.test.js",
+    "test:cash": "node --test dist/test/cash/*.integration.test.js",
+    "test:attendance:integration": "node --test --import tsx test/attendance/attendance-lifecycle.integration.test.ts",
+    "test:attendance": "node --test dist/test/attendance/*.integration.test.js"
   },
   "dependencies": {
     "@eduerp/contracts": "2.0.0-s03.0",

@@ -192,6 +192,20 @@ jobs:
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:payments
 
+      - name: Gate G8 — Run real HTTP + PostgreSQL Cash Shifts, Categorized Expenses, Promise-to-Pay & Method-Wise Reconciliation integration test suite (CASH-IT-01..CASH-IT-10)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:cash
+
+      - name: Gate G9 — Run real HTTP + PostgreSQL Attendance, Offline Sync, Conflict Queue, Admin Override & Trial Conversion integration test suite (ATT-IT-01..ATT-IT-10)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:attendance
+
   docker-dev-smoke:
     name: "Build and smoke-test the dev Compose stack (migrator + /health + /ready)"
     runs-on: ubuntu-latest

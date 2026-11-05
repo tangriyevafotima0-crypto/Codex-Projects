@@ -69,13 +69,14 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
          FROM "_prisma_migrations"
         ORDER BY "migration_name" ASC`,
     );
-    assert.equal(migRowsBefore.rows.length, 6);
+    assert.equal(migRowsBefore.rows.length, 7);
     assert.equal(migRowsBefore.rows[0].migration_name, '20261104000100_initial_foundation');
     assert.equal(migRowsBefore.rows[1].migration_name, '20261104000200_s05_auth_and_rbac_foundation');
     assert.equal(migRowsBefore.rows[2].migration_name, '20261104000300_s06_auth_fixes_and_student_foundation');
     assert.equal(migRowsBefore.rows[3].migration_name, '20261104000400_s07_academics_schedule_substitutes_grades');
     assert.equal(migRowsBefore.rows[4].migration_name, '20261104000500_s08_billing_policy_cycles_trials_invoices');
     assert.equal(migRowsBefore.rows[5].migration_name, '20261105000600_s10_payments_allocations_reversals_receipts');
+    assert.equal(migRowsBefore.rows[6].migration_name, '20261105000700_s11_cash_shifts_expenses_promises_reconciliation');
     for (const row of migRowsBefore.rows) {
       assert.equal(row.checksum.length, 64);
       assert.notEqual(row.finished_at, null);
@@ -87,7 +88,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
     const migRowsAfter = await env.apiPoolA.query<{ count: string }>(
       `SELECT COUNT(*)::text AS count FROM "_prisma_migrations"`,
     );
-    assert.equal(Number(migRowsAfter.rows[0]?.count), 6);
+    assert.equal(Number(migRowsAfter.rows[0]?.count), 7);
 
     // Fault injection: a migration batch that fails mid-script in a transaction leaves zero partial tables
     const client = await env.migratorPoolA.connect();
@@ -124,6 +125,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
       const m4Sql = fs.readFileSync(resolveMigrationSqlPath('20261104000400_s07_academics_schedule_substitutes_grades'), 'utf8');
       const m5Sql = fs.readFileSync(resolveMigrationSqlPath('20261104000500_s08_billing_policy_cycles_trials_invoices'), 'utf8');
       const m6Sql = fs.readFileSync(resolveMigrationSqlPath('20261105000600_s10_payments_allocations_reversals_receipts'), 'utf8');
+      const m7Sql = fs.readFileSync(resolveMigrationSqlPath('20261105000700_s11_cash_shifts_expenses_promises_reconciliation'), 'utf8');
 
       // 1. Apply initial S04 foundation snapshot
       await upgradePool.query(m1Sql);
@@ -154,6 +156,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
       await upgradePool.query(m4Sql);
       await upgradePool.query(m5Sql);
       await upgradePool.query(m6Sql);
+      await upgradePool.query(m7Sql);
 
       // 4. Verify pre-existing rows are intact and have valid S05 default columns
       const checkSession = await upgradePool.query<{

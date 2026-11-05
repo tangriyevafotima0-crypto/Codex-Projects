@@ -1,0 +1,245 @@
+{
+  "task_id": "S11FIX-S12FULL-P",
+  "base_commit": "7b757d61de529381b95d9092c021ef10e19846c0",
+  "candidate_input_commit": "3a110d8cf6c75da3cc750227ee7cedff9ecacd83",
+  "tested_product_commit": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+  "stage_id": "S12",
+  "status": "IN_REVIEW",
+  "next_stage": "S13",
+  "steps_completed_for_review": [
+    "O01",
+    "O02",
+    "O03",
+    "O04",
+    "O05",
+    "12.01",
+    "12.02",
+    "12.03",
+    "12.04",
+    "12.05"
+  ],
+  "verification": {
+    "input_manifest_check": {
+      "command": "python3 -B VERIFY_INPUT.py",
+      "status": "PASS",
+      "details": "503 input files verified against INPUT_MANIFEST.json SHA256 hashes"
+    },
+    "s01_s02_verifier": {
+      "command": "python3 -B tools/verify_s01_s02.py",
+      "status": "PASS"
+    },
+    "s04_sql_schema_verifier": {
+      "command": "python3 -B tools/verify_s04.py",
+      "status": "PASS",
+      "details": "46 Prisma models, 8 migrations, 61 RBAC rows, and 263 TypeScript SQL INSERT statements verified"
+    },
+    "plan_verifiers": {
+      "command": "python3 -B planning/tools/check_plan.py && python3 -B planning/tools/test_plan.py",
+      "status": "PASS"
+    },
+    "unit_and_sqlite_protocol_tests": {
+      "command": "node --test (packages/contracts/test/index.test.ts, apps/api/test/cash-unit.test.ts, apps/api/test/attendance-unit.test.ts)",
+      "status": "PASS",
+      "details": "13/13 unit and real SQLite (.sqlite file) offline sync protocol tests passed"
+    },
+    "postgres_http_integration_tests": {
+      "command": "npm run test:db && npm run test:cash && npm run test:attendance",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox VM has no local PostgreSQL server daemon or node_modules; DB-IT-04, CASH-IT-01..11 (Gate G8), and ATT-IT-01..10 (Gate G9) are prepared and wired into infra/ci/eduerp-ci.yml"
+    }
+  },
+  "changed_files": [
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "sha256": "ffdb98d5c856c962390c06c3b6a9f8df6453a6a514c0b1fe24357a5d9cbb440e",
+      "size_bytes": 1791,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261105000700_s11_cash_shifts_expenses_promises_reconciliation/migration.sql",
+      "sha256": "b36ecfbfe6672ca894d8a9907a050a6591d52515553b7914181cc633c3e1d6f3",
+      "size_bytes": 3689,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "sha256": "d7919e54cb7515ae1c04bd719eb31fcf1caaec1fb70ba9fbdb63b0275985fc1b",
+      "size_bytes": 1437,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/attendance.controller.ts",
+      "sha256": "2dec2228c9f70d74cff5d7b654c8f6fa90147c737ba63844862d1d856fb3b315",
+      "size_bytes": 2317,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/attendance.events.ts",
+      "sha256": "2214582810ba06020d86c7f1a91ff217f060919573beefd34de639992ebfed13",
+      "size_bytes": 4403,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/attendance.module.ts",
+      "sha256": "4cb5d8a85a031a158e3e99238b944808ac4cb51213623bab93c540219848f316",
+      "size_bytes": 788,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/attendance.service.ts",
+      "sha256": "cbf9169d1bf5dc5ee068115fa4e8fd3818411be5fc3514d97429b16eb0b128c4",
+      "size_bytes": 40659,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/conflicts.service.ts",
+      "sha256": "853b61cbb9861cd49cfb10f82f4ab021e120011e962226767137cf4bd11bcd88",
+      "size_bytes": 7075,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/dto.ts",
+      "sha256": "e0d399cca756809270801d24f29f03b05c83a4018232cb7a34b59f17805127c4",
+      "size_bytes": 11970,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/index.ts",
+      "sha256": "244a44a424fb3d568b8061ab46c312e1b816437df1b5bd7b2d2ff8a06b5655d5",
+      "size_bytes": 245,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/attendance/sync.service.ts",
+      "sha256": "90e92592ddd7dc79dbe3fd3c19db0d51dd279fbba3610016cfecdde4f2cd9926",
+      "size_bytes": 5729,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/dto.ts",
+      "sha256": "e551c82db0079eca22dd64c2d257df0896f59033a8938a1ac860e8d195877ad1",
+      "size_bytes": 12452,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/expenses.service.ts",
+      "sha256": "27e5e7c08383e6accbb31b608d45cee30ff76a7f8e6c968ff4d5efe2e6307d07",
+      "size_bytes": 30706,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/promises.service.ts",
+      "sha256": "45ac39d2f78cfb3864108661ed56f8da1f0919097fed2643d5fb9fcd03b2d62e",
+      "size_bytes": 14129,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/cash/reconciliation.service.ts",
+      "sha256": "025b39b264aa75f7954e23d01a44ac695198f8c853314d125a3b27e0b8330ab3",
+      "size_bytes": 20868,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/attendance/attendance-lifecycle.integration.test.ts",
+      "sha256": "00f437a259d20806b1a360f24b884e85588ef3cdabbee1391b8d950a630a7e4b",
+      "size_bytes": 46775,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/attendance-unit.test.ts",
+      "sha256": "a1b9553e84b064a240a0ccfe0ad3bde9d76aa9af870b86a03fa44a57e6d3a56a",
+      "size_bytes": 20644,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/cash-unit.test.ts",
+      "sha256": "94b0b12c0b06b2be709f75ccd9cc7d2bf58b9376f2ac9e79a1401be757c9d9d2",
+      "size_bytes": 13513,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-012-attendance-offline-sync-and-conflict-resolution.md",
+      "sha256": "a7f5d7cb7940544bdda70f94a3515c7b84e5c74aa132c2cc1b474c115ca22029",
+      "size_bytes": 2292,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "sha256": "76d4467fd4b87e58dc862886884db77e0f9b222d7cd402ef22fe8b44988a20c5",
+      "size_bytes": 27729,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S11-P.md",
+      "sha256": "b5b546212e2752f8499cd2d9e582ca38db30b65bd0bad7e0ff62db9c9b536f71",
+      "size_bytes": 2721,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S12.md",
+      "sha256": "88aacbb5fbb030f7a73092ab389b76c9a51429c4ae8ed58408bce57aa75bc01e",
+      "size_bytes": 3012,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "sha256": "2622482e505be6aafe1f0326737527d5c070c3815e8b4316354909f723c053b6",
+      "size_bytes": 10797,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "sha256": "156412ae22d34aae30ae5abdb46bfa8955323490fed3f7ef695035c0e42b3514",
+      "size_bytes": 2046,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/index.ts",
+      "sha256": "0ec898ef97db41f83da7f6f1290b3540648251098740148a10cd9d499830034f",
+      "size_bytes": 8472,
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S12.md",
+      "sha256": "87c2ef686aa6e6f813f3d7ea960be65bf3b8cc43a9d9c36e514cafae6364409d",
+      "size_bytes": 2530,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/12.01.md",
+      "sha256": "993ff605d9858f3009f733fbb8a32f3631221ca1f6b9e68e65630b4e76c3d122",
+      "size_bytes": 1522,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/12.02.md",
+      "sha256": "8094be376ec6fa9b010be1f68513a7c83c81c1ce20080f4ca254847e1707c125",
+      "size_bytes": 1439,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/12.03.md",
+      "sha256": "78419f913606a83da48c3909fce3e28b3388704a07c4ec6cdf955405cbb4b7ba",
+      "size_bytes": 1364,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/12.04.md",
+      "sha256": "892a3aee3efa6ae80c246d69994b7ae35fb9bd304b94b5e63054e2e67b743f1f",
+      "size_bytes": 1561,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/12.05.md",
+      "sha256": "ffa396e3ee7c14d1ac99535863899f49a057a87fb1bf93aff0306c9b915ac047",
+      "size_bytes": 1662,
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "91ebbb8213a03ad0a0e3ab3adc10910d7b587c2a20bae508a3c8a71d48960a41",
+      "size_bytes": 36083,
+      "change_type": "MODIFIED"
+    }
+  ]
+}
