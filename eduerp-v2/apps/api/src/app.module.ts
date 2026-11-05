@@ -5,6 +5,7 @@ import { AdjustmentsModule } from './adjustments/adjustments.module';
 import { AuthModule } from './auth/auth.module';
 import { PermissionsGuard } from './auth/permissions.guard';
 import { BillingModule } from './billing/billing.module';
+import { CashModule } from './cash/cash.module';
 import { ApiEnvConfig } from './config/env';
 import { DatabaseModule } from './database/database.module';
 import { DatabaseService } from './database/database.service';
@@ -26,6 +27,7 @@ export class AppModule {
         BillingModule,
         AdjustmentsModule,
         PaymentsModule,
+        CashModule,
       ],
       controllers: [HealthController, ReadinessController],
       providers: [

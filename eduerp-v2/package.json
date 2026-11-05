@@ -2,7 +2,7 @@
   "name": "eduerp-v2-monorepo",
   "version": "2.0.0-s05.0",
   "private": true,
-  "description": "EduERP v2.0 B2B Turnkey Platform \u2014 Center Data Plane API, Outbox Worker, Shared Contracts, PostgreSQL/Prisma 7 Foundation, and Staff Auth/RBAC (Stages 04\u201309)",
+  "description": "EduERP v2.0 B2B Turnkey Platform — Center Data Plane API, Outbox Worker, Shared Contracts, PostgreSQL/Prisma 7 Foundation, and Staff Auth/RBAC (Stages 04–09)",
   "engines": {
     "node": ">=24.18.1 <25",
     "npm": ">=11 <12"
@@ -26,7 +26,8 @@
     "test:academics": "npm run build && npm --workspace=@eduerp/api run test:academics",
     "test:billing": "npm run build && npm --workspace=@eduerp/api run test:billing",
     "test:adjustments": "npm run build && npm --workspace=@eduerp/api run test:adjustments",
-    "test:payments": "npm run build && npm --workspace=@eduerp/api run test:payments"
+    "test:payments": "npm run build && npm --workspace=@eduerp/api run test:payments",
+    "test:cash": "npm run build && npm --workspace=@eduerp/api run test:cash"
   },
   "devDependencies": {
     "@types/node": "24.13.6",

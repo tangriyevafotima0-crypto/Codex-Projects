@@ -1,0 +1,310 @@
+{
+  "task_id": "S11S12FIX-Q",
+  "status": "S11_APPROVED_S12_CHANGES_REQUIRED",
+  "base_commit": "e61f3adff3540c93d46a9fe5aa515c687b0cf4a9",
+  "raw_candidate_commit": "0fa3312d0bc519b9f694b81fe2445c1d2428a64c",
+  "full_candidate_commit": "191339dba68b0cfbaf23251d8a2a894868b55e2e",
+  "zip_sha256": "5b6b8f37610924d3eece9dddca327238862c95b311d5f7ee3040f4af6f489218",
+  "artifact_audit": "PASS_exact32working-source_delta_0deletions",
+  "s11": {
+    "task_id": "S11S12FIX-Q",
+    "stage": "S11",
+    "status": "REVIEW_PASS_MANAGER_ASSISTED",
+    "source_commit": "0e6fdffb959b80c26f8918577dea975e79b31084",
+    "source_tree": "df0683ecec9d5a02aec4671b0cb8d30db991b8ed",
+    "strict_run_id": 42084439732,
+    "strict_conclusion": "success",
+    "strict_jobs": [
+      127445641683,
+      127445736073,
+      127447068045
+    ],
+    "docker_conclusion": "success",
+    "tests": {
+      "contracts": 1,
+      "api_unit": 55,
+      "worker": 4,
+      "G1_database": 19,
+      "G2_auth": 14,
+      "G3_students": 6,
+      "G4_academics": 10,
+      "G5_billing": 13,
+      "G6_adjustments": 6,
+      "G7_payments": 11,
+      "G8_cash": 13,
+      "total": 152,
+      "failed": 0
+    },
+    "scope": "Isolated S11-only snapshot built/tested independently; no S12 attendance module or implementation merged",
+    "manager_assists": [
+      "Upgrade harness URL/path/hash fixture and real Prisma baseline/upgrade/history CLI test",
+      "Canonical contradictory-version-header400 unit fixture",
+      "Cash missing-ledger fixture request_hash",
+      "S11 validator requires13cash scenarios"
+    ],
+    "limitations": [
+      "No production or live Telegram approval",
+      "Future S12 contracts in planning remain unapproved",
+      "S12 version-chain defect separate"
+    ]
+  },
+  "full_candidate_standard_ci": {
+    "run_id": 42084684367,
+    "conclusion": "success",
+    "jobs": [
+      127446502051,
+      127446578147,
+      127448720649
+    ],
+    "docker": "success",
+    "tests": {
+      "contracts": 2,
+      "api_unit": 61,
+      "worker": 4,
+      "G1_database": 19,
+      "G2_auth": 14,
+      "G3_students": 6,
+      "G4_academics": 10,
+      "G5_billing": 13,
+      "G6_adjustments": 6,
+      "G7_payments": 11,
+      "G8_cash": 13,
+      "G9_attendance": 10,
+      "total": 169,
+      "failed": 0
+    }
+  },
+  "independent_run_id": 42084684330,
+  "independent_job_id": 127446503474,
+  "independent_workflow_conclusion": "success_but_observed_version_chain_is_P1",
+  "independent_probe": {
+    "missing_ledger": {
+      "ledger_rows": 0,
+      "get_http": 409,
+      "close_http": 409
+    },
+    "predecessor_duplicate_promises_upgrade": {
+      "success": true,
+      "promises": [
+        {
+          "status": "ACTIVE",
+          "version": 1,
+          "has_successor": false
+        },
+        {
+          "status": "CANCELLED",
+          "version": 2,
+          "has_successor": true
+        }
+      ]
+    },
+    "version_chain": {
+      "first_http": 200,
+      "first_returned": 2,
+      "second_http": 200,
+      "second_returned": 3,
+      "get_current_version": 2,
+      "third_http": 409,
+      "third_error": "VERSION_CONFLICT"
+    },
+    "attendance": {
+      "draft_http": 200,
+      "draft": {
+        "lesson_id": "6db90c3f-f86e-4ac0-8274-12ff234db259",
+        "group_id": "11111111-2222-4333-8444-000000000030",
+        "lesson_date": "2026-11-04",
+        "occurrence_seq": 1,
+        "lesson_status": "SCHEDULED",
+        "is_submitted": false,
+        "current_version": 1,
+        "roster": [
+          {
+            "student_id": "11111111-2222-4333-8444-000000000040",
+            "enrollment_id": "2ec7c096-674c-4541-9aae-a1f29f5e6526",
+            "student_code": "STU-SYN-0001",
+            "full_name": "Ali Valiyev (Synthetic)",
+            "enrollment_status": "ACTIVE",
+            "is_frozen_for_lesson": false,
+            "draft_default_status": "PRESENT",
+            "submitted_status": null,
+            "is_excused_frozen": false,
+            "attendance_record_id": null,
+            "record_version": null,
+            "source_channel": null
+          },
+          {
+            "student_id": "29e307d9-428c-41bc-93c5-d96ebc6ffce2",
+            "enrollment_id": "286f4b12-bf0a-4b18-8caf-629623c7a453",
+            "student_code": "COUNTER-0",
+            "full_name": "Counter Student",
+            "enrollment_status": "ACTIVE",
+            "is_frozen_for_lesson": false,
+            "draft_default_status": "PRESENT",
+            "submitted_status": null,
+            "is_excused_frozen": false,
+            "attendance_record_id": null,
+            "record_version": null,
+            "source_channel": null
+          },
+          {
+            "student_id": "8a88b34e-a629-4454-8842-2f03705bb336",
+            "enrollment_id": "38e4bc26-0c61-41d2-bbdf-17e9a2ea1857",
+            "student_code": "COUNTER-1",
+            "full_name": "Counter Student",
+            "enrollment_status": "ACTIVE",
+            "is_frozen_for_lesson": false,
+            "draft_default_status": "PRESENT",
+            "submitted_status": null,
+            "is_excused_frozen": false,
+            "attendance_record_id": null,
+            "record_version": null,
+            "source_channel": null
+          }
+        ],
+        "revisions": []
+      },
+      "submit": {
+        "status": 200,
+        "body": {
+          "lesson_id": "6db90c3f-f86e-4ac0-8274-12ff234db259",
+          "client_operation_uuid": "7841de7d-5c3c-49b6-8c83-828ddf550b66",
+          "new_version": 1,
+          "submitted_at_utc": "2026-11-05T07:00:00.000Z",
+          "trial_activations_triggered": 0,
+          "records": [
+            {
+              "attendance_record_id": "addfd271-8936-45e8-bb1a-015b586bd19f",
+              "student_id": "11111111-2222-4333-8444-000000000040",
+              "enrollment_id": "2ec7c096-674c-4541-9aae-a1f29f5e6526",
+              "status": "PRESENT",
+              "is_excused_frozen": false,
+              "source_channel": "TEACHER_WEB",
+              "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+              "override_reason": null,
+              "version": 1
+            },
+            {
+              "attendance_record_id": "430e0604-326c-4186-af36-73ed39db25e0",
+              "student_id": "29e307d9-428c-41bc-93c5-d96ebc6ffce2",
+              "enrollment_id": "286f4b12-bf0a-4b18-8caf-629623c7a453",
+              "status": "PRESENT",
+              "is_excused_frozen": false,
+              "source_channel": "TEACHER_WEB",
+              "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+              "override_reason": null,
+              "version": 1
+            },
+            {
+              "attendance_record_id": "0da92911-7c73-405f-8c55-54a4b781f307",
+              "student_id": "8a88b34e-a629-4454-8842-2f03705bb336",
+              "enrollment_id": "38e4bc26-0c61-41d2-bbdf-17e9a2ea1857",
+              "status": "PRESENT",
+              "is_excused_frozen": false,
+              "source_channel": "TEACHER_WEB",
+              "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+              "override_reason": null,
+              "version": 1
+            }
+          ]
+        }
+      },
+      "excel": {
+        "status": 409,
+        "body": {
+          "error_code": "STALE_EXCEL_CONFLICT",
+          "message": "Stale Excel attendance payload (excel_version=1) rejected because server attendance is at version 1; confirmed Teacher attendance cannot be overwritten by Excel import (CASE-21, BR-11, T12.03)",
+          "request_id": "b4d44e93-9d17-4c91-975b-915fe27f57fc",
+          "timestamp_utc": "2026-11-05T18:30:06.937Z",
+          "retry_after_seconds": null,
+          "conflict_details": {
+            "lesson_id": "6db90c3f-f86e-4ac0-8274-12ff234db259",
+            "excel_version": 1,
+            "server_version": 1,
+            "current_record_version": 1,
+            "stale_rows": [
+              {
+                "student_id": "11111111-2222-4333-8444-000000000040",
+                "excel_status": "ABSENT",
+                "server_status": "PRESENT",
+                "server_source_channel": "TEACHER_WEB",
+                "server_record_version": 1
+              }
+            ]
+          }
+        }
+      },
+      "override": {
+        "status": 200,
+        "body": {
+          "lesson_id": "6db90c3f-f86e-4ac0-8274-12ff234db259",
+          "client_operation_uuid": "50168191-1077-497d-bace-5516c0bc311f",
+          "new_version": 2,
+          "submitted_at_utc": "2026-11-05T07:00:00.000Z",
+          "trial_activations_triggered": 0,
+          "records": [
+            {
+              "attendance_record_id": "addfd271-8936-45e8-bb1a-015b586bd19f",
+              "student_id": "11111111-2222-4333-8444-000000000040",
+              "enrollment_id": "2ec7c096-674c-4541-9aae-a1f29f5e6526",
+              "status": "ABSENT",
+              "is_excused_frozen": false,
+              "source_channel": "ADMIN_OVERRIDE",
+              "recorded_by_staff_id": "11111111-2222-4333-8444-000000000001",
+              "override_reason": "Manager synthetic correction",
+              "version": 2
+            },
+            {
+              "attendance_record_id": "430e0604-326c-4186-af36-73ed39db25e0",
+              "student_id": "29e307d9-428c-41bc-93c5-d96ebc6ffce2",
+              "enrollment_id": "286f4b12-bf0a-4b18-8caf-629623c7a453",
+              "status": "PRESENT",
+              "is_excused_frozen": false,
+              "source_channel": "TEACHER_WEB",
+              "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+              "override_reason": null,
+              "version": 1
+            },
+            {
+              "attendance_record_id": "0da92911-7c73-405f-8c55-54a4b781f307",
+              "student_id": "8a88b34e-a629-4454-8842-2f03705bb336",
+              "enrollment_id": "38e4bc26-0c61-41d2-bbdf-17e9a2ea1857",
+              "status": "PRESENT",
+              "is_excused_frozen": false,
+              "source_channel": "TEACHER_WEB",
+              "recorded_by_staff_id": "11111111-2222-4333-8444-000000000003",
+              "override_reason": null,
+              "version": 1
+            }
+          ]
+        }
+      },
+      "record_count": 3
+    }
+  },
+  "remaining_finding": {
+    "id": "Q-VERSION-01",
+    "next_id": "R01",
+    "severity": "P1",
+    "sequence": "initial1 -> overrideA returns2 -> overrideB returns3 -> GET2 -> next override expected3 rejected409",
+    "cause": "MAX(per-record version) used as lesson aggregate transaction counter"
+  },
+  "manager_assist_paths": [
+    "apps/api/src/attendance/dto.ts",
+    "apps/api/src/attendance/sync.service.ts",
+    "apps/api/test/database/migrations-and-drift.integration.test.ts",
+    "apps/api/test/cash-unit.test.ts",
+    "apps/api/test/cash/cash-lifecycle.integration.test.ts",
+    "apps/api/test/attendance/attendance-lifecycle.integration.test.ts"
+  ],
+  "approved_steps": 55,
+  "total_steps": 120,
+  "approved_stages": 11,
+  "total_stages": 24,
+  "next_task": "S12FIX-S13FULL-R",
+  "main_source_scope": "Only isolated accepted S11 snapshot plus manager governance; full S12 remains candidate branch/input",
+  "limits": [
+    "Not production release approval",
+    "No external Telegram/provider actions",
+    "S12 not approved despite standard169PASS due independently confirmed P1"
+  ]
+}

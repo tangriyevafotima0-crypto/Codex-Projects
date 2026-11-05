@@ -66,6 +66,18 @@ Har bir hodisa `outbox_events` jadvalida quyidagi majburiy ustunlar va PII-minim
 | <a id="evt-GuardianLinkRevoked"></a>**14** | **`GuardianLinkRevoked`** | `v1` | `updateGuardianPhoneAndRevokeBot` | `GuardianTelegramLink` (`vN`)<br>`dedup_key = "GuardianLinkRevoked:{link_id}:v{version}"` | `BotSessionCacheConsumer` (`receipt_key = "BotSessionCacheConsumer:{event_id}:{link_id}"`): ota-ona telefoni o‘zgarganda yoki vasiy unlink qilinganda eski `telegram_chat_id` keshini darhol tozalash va navbatdagi jo‘natilmagan xabarlarni `SKIPPED_UNLINKED` qilish (`D18`, `B16`, `T14.01`, `T14.02`). | `link_id`, `guardian_id`, `revoked_telegram_chat_id`, `revoke_reason`, `revoked_at_utc` |
 | <a id="evt-LicenseStateChanged"></a>**15** | **`LicenseStateChanged`** | `v1` | `updateCenterLicenseKillSwitch` | `CenterLicense` (`vN`)<br>`dedup_key = "LicenseStateChanged:{center_id}:v{version}"` | `CenterLicenseGuardConsumer` (`receipt_key = "CenterLicenseGuardConsumer:{event_id}:{center_id}"`): markaz API va Worker keshini yangilash; `READ_ONLY` ga o‘tganda yangi biznes mutatsiyalarini bloklash; `ACTIVE` ga qaytganda oflayn navbatni qayta tekshirish (`BR-15`, `D17`, `D23`, `T19.02`–`19.04`). | `center_id`, `center_slug`, `previous_mode`, `new_license_mode`, `valid_until_utc`, `grace_until_utc`, `signature_key_id` |
 
+
+### 2.1. Stage 11–12 Amalga Oshirilgan Qo‘shimcha Operatsion Outbox Kontraktlari (`ExpenseRecorded`, `ExpenseReversed`, `AttendanceCorrected`)
+- <a id="s11-expense-events"></a>**`ExpenseRecorded` (`v1`, `aggregate_type = 'CashExpense'`, `producer = recordCashOrCardExpense`):**
+  - `dedup_key = "ExpenseRecorded:{expense_id}:v1"`
+  - Payload: `expense_id`, `cash_shift_id`, `category`, `amount_uzs` (musbat integer string), `payment_method`, `reason_and_doc`, `reverses_expense_id: null`, `recorded_by_staff_id`.
+- **`ExpenseReversed` (`v1`, `aggregate_type = 'CashExpense'`, `producer = recordCashOrCardExpense` / `reverseExpenseById`):**
+  - `dedup_key = "ExpenseReversed:{reversal_expense_id}:v1"`
+  - Payload: `reversal_expense_id`, `reverses_expense_id` (asl xarajat IDsi), `cash_shift_id`, `category`, `amount_uzs` (manfiy integer string), `payment_method`, `reason_and_doc`, `recorded_by_staff_id` (`DIRECTOR`).
+- **`AttendanceSubmitted` (`v1`) va `AttendanceCorrected` (`v1`) Stage 12 Runtime Producer Tafsilotlari (`apps/api/src/attendance/attendance.events.ts`):**
+  - `AttendanceSubmitted` payload: `lesson_id`, `group_id`, `lesson_date`, `occurrence_seq`, `client_operation_uuid`, `submitted_by_staff_id`, `absent_student_ids[]`, `late_student_ids[]`, `present_trial_enrollment_ids[]`.
+  - `AttendanceCorrected` payload: `attendance_record_id`, `revision_version`, `lesson_id`, `student_id`, `enrollment_id`, `previous_status`, `new_status`, `override_reason`, `actor_staff_id`, `requires_trial_compensation_review` (`boolean` — 2-trial dars `PRESENT`/`LATE` holatidan `ADMIN_OVERRIDE` orqali `ABSENT` ga tuzatilganda `true`).
+
 ---
 
 <a id="evt-outbox-lease-retry-dlq"></a>
