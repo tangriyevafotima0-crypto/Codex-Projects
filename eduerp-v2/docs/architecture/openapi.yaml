@@ -1749,6 +1749,49 @@
           "promise_date": {
             "$ref": "#/components/schemas/IsoDate",
             "description": "MANDATORY when remaining invoice debt > 0 after this payment; missing promise_date aborts entire transaction with 422 (B03, T11.03)."
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "invoice_id",
+                "allocated_amount_uzs"
+              ],
+              "properties": {
+                "invoice_id": {
+                  "$ref": "#/components/schemas/Uuid"
+                },
+                "allocated_amount_uzs": {
+                  "$ref": "#/components/schemas/PositiveMoneyUzs"
+                }
+              }
+            }
+          },
+          "paid_at": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "external_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payment_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -1811,6 +1854,96 @@
             "enum": [
               false
             ]
+          },
+          "student_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "cash_shift_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "currency": {
+            "$ref": "#/components/schemas/CurrencyCode"
+          },
+          "payment_method": {
+            "$ref": "#/components/schemas/PaymentMethod"
+          },
+          "paid_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "recorded_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "late_entry": {
+            "type": "boolean"
+          },
+          "external_reference": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 128
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "payment_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_channel": {
+            "type": "string",
+            "enum": [
+              "ADMIN_MANUAL_ENTRY",
+              "DIRECTOR_MANUAL_ENTRY"
+            ]
+          },
+          "unapplied_credit_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "allocations": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "allocation_id",
+                "invoice_id",
+                "allocated_amount_uzs",
+                "resulting_invoice_debt_uzs",
+                "resulting_invoice_status"
+              ],
+              "properties": {
+                "allocation_id": {
+                  "$ref": "#/components/schemas/Uuid"
+                },
+                "invoice_id": {
+                  "$ref": "#/components/schemas/Uuid"
+                },
+                "allocated_amount_uzs": {
+                  "$ref": "#/components/schemas/PositiveMoneyUzs"
+                },
+                "resulting_invoice_debt_uzs": {
+                  "$ref": "#/components/schemas/NonNegativeMoneyUzs"
+                },
+                "resulting_invoice_status": {
+                  "type": "string"
+                }
+              }
+            }
           }
         }
       },
@@ -1844,6 +1977,13 @@
           "reason": {
             "type": "string",
             "minLength": 5
+          },
+          "debt_effect_policy": {
+            "type": "string",
+            "enum": [
+              "REOPEN_INVOICE_DEBT",
+              "CLOSE_WITH_CREDIT_NOTE"
+            ]
           }
         }
       },
@@ -1876,6 +2016,17 @@
           "expected_version": {
             "type": "integer",
             "minimum": 1
+          },
+          "decision_note": {
+            "anyOf": [
+              {
+                "type": "string",
+                "maxLength": 500
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         }
       },
@@ -1938,6 +2089,42 @@
             "anyOf": [
               {
                 "$ref": "#/components/schemas/ReversalOrRefundExecutionResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "requested_by_admin_id": {
+            "$ref": "#/components/schemas/Uuid"
+          },
+          "decided_by_director_id": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Uuid"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "decision_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "red_alert_sent_at": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UtcTimestamp"
               },
               {
                 "type": "null"
@@ -3305,6 +3492,66 @@
           },
           "issued_at": {
             "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "paid_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "recorded_at_utc": {
+            "$ref": "#/components/schemas/UtcTimestamp"
+          },
+          "reversed_total_uzs": {
+            "$ref": "#/components/schemas/NonNegativeMoneyUzs"
+          },
+          "net_effective_payment_uzs": {
+            "$ref": "#/components/schemas/NonNegativeMoneyUzs"
+          },
+          "reversal_status": {
+            "type": "string",
+            "enum": [
+              "NONE",
+              "PENDING_REVERSAL",
+              "PARTIALLY_REVERSED",
+              "FULLY_REVERSED"
+            ]
+          },
+          "reversals": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "execution_id",
+                "request_id",
+                "kind",
+                "reversed_amount_uzs",
+                "refund_method",
+                "executed_at"
+              ],
+              "properties": {
+                "execution_id": {
+                  "$ref": "#/components/schemas/Uuid"
+                },
+                "request_id": {
+                  "$ref": "#/components/schemas/Uuid"
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": [
+                    "ERROR_STORNO_REVERSAL",
+                    "PARTIAL_REFUND",
+                    "FULL_REFUND"
+                  ]
+                },
+                "reversed_amount_uzs": {
+                  "$ref": "#/components/schemas/PositiveMoneyUzs"
+                },
+                "refund_method": {
+                  "$ref": "#/components/schemas/PaymentMethod"
+                },
+                "executed_at": {
+                  "$ref": "#/components/schemas/UtcTimestamp"
+                }
+              }
+            }
           }
         }
       },

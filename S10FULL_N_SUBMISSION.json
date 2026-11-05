@@ -1,0 +1,338 @@
+{
+  "task_id": "S10FULL-N",
+  "base_commit": "42aeeeda869960acfc0d6381a1b5c1f24864a3e2",
+  "candidate_input_commit": "42aeeeda869960acfc0d6381a1b5c1f24864a3e2",
+  "status": "IN_REVIEW",
+  "scope_completed": [
+    "10.01",
+    "10.02",
+    "10.03",
+    "10.04",
+    "10.05"
+  ],
+  "stop_before": "S11",
+  "needs_manager_dependency_refresh": false,
+  "dependency_refresh_notes": "No new npm dependencies required; existing package-lock.json preserved intact.",
+  "owner_decisions_applied": {
+    "OWNER-20261105-05": "Manual external payment recording only (CASH, CARD, CLICK, PAYME, TRANSFER recorded by staff with separate paid_at and recorded_at timestamps; zero payment gateway/webhook/autocharge integration; accounting reversal restores receivable debt while unconfirmed D22 CLOSE_WITH_CREDIT_NOTE service-refund formula stays gated)."
+  },
+  "files": [
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "sha256": "41669e1c67744a153ecc17364f2afc1919a024a8c6d9b2e3dff965eacfb7436b"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261105000600_s10_payments_allocations_reversals_receipts/migration.sql",
+      "sha256": "122acc6591f17d8329e22b76a24529a661b236cc95e5afd0171e8bc5b37eecc1"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "6c9f9a20529fc37f79bc93069caa2741e121740a768f0bde54719accd2704e25"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "sha256": "36a79593e9d435e6bbeb9e52ac693246b7443783c6d21eab85f3db453d76dbf9"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/allocation.service.ts",
+      "sha256": "c55c710f30faa6dfbb49e651b42de2ef90c37b5b2b7aa2238b0531c9ba9bc750"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/dto.ts",
+      "sha256": "f89cd17eedb3ca1149de6222c6c5ceddf9fb5795c68bdf02dff9e48fcd01bbbe"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/index.ts",
+      "sha256": "0d41527613159be07dbdebfaeb319770e0e8d23aa1a7c96d1278c223f62fa595"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/payment.service.ts",
+      "sha256": "0f8be39b29036ff2884de033b12ac70813ba862360c65aa0910419e466d2c772"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/payments.controller.ts",
+      "sha256": "eb74246878f9fc90152b03d5d434bf95cf959042848314495937810002f94be6"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/payments.module.ts",
+      "sha256": "e3e2dcb931748db50ded9f49651a6a3f4393aeaa28de962f10c537105b65721f"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/receipts.service.ts",
+      "sha256": "b59e9ec3727ab232fd9a8b2ff6efd22604148ed73d53dd1506275b8d5d58c046"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/reversal.service.ts",
+      "sha256": "855963f0a536203e69c79548f402542e9b8d13359823f83b2262dc8381268986"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "sha256": "7ee818c463b36aef4ea17b6b1b71ac1c138d25bcd7c1b924e98242b9b500aa50"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/payments-unit.test.ts",
+      "sha256": "295d7239fc3fd59e0ebabc52f1d24e97a79239dee231842cfbf25ae274f0bd0d"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/payments/payments-lifecycle.integration.test.ts",
+      "sha256": "778cd83f0806ce14d182bf93cd63a43b147f45d1af79ed316f61c43555bf1f3b"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-010-manual-payments-allocations-reversals-and-receipts.md",
+      "sha256": "e2ec448180a688418f03c8ad836f4b33171b3ebcfd47207b440cf9bf1af71d83"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "sha256": "124d404749e061cbad34b75e028206826208b9a9b3961d3b1f1f11a9cedb88f0"
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "sha256": "4fc75c849c3785af525b2bc452b3f60dfd7f400b22741e2b0c895f41a0e9c777"
+    },
+    {
+      "path": "eduerp-v2/docs/spec/decisions.md",
+      "sha256": "d07fe8f35cd80017cde598d37d75bb77ccbce83d49b1105c76cd7e5e95114e61"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S10.md",
+      "sha256": "ed9774c00a8cc6dc8e5b6605b6abe768c83094792e88c0a00630c4d85b81b8a1"
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "sha256": "781a126c026739305360167feaaee375a1f2a908602f3026ad7dd4e885a00a64"
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "sha256": "ee4513f3e4042ee163fc6f477483942869020f1f457dcf42de5be3ec00f0449a"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/index.ts",
+      "sha256": "b6be8cbbf9ec80d337871692fad2b78026b42f5b95f68d870696a86366350dd0"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S10.md",
+      "sha256": "aac0e2c3fb5264577548d1f4cdd410889eb64e02e760784343b6c9ef2db68653"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.01.md",
+      "sha256": "5884bbfeadcd322455a81fec47a76677b5b73233833a9ec9073c2ca727d1d254"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.02.md",
+      "sha256": "9004b0a2ba1cc25a928f5760712eecbac11452cbc8065ff3ba521821c53423e1"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.03.md",
+      "sha256": "bb49b888d63c6da257b56a21bf3a59c91c2318758194bc91d19cf375c48f23c8"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.04.md",
+      "sha256": "52ce581034c09fb23f8a610a50d4888baadca3e24bf8f1c967d67414e1d4a5f2"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.05.md",
+      "sha256": "f5bdaee945d7a8e268ba790e29e0b95ce7eccb20ac243beffef0b120def77818"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "70341b2a4f425ba22635b3b725529771b8931f07076515b83f511c281d191002"
+    }
+  ],
+  "changed_files": [
+    {
+      "path": "eduerp-v2/apps/api/package.json",
+      "sha256": "41669e1c67744a153ecc17364f2afc1919a024a8c6d9b2e3dff965eacfb7436b",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261105000600_s10_payments_allocations_reversals_receipts/migration.sql",
+      "sha256": "122acc6591f17d8329e22b76a24529a661b236cc95e5afd0171e8bc5b37eecc1",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "6c9f9a20529fc37f79bc93069caa2741e121740a768f0bde54719accd2704e25",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/app.module.ts",
+      "sha256": "36a79593e9d435e6bbeb9e52ac693246b7443783c6d21eab85f3db453d76dbf9",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/allocation.service.ts",
+      "sha256": "c55c710f30faa6dfbb49e651b42de2ef90c37b5b2b7aa2238b0531c9ba9bc750",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/dto.ts",
+      "sha256": "f89cd17eedb3ca1149de6222c6c5ceddf9fb5795c68bdf02dff9e48fcd01bbbe",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/index.ts",
+      "sha256": "0d41527613159be07dbdebfaeb319770e0e8d23aa1a7c96d1278c223f62fa595",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/payment.service.ts",
+      "sha256": "0f8be39b29036ff2884de033b12ac70813ba862360c65aa0910419e466d2c772",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/payments.controller.ts",
+      "sha256": "eb74246878f9fc90152b03d5d434bf95cf959042848314495937810002f94be6",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/payments.module.ts",
+      "sha256": "e3e2dcb931748db50ded9f49651a6a3f4393aeaa28de962f10c537105b65721f",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/receipts.service.ts",
+      "sha256": "b59e9ec3727ab232fd9a8b2ff6efd22604148ed73d53dd1506275b8d5d58c046",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/payments/reversal.service.ts",
+      "sha256": "855963f0a536203e69c79548f402542e9b8d13359823f83b2262dc8381268986",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "sha256": "7ee818c463b36aef4ea17b6b1b71ac1c138d25bcd7c1b924e98242b9b500aa50",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/payments-unit.test.ts",
+      "sha256": "295d7239fc3fd59e0ebabc52f1d24e97a79239dee231842cfbf25ae274f0bd0d",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/payments/payments-lifecycle.integration.test.ts",
+      "sha256": "778cd83f0806ce14d182bf93cd63a43b147f45d1af79ed316f61c43555bf1f3b",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-010-manual-payments-allocations-reversals-and-receipts.md",
+      "sha256": "e2ec448180a688418f03c8ad836f4b33171b3ebcfd47207b440cf9bf1af71d83",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/openapi.yaml",
+      "sha256": "124d404749e061cbad34b75e028206826208b9a9b3961d3b1f1f11a9cedb88f0",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/security/rbac-matrix.csv",
+      "sha256": "4fc75c849c3785af525b2bc452b3f60dfd7f400b22741e2b0c895f41a0e9c777",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/spec/decisions.md",
+      "sha256": "d07fe8f35cd80017cde598d37d75bb77ccbce83d49b1105c76cd7e5e95114e61",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S10.md",
+      "sha256": "ed9774c00a8cc6dc8e5b6605b6abe768c83094792e88c0a00630c4d85b81b8a1",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/infra/ci/eduerp-ci.yml",
+      "sha256": "781a126c026739305360167feaaee375a1f2a908602f3026ad7dd4e885a00a64",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/package.json",
+      "sha256": "ee4513f3e4042ee163fc6f477483942869020f1f457dcf42de5be3ec00f0449a",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/index.ts",
+      "sha256": "b6be8cbbf9ec80d337871692fad2b78026b42f5b95f68d870696a86366350dd0",
+      "change_type": "MODIFIED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S10.md",
+      "sha256": "aac0e2c3fb5264577548d1f4cdd410889eb64e02e760784343b6c9ef2db68653",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.01.md",
+      "sha256": "5884bbfeadcd322455a81fec47a76677b5b73233833a9ec9073c2ca727d1d254",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.02.md",
+      "sha256": "9004b0a2ba1cc25a928f5760712eecbac11452cbc8065ff3ba521821c53423e1",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.03.md",
+      "sha256": "bb49b888d63c6da257b56a21bf3a59c91c2318758194bc91d19cf375c48f23c8",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.04.md",
+      "sha256": "52ce581034c09fb23f8a610a50d4888baadca3e24bf8f1c967d67414e1d4a5f2",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/10.05.md",
+      "sha256": "f5bdaee945d7a8e268ba790e29e0b95ce7eccb20ac243beffef0b120def77818",
+      "change_type": "ADDED"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "70341b2a4f425ba22635b3b725529771b8931f07076515b83f511c281d191002",
+      "change_type": "MODIFIED"
+    }
+  ],
+  "deleted_files": [],
+  "actual_tests": [
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B VERIFY_INPUT.py",
+      "status": "PASS",
+      "details": "Verified all 458 input files match INPUT_MANIFEST.json SHA256 before changes."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B tools/verify_s01_s02.py",
+      "status": "PASS",
+      "details": "Verified 69 OpenAPI operations, 1036 local $refs, 15 domain events, and 46 canonical entities."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B tools/verify_s04.py",
+      "status": "PASS",
+      "details": "Verified 46 Prisma models, 6 migrations (000100..000600), 10 PAY-IT scenarios, 49 RBAC rows, and 220 SQL INSERT statements."
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -B planning/tools/check_plan.py && PYTHONDONTWRITEBYTECODE=1 python3 -B planning/tools/test_plan.py",
+      "status": "PASS",
+      "details": "Plan structure, links, statuses, and 15 plan self-tests passed."
+    },
+    {
+      "command": "NODE_PATH=/tmp/s10n_babel_out/node_modules:/usr/share/nodejs node --test (payments-unit, adjustments-unit, billing-unit, academics-unit, students-unit, config, worker, process)",
+      "status": "PASS",
+      "details": "Transpiled all 103 TypeScript files cleanly via @babel/core and passed 40 unit and OS-signal subprocess tests (0 failures), including PAY-UNIT-01..05."
+    }
+  ],
+  "not_run": [
+    {
+      "command": "npm run prisma:generate && npm run lint && npm run typecheck && npm run build",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox has no installed workspace node_modules for prisma/typescript/eslint (executed in GitHub Actions CI)."
+    },
+    {
+      "command": "npm run test:payments --workspace @eduerp/api",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox has no local PostgreSQL 16 or Docker daemon; wired as blocking Gate G7 in infra/ci/eduerp-ci.yml."
+    },
+    {
+      "command": "npm run test:db / test:auth / test:students / test:academics / test:billing / test:adjustments --workspace @eduerp/api",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox has no local PostgreSQL 16 or Docker daemon; wired as blocking Gates G1..G6 in infra/ci/eduerp-ci.yml."
+    }
+  ]
+}
