@@ -2,6 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { AcademicsModule } from './academics/academics.module';
 import { AdjustmentsModule } from './adjustments/adjustments.module';
+import { AttendanceModule } from './attendance/attendance.module';
 import { AuthModule } from './auth/auth.module';
 import { PermissionsGuard } from './auth/permissions.guard';
 import { BillingModule } from './billing/billing.module';
@@ -28,6 +29,7 @@ export class AppModule {
         AdjustmentsModule,
         PaymentsModule,
         CashModule,
+        AttendanceModule,
       ],
       controllers: [HealthController, ReadinessController],
       providers: [

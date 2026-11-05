@@ -1,4 +1,15 @@
 import { loadWorkerEnv, redactWorkerConfig, WorkerEnvConfig } from './config/env';
+import { sanitizeWorkerErrorMessage, WorkerDatabase } from './database';
+import { OutboxWorker } from './outbox.worker';
+import { RemindersWorker } from './reminders.worker';
+import { SchedulesWorker } from './schedules.worker';
+import { TeacherPingWorker } from './teacher-ping.worker';
+
+export * from './database';
+export * from './outbox.worker';
+export * from './reminders.worker';
+export * from './teacher-ping.worker';
+export * from './schedules.worker';
 
 export type WorkerLifecycleState = 'IDLE' | 'RUNNING' | 'STOPPING' | 'STOPPED';
 
@@ -14,15 +25,28 @@ export interface WorkerLogEvent {
 export class WorkerRuntimeSkeleton {
   private readonly config: WorkerEnvConfig;
   private readonly logger: (entry: WorkerLogEvent) => void;
+  private readonly db: WorkerDatabase;
+  public readonly outboxWorker: OutboxWorker;
+  public readonly remindersWorker: RemindersWorker;
+  public readonly teacherPingWorker: TeacherPingWorker;
+  public readonly schedulesWorker: SchedulesWorker;
   private state: WorkerLifecycleState = 'IDLE';
   private heartbeatTimer: NodeJS.Timeout | null = null;
+  private inFlightTick: Promise<void> | null = null;
 
   constructor(
     config: WorkerEnvConfig,
-    logger: (entry: WorkerLogEvent) => void = (entry) => process.stdout.write(`${JSON.stringify(entry)}\n`),
+    logger: (entry: WorkerLogEvent) => void = (entry) =>
+      process.stdout.write(`${JSON.stringify(entry)}\n`),
+    customDb?: WorkerDatabase,
   ) {
     this.config = config;
     this.logger = logger;
+    this.db = customDb ?? new WorkerDatabase(config);
+    this.outboxWorker = new OutboxWorker(config, this.db);
+    this.remindersWorker = new RemindersWorker(config, this.db);
+    this.teacherPingWorker = new TeacherPingWorker(config, this.db);
+    this.schedulesWorker = new SchedulesWorker(config, this.db);
   }
 
   public getState(): WorkerLifecycleState {
@@ -40,7 +64,7 @@ export class WorkerRuntimeSkeleton {
       worker_id: this.config.workerId,
       center_slug: this.config.centerSlug,
       details: {
-        stage_boundary: 'S03_FOUNDATION_SKELETON_ONLY_NO_OUTBOX_BUSINESS_JOBS_YET',
+        stage_boundary: 'S13_OUTBOX_REMINDERS_PINGS_SCHEDULER_ACTIVE',
         config: redactWorkerConfig(this.config),
       },
       timestamp_utc: new Date().toISOString(),
@@ -58,7 +82,35 @@ export class WorkerRuntimeSkeleton {
         });
       }
     }, this.config.pollIntervalMs);
-    // The daemon must stay alive while waiting for work; stop() clears this handle.
+  }
+
+  public async executePollCycle(nowUtc: Date = new Date()): Promise<void> {
+    if (this.state !== 'RUNNING' || this.inFlightTick !== null) {
+      return;
+    }
+    const tickPromise = (async () => {
+      try {
+        await this.remindersWorker.runPromiseReminderTick({ nowUtc });
+        await this.teacherPingWorker.runTeacherPingAndEscalationTick({ nowUtc });
+        await this.schedulesWorker.runUnclosedCashShiftReminderJob({ nowUtc });
+        await this.outboxWorker.runOutboxTick({ nowUtc });
+      } catch (err: unknown) {
+        this.logger({
+          level: 'warn',
+          event: 'worker_poll_cycle_error',
+          worker_id: this.config.workerId,
+          center_slug: this.config.centerSlug,
+          details: { reason: sanitizeWorkerErrorMessage(err) },
+          timestamp_utc: new Date().toISOString(),
+        });
+      }
+    })();
+    this.inFlightTick = tickPromise;
+    try {
+      await tickPromise;
+    } finally {
+      this.inFlightTick = null;
+    }
   }
 
   public async stop(signal: string): Promise<void> {
@@ -70,6 +122,13 @@ export class WorkerRuntimeSkeleton {
       clearInterval(this.heartbeatTimer);
       this.heartbeatTimer = null;
     }
+    if (this.inFlightTick) {
+      await Promise.race([
+        this.inFlightTick,
+        new Promise<void>((resolve) => setTimeout(resolve, this.config.shutdownTimeoutMs)),
+      ]);
+    }
+    await this.db.close();
     this.state = 'STOPPED';
     this.logger({
       level: 'info',

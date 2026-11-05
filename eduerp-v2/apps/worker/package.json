@@ -8,7 +8,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "start": "node dist/src/main.js",
-    "test": "node --test dist/test/*.test.js"
+    "test": "node --test dist/test/worker.test.js dist/test/process.test.js",
+    "test:integration": "node --test dist/test/worker-integration.test.js"
   },
   "dependencies": {
     "@eduerp/contracts": "2.0.0-s03.0"

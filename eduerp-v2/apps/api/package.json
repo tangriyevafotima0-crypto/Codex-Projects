@@ -18,7 +18,8 @@
     "test:billing": "node --test dist/test/billing/*.integration.test.js",
     "test:adjustments": "node --test dist/test/adjustments/*.integration.test.js",
     "test:payments": "node --test dist/test/payments/*.integration.test.js",
-    "test:cash": "node --test dist/test/cash/*.integration.test.js"
+    "test:cash": "node --test dist/test/cash/*.integration.test.js",
+    "test:attendance": "node --test dist/test/attendance/*.integration.test.js"
   },
   "dependencies": {
     "@eduerp/contracts": "2.0.0-s03.0",

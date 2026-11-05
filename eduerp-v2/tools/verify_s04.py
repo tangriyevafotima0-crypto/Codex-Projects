@@ -326,6 +326,7 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
     s08_mig_path = root / "apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql"
     s10_mig_path = root / "apps/api/prisma/migrations/20261105000600_s10_payments_allocations_reversals_receipts/migration.sql"
     s11_mig_path = root / "apps/api/prisma/migrations/20261105000700_s11_cash_shifts_expenses_promises_reconciliation/migration.sql"
+    s12_s13_mig_path = root / "apps/api/prisma/migrations/20261105000800_s12_s13_attendance_version_and_worker_schedules/migration.sql"
 
     s05_sql = s05_mig_path.read_text(encoding="utf-8")
     s06_sql = s06_mig_path.read_text(encoding="utf-8")
@@ -333,6 +334,7 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
     s08_sql = s08_mig_path.read_text(encoding="utf-8")
     s10_sql = s10_mig_path.read_text(encoding="utf-8")
     s11_sql = s11_mig_path.read_text(encoding="utf-8")
+    s12_s13_sql = s12_s13_mig_path.read_text(encoding="utf-8")
 
     if '"billing_cycle_lesson_allocations"' not in s08_sql or '"uq_bcla_enrollment_lesson"' not in s08_sql:
         raise ValueError("[ERR_S08_L02_MISSING_BCLA] Migration 000500 must define billing_cycle_lesson_allocations with uq_bcla_enrollment_lesson")
@@ -343,7 +345,7 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
     if '"non_cash_expenses_uzs"' not in s11_sql or '"idx_cash_expenses_unique_reversal"' not in s11_sql or '"superseded_by_promise_id"' not in s11_sql:
         raise ValueError("[ERR_S11_MISSING_CASH_MIGRATION_OBJECTS] Migration 000700 must define non_cash_expenses_uzs, idx_cash_expenses_unique_reversal, and superseded_by_promise_id")
 
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql, s10_sql, s11_sql)
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql, s10_sql, s11_sql, s12_s13_sql)
     expected_tables = set(ALL_ENTITIES.values())
     if set(table_cols.keys()) != expected_tables:
         diff = set(table_cols.keys()) ^ expected_tables
@@ -415,7 +417,7 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
 
     return {
         "sql_tables_created": len(table_cols),
-        "migrations_verified": 7,
+        "migrations_verified": 8,
         "foreign_keys_restrict": fk_count,
         "named_check_constraints_verified": len(REQUIRED_CHECK_CONSTRAINTS),
         "partial_unique_indexes_verified": len(REQUIRED_PARTIAL_INDEXES),
@@ -446,7 +448,10 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
     s11_sql = (
         root / "apps/api/prisma/migrations/20261105000700_s11_cash_shifts_expenses_promises_reconciliation/migration.sql"
     ).read_text(encoding="utf-8")
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql, s10_sql, s11_sql)
+    s12_s13_sql = (
+        root / "apps/api/prisma/migrations/20261105000800_s12_s13_attendance_version_and_worker_schedules/migration.sql"
+    ).read_text(encoding="utf-8")
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql, s10_sql, s11_sql, s12_s13_sql)
     table_cols.update(parse_migration_table_columns(s06_sql))
     table_cols.update(parse_migration_table_columns(s08_sql))
 
@@ -519,11 +524,25 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "apps/api/src/cash/cash.controller.ts",
         "apps/api/test/cash-unit.test.ts",
         "apps/api/test/cash/cash-lifecycle.integration.test.ts",
+        "apps/api/src/attendance/dto.ts",
+        "apps/api/src/attendance/conflicts.service.ts",
+        "apps/api/src/attendance/attendance.events.ts",
+        "apps/api/src/attendance/attendance.service.ts",
+        "apps/api/src/attendance/sync.service.ts",
+        "apps/api/src/attendance/attendance.controller.ts",
+        "apps/api/test/attendance-unit.test.ts",
+        "apps/api/test/attendance/attendance-lifecycle.integration.test.ts",
+        "apps/worker/src/database.ts",
+        "apps/worker/src/outbox.worker.ts",
+        "apps/worker/src/reminders.worker.ts",
+        "apps/worker/src/teacher-ping.worker.ts",
+        "apps/worker/src/schedules.worker.ts",
+        "apps/worker/test/worker-integration.test.ts",
     ]
     if test_corpus is None:
         test_corpus = "\n".join((root / rel).read_text(encoding="utf-8") for rel in ts_files)
 
-    for i in range(1, 21):
+    for i in range(1, 22):
         code = f"DB-IT-{i:02d}"
         if code not in test_corpus:
             raise ValueError(f"[ERR_S04_MISSING_DB_IT] Missing required DB integration test scenario {code}")
@@ -562,6 +581,16 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         code = f"CASH-IT-{i:02d}"
         if code not in test_corpus:
             raise ValueError(f"[ERR_S11_MISSING_CASH_IT] Missing required Stage 11 integration test scenario {code}")
+
+    for i in range(1, 13):
+        code = f"ATT-IT-{i:02d}"
+        if code not in test_corpus:
+            raise ValueError(f"[ERR_S12_MISSING_ATT_IT] Missing required Stage 12 integration test scenario {code}")
+
+    for i in range(1, 9):
+        code = f"WORKER-IT-{i:02d}"
+        if code not in test_corpus:
+            raise ValueError(f"[ERR_S13_MISSING_WORKER_IT] Missing required Stage 13 integration test scenario {code}")
 
     if "EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS" not in test_corpus or "eduerp_test_" not in test_corpus:
         raise ValueError("[ERR_S04_HARNESS_GUARD] Missing destructive test harness safety guards")
@@ -618,7 +647,9 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "billing_integration_scenarios_verified": 13,
         "adjustments_integration_scenarios_verified": 8,
         "payments_integration_scenarios_verified": 10,
-        "cash_integration_scenarios_verified": 10,
+        "cash_integration_scenarios_verified": 13,
+        "attendance_integration_scenarios_verified": 12,
+        "worker_integration_scenarios_verified": 8,
         "rbac_matrix_rows_verified": len(rbac_rows),
         "ts_sql_insert_statements_verified": inserts_verified,
         "node_target": nvmrc,

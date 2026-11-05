@@ -338,7 +338,9 @@ model LessonOccurrence {
   attendanceSubmittedAt   DateTime? @map("attendance_submitted_at") @db.Timestamptz(6)
   attendanceSubmittedBy   String?   @map("attendance_submitted_by") @db.Uuid
   teacherPingSentAt       DateTime? @map("teacher_ping_sent_at") @db.Timestamptz(6)
+  teacherPingRecipientId  String?   @map("teacher_ping_recipient_id") @db.Uuid
   adminEscalationSentAt   DateTime? @map("admin_escalation_sent_at") @db.Timestamptz(6)
+  attendanceVersion       Int       @default(0) @map("attendance_version")
   version                 Int       @default(1)
   createdAt               DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt               DateTime  @default(now()) @map("updated_at") @db.Timestamptz(6)

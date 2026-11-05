@@ -199,6 +199,20 @@ jobs:
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:cash
 
+      - name: Gate G9 — Run real HTTP + PostgreSQL Attendance, Offline Sync, Conflict Queue, Admin Override & Trial Conversion integration test suite (ATT-IT-01..ATT-IT-12)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:attendance
+
+      - name: Gate G10 — Run real PostgreSQL Worker Outbox Lease/Fencing/DLQ, 09:00 Reminders, 20m Teacher Ping & Scheduler integration test suite (WORKER-IT-01..WORKER-IT-08)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:worker
+
   docker-dev-smoke:
     name: "Build and smoke-test the dev Compose stack (migrator + /health + /ready)"
     runs-on: ubuntu-latest
