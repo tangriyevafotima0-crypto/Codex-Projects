@@ -49,16 +49,16 @@ step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
 10.03,10,"Sababli tuzatish so‘rovi, rahbar tasdig‘i va append-only reversal yaratish",apps/api/src/payments/reversal.service.ts,10.02,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
 10.04,10,Noyob kvitansiya raqami va tasdiqlangan ledgerdan elektron kvitansiya yaratish,apps/api/src/payments/receipts.service.ts,10.03,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
 10.05,10,"Review, regressiya va handoff",planning/state/handoffs/S10.md,10.04,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
-11.01,11,"Kassa ochish, sanalgan pul, discrepancy va yopilgan smenani qulflash",apps/api/src/cash/shifts.service.ts,10.05,CHANGES_REQUIRED,state/reviews/S11-O.md,4295a01b78a4d0268642873c3e77c5685f0542c4
-11.02,11,"Xarajat toifasi, hujjat, vakolat va reversal bilan naqd chiqimini yozish",apps/api/src/cash/expenses.service.ts,11.01,CHANGES_REQUIRED,state/reviews/S11-O.md,4295a01b78a4d0268642873c3e77c5685f0542c4
-11.03,11,"Partial payment va promise atomik commandini integratsiya qilish, debt yopilganda eslatmani bekor qilish",apps/api/src/cash/promises.service.ts,11.02,CHANGES_REQUIRED,state/reviews/S11-O.md,4295a01b78a4d0268642873c3e77c5685f0542c4
-11.04,11,"To‘lov usullari bo‘yicha tushum, kutilgan naqd va smena hisobotini yozish",apps/api/src/cash/reconciliation.service.ts,11.03,CHANGES_REQUIRED,state/reviews/S11-O.md,4295a01b78a4d0268642873c3e77c5685f0542c4
-11.05,11,"Review, regressiya va handoff",planning/state/handoffs/S11.md,11.04,CHANGES_REQUIRED,state/reviews/S11-O.md,4295a01b78a4d0268642873c3e77c5685f0542c4
-12.01,12,"Draftda default present, faqat submitdan keyin tasdiqlangan davomat yaratish",apps/api/src/attendance/attendance.service.ts,11.05,NOT_STARTED,,
-12.02,12,"client operation UUID, expected version va lesson_id+student_id orqali dedup yozish",apps/api/src/attendance/sync.service.ts,12.01,NOT_STARTED,,
-12.03,12,"Eski Excelni rad etish, Teacher tasdig‘ini himoyalash va Admin sababli override yozish",apps/api/src/attendance/conflicts.service.ts,12.02,NOT_STARTED,,
-12.04,12,"Tasdiqlangan absence/late hodisasi, trial activation va billingga bog‘lash",apps/api/src/attendance/attendance.events.ts,12.03,NOT_STARTED,,
-12.05,12,"Review, regressiya va handoff",planning/state/handoffs/S12.md,12.04,NOT_STARTED,,
+11.01,11,"Kassa ochish, sanalgan pul, discrepancy va yopilgan smenani qulflash",apps/api/src/cash/shifts.service.ts,10.05,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+11.02,11,"Xarajat toifasi, hujjat, vakolat va reversal bilan naqd chiqimini yozish",apps/api/src/cash/expenses.service.ts,11.01,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+11.03,11,"Partial payment va promise atomik commandini integratsiya qilish, debt yopilganda eslatmani bekor qilish",apps/api/src/cash/promises.service.ts,11.02,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+11.04,11,"To‘lov usullari bo‘yicha tushum, kutilgan naqd va smena hisobotini yozish",apps/api/src/cash/reconciliation.service.ts,11.03,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+11.05,11,"Review, regressiya va handoff",planning/state/handoffs/S11.md,11.04,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+12.01,12,"Draftda default present, faqat submitdan keyin tasdiqlangan davomat yaratish",apps/api/src/attendance/attendance.service.ts,11.05,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+12.02,12,"client operation UUID, expected version va lesson_id+student_id orqali dedup yozish",apps/api/src/attendance/sync.service.ts,12.01,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+12.03,12,"Eski Excelni rad etish, Teacher tasdig‘ini himoyalash va Admin sababli override yozish",apps/api/src/attendance/conflicts.service.ts,12.02,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+12.04,12,"Tasdiqlangan absence/late hodisasi, trial activation va billingga bog‘lash",apps/api/src/attendance/attendance.events.ts,12.03,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
+12.05,12,"Review, regressiya va handoff",planning/state/handoffs/S12.md,12.04,CHANGES_REQUIRED,state/reviews/S11-S12-P.md,4f4ede44c7b670440816714dbd388cd755d9ac30
 13.01,13,"DB outboxni lease bilan olish, bounded retry va dead-letter holatini yozish",apps/worker/src/outbox.worker.ts,12.05,NOT_STARTED,,
 13.02,13,"Markaz vaqtida 09:00 va’da eslatmasi, to‘langan qarzni qayta tekshirish",apps/worker/src/reminders.worker.ts,13.01,NOT_STARTED,,
 13.03,13,"20 daqiqada davomat yo‘q bo‘lsa ping, dars tugaganda Admin escalation yozish",apps/worker/src/teacher-ping.worker.ts,13.02,NOT_STARTED,,

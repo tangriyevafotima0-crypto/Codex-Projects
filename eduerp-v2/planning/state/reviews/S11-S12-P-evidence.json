@@ -1,0 +1,158 @@
+{
+  "task_id": "S11FIX-S12FULL-P",
+  "status": "CHANGES_REQUIRED",
+  "base_commit": "7b757d61de529381b95d9092c021ef10e19846c0",
+  "original_candidate_commit": "bccb9a104ae0d2eb624ef15c07ecbc054022d190",
+  "candidate_input_commit": "4f4ede44c7b670440816714dbd388cd755d9ac30",
+  "zip_sha256": "c9fd2d24945f015f97920b4bce4eedfad6ebff8f1354c979eb70bef90698acbe",
+  "submitted_source_files": 32,
+  "strict_run_id": 42075332138,
+  "strict_conclusion": "failure_typecheck",
+  "strict_jobs": [
+    127413900252,
+    127414059971
+  ],
+  "typescript_errors": 25,
+  "diagnostic_run_id": 42075332107,
+  "diagnostic_job_id": 127413898035,
+  "diagnostic_workflow_conclusion": "success_WITH_CONTINUE_ON_ERROR_NOT_ACCEPTANCE",
+  "diagnostic_compilation": "Emitted JS despite TypeScript exit2; not a successful build",
+  "diagnostic_tests": {
+    "attendance_unit_sqlite": {
+      "pass": 6,
+      "fail": 0
+    },
+    "database_G1": {
+      "pass": 18,
+      "fail": 0
+    },
+    "cash_G8": {
+      "pass": 2,
+      "fail": 8
+    },
+    "attendance_G9": {
+      "pass": 0,
+      "fail": 0,
+      "cancelled": 10,
+      "before_hook_error": "column confirmed_by_director_id of billing_policy_versions does not exist"
+    },
+    "selected_total_pass": 26,
+    "selected_total_fail": 8,
+    "selected_cancelled": 10
+  },
+  "probe": {
+    "missing_ledger": {
+      "ledger_rows": 0,
+      "get_http": 409,
+      "close_http": 409
+    },
+    "predecessor_duplicate_promises_upgrade": {
+      "success": true,
+      "promises": [
+        {
+          "status": "ACTIVE",
+          "version": 1,
+          "has_successor": false
+        },
+        {
+          "status": "CANCELLED",
+          "version": 2,
+          "has_successor": true
+        }
+      ]
+    },
+    "attendance": {
+      "draft_http": 200,
+      "draft": {
+        "lesson_id": "ed35f8d4-4839-46de-a265-0eb664dc4407",
+        "group_id": "11111111-2222-4333-8444-000000000030",
+        "lesson_date": "2026-11-04",
+        "occurrence_seq": 1,
+        "lesson_status": "SCHEDULED",
+        "is_submitted": false,
+        "current_version": 1,
+        "roster": [
+          {
+            "student_id": "11111111-2222-4333-8444-000000000040",
+            "enrollment_id": "ebfdd216-0495-4023-81d8-a9e62f443a7b",
+            "student_code": "STU-SYN-0001",
+            "full_name": "Ali Valiyev (Synthetic)",
+            "enrollment_status": "ACTIVE",
+            "is_frozen_for_lesson": false,
+            "draft_default_status": "PRESENT",
+            "submitted_status": null,
+            "is_excused_frozen": false,
+            "attendance_record_id": null,
+            "record_version": null,
+            "source_channel": null
+          }
+        ],
+        "revisions": []
+      },
+      "submit": {
+        "status": 500,
+        "body": {
+          "error_code": "VALIDATION_ERROR",
+          "message": "Internal server error",
+          "request_id": "48d2fd58-9274-4735-b41f-b10472324236",
+          "timestamp_utc": "2026-11-05T17:31:51.925Z",
+          "retry_after_seconds": null,
+          "conflict_details": null
+        }
+      },
+      "excel": {
+        "status": 404,
+        "body": {
+          "error_code": "NOT_FOUND",
+          "message": "Requested endpoint or resource was not found",
+          "request_id": "e840afce-458d-4679-9ab2-e83471f4015a",
+          "timestamp_utc": "2026-11-05T17:31:51.928Z",
+          "retry_after_seconds": null,
+          "conflict_details": null
+        }
+      },
+      "override": {
+        "status": 404,
+        "body": {
+          "error_code": "NOT_FOUND",
+          "message": "Requested endpoint or resource was not found",
+          "request_id": "5cb69297-941a-4e42-abf3-77f78c0d2bbf",
+          "timestamp_utc": "2026-11-05T17:31:51.930Z",
+          "retry_after_seconds": null,
+          "conflict_details": null
+        }
+      },
+      "record_count": 0
+    }
+  },
+  "manager_assist_paths": [
+    "apps/api/src/app.module.ts"
+  ],
+  "manager_assist": "Restore original DatabaseModule.register(config,customDB), global APP_GUARD PermissionsGuard, ReadinessController; add AttendanceModule only",
+  "missing_claimed_submission_files": [
+    "eduerp-v2/apps/api/test/cash/cash-lifecycle.integration.test.ts",
+    "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts"
+  ],
+  "partial_closure": {
+    "O02": "Independent zero-ledger GET409/close409 verified",
+    "O03": "Duplicate ACTIVE fixture exact migration SQL succeeded:1ACTIVE/1CANCELLED; full populated six-to-seven Prisma upgrade test not delivered"
+  },
+  "findings": [
+    "P01_missing_claimed_tests_output_proof",
+    "P02_AppModule_removed_registered_database_guard_readiness_manager_restored",
+    "P03_25_type_errors_nonexistent_exports_and_fixtures",
+    "P04_license_column_submit500_missing_routes404_and_contracts",
+    "P05_subset_override_mutates_unrequested_records_without_revisions_source_audit",
+    "P06_complete_runtime_acceptance_and_artifact_consistency"
+  ],
+  "not_run": [
+    "Clean full build/unit/G1-G9 acceptance chain",
+    "Docker skipped after typecheck failure",
+    "Subset override live behavior blocked by upstream submit error; source audit finding"
+  ],
+  "approved_steps": 50,
+  "total_steps": 120,
+  "next_task": "S11S12FIX-Q",
+  "stop_before": "S13",
+  "manager_diagnostic_correction": "Initial diagnostics invoked root scripts that rebuild and abort, and API bootstrap failure was silent with logger false. Switched to workspace diagnostic commands after restoring original AppModule. Not Argon test results or approval."
+}

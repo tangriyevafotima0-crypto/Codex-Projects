@@ -1139,8 +1139,8 @@
       "acceptance": "Yopiq smenaga yangi naqd payment rad yoki yangi smena talab qiladi; parallel close bitta natija; counted va expected farqi reason/audit bilan.",
       "prompt": "prompts/S11/01.md",
       "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-O.md",
-      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
       "review_result": "CHANGES_REQUIRED",
       "reviewer": "Codex-manager"
     },
@@ -1162,8 +1162,8 @@
       "acceptance": "Expense uchun rol/sabab/summa talab qilinadi; reverse expense cash balancega bir marta ta’sir qiladi; karta expense naqdni kamaytirmaydi.",
       "prompt": "prompts/S11/02.md",
       "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-O.md",
-      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
       "review_result": "CHANGES_REQUIRED",
       "reviewer": "Codex-manager"
     },
@@ -1185,8 +1185,8 @@
       "acceptance": "Qisman payment+promise yaratish atomik command orqali: sana yo‘q bo‘lsa payment ham commit bo‘lmaydi. Qarz nol bo‘lganda eski promise CANCELLED.",
       "prompt": "prompts/S11/03.md",
       "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-O.md",
-      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
       "review_result": "CHANGES_REQUIRED",
       "reviewer": "Codex-manager"
     },
@@ -1208,8 +1208,8 @@
       "acceptance": "Opening0+cash3200000-expense150000=3050000; card1800000 naqdga qo‘shilmaydi. Refund, opening float va discrepancy alohida satrlar bilan reconcile.",
       "prompt": "prompts/S11/04.md",
       "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-O.md",
-      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
       "review_result": "CHANGES_REQUIRED",
       "reviewer": "Codex-manager"
     },
@@ -1229,8 +1229,8 @@
       "acceptance": "3200000 naqd −150000 xarajat =3050000; karta naqd qoldiqqa qo‘shilmaydi",
       "prompt": "prompts/S11/05.md",
       "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S11-O.md",
-      "reviewed_revision": "4295a01b78a4d0268642873c3e77c5685f0542c4",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
       "review_result": "CHANGES_REQUIRED",
       "reviewer": "Codex-manager"
     },
@@ -1253,11 +1253,11 @@
       "test_id": "T12.01",
       "acceptance": "Draft default present ota-onaga xabar yubormaydi; submit har student uchun unique result; kechikish holati distinct; teacher bo‘lmagan actor rad.",
       "prompt": "prompts/S12/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "12.02",
@@ -1278,11 +1278,11 @@
       "test_id": "T12.02",
       "acceptance": "Bir operation UUID retransmitda oldingi natija; boshqa body shu UUID bilan conflict. Batchda har op natijasi qaytadi va SQLite faqat ackdan keyin synced.",
       "prompt": "prompts/S12/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "12.03",
@@ -1303,11 +1303,11 @@
       "test_id": "T12.03",
       "acceptance": "Stale Excel409 va per-row conflict; Teacher tasdiqini Admin faqat sababli override qiladi; blind last-write-wins yo‘q; teng versionli ikki write biri yutadi.",
       "prompt": "prompts/S12/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "12.04",
@@ -1328,11 +1328,11 @@
       "test_id": "T12.04",
       "acceptance": "Submitted event trialni bir marta aktiv qiladi; absence correction yangi event/audit beradi; oldingi jo‘natilgan xabar o‘chirildi deb da’vo qilinmaydi.",
       "prompt": "prompts/S12/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "12.05",
@@ -1349,11 +1349,11 @@
       "test_id": "T12.05",
       "acceptance": "Eski Excel yangi mobil davomatni buzmaydi; retransmit yangi hodisa yaratmaydi",
       "prompt": "prompts/S12/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "CHANGES_REQUIRED",
+      "evidence": "state/reviews/S11-S12-P.md",
+      "reviewed_revision": "4f4ede44c7b670440816714dbd388cd755d9ac30",
+      "review_result": "CHANGES_REQUIRED",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "13.01",

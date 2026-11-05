@@ -1,7 +1,6 @@
 # ACTIVE TASK
 
-Task: **S11FIX-S12FULL-P**, Argon executor, Codex manager, READY_TO_ASSIGN.
-
-S01–S10 approved50/120=41.67%,10/24stages. S11-OCHANGES_REQUIRED; S12NOT_STARTED in global registers. New assignment explicitly allows a combined draft: firstO01–O05closure, then12.01–12.05fullcandidate, without intermediate manager waits. No selfapproval. Exact main/candidate composition rootTASK_INPUT; no earlier ZIP required.
-
-Read assignment, state/reviews/S11-O.md+JSON, OWNER_DECISIONS01–05, ARGON_LEARNING/USER_WORKING_PREFERENCES. Keep manager compileassists and allS10fixes. OutputS11FIX_S12FULL_P_SUBMISSION.zip source delta+SUBMISSION.json, IN_REVIEW. Globalmanagerregistersread-only. StopS13/payroll/liveTelegram/production. S12isattendance, payrollS18.
+Task: **S11S12FIX-Q**, Argon executor, Codex manager, READY_TO_ASSIGN.
+S01–S10 approved50/120=41.67%,10/24stage. S11/S12CHANGES_REQUIRED. Scopefull11.01–12.05stabilization,P01–P06closure, allAPI/SQL/tests/CI/docs/output. NoS13.
+Readassignment+state/reviews/S11-S12-P.md/evidence,OWNER_DECISIONS01–05,ARGON_LEARNING/USER_WORKING_PREFERENCES. Inputapprovedmain+fullPcandidate+managerAppModulerestore;exactrootTASK_INPUT;oldZIPnotneeded.
+Onecompletebatchwithoutinternalmanagerwaits; globalapproval/registersread-only. Keepoldauth/DBregistration/APP_GUARD/readiness/Ntemporalfix/lock/immutableledger. OutputS11S12FIX_Q_SUBMISSION.zip+SUBMISSION.json,IN_REVIEW;ARTIFACT_PROOF andaudit_submission.pyrequired. StopS13/payroll/liveTelegram/production.

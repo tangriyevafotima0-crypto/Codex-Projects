@@ -1,6 +1,6 @@
 # Joriy loyiha holati — 2026-11-05
 
-S01–S10 APPROVED:50/120=41.67%,10/24stage. S11-O CHANGES_REQUIRED:139PASS/8FAIL va2independentP1. NextS11FIX-S12FULL-P (S11fix+S12attendancecandidate). ExactACTIVE_TASK; dalil state/reviews/S11-O.md. S12attendance, payrollS18. Reja sanog‘i release/timefoiziemas.
+S01–S10APPROVED50/120=41.67%,10/24stage. S11/S12CHANGES_REQUIRED. PpartialfixesO02/O03verified,ammo25compileerrors/runtime500/routes404/testsmissing. NextS11S12FIX-Qfullstabilization. ExactACTIVE_TASK;dalilstate/reviews/S11-S12-P.md. Rejasanog‘irelease/timefoiziemas.
 
 Quyidagi v2.1 matni tarixiy boshlang‘ich reja; undagi NOT_STARTED yoki “GitHubga yuklanmagan” bayonotlari joriy holat emas. Joriy source va status uchun execution.json/ACTIVE_TASK/APPROVALS/manager review ustuvor.
 
