@@ -1,6 +1,6 @@
 # Joriy loyiha holati — 2026-11-05
 
-S01–S09 APPROVED:45/120step=37.5%,9/24stage. S08/S09 manager-assisted REVIEW-PASS. Keyingi S10FULL-N: manual to‘lov qaydi, gateway emas. Joriy state/ACTIVE_TASK.md; dalil state/reviews/S08-S09-M.md. Bu reja sanog‘i, release tayyorligi yoki sarflangan vaqt foizi emas.
+S01–S10 APPROVED:50/120step=41.67%,10/24stage. S10 manager-assistedREVIEW-PASS,132actualtests+DockerPASS. NextS11FULL-O cash/expense/promise/reconciliationfullcandidate. Exact ACTIVE_TASK; dalil state/reviews/S10-N.md. Bu reja sanog‘i, release tayyorligi yoki sarflangan vaqt foizi emas.
 
 Quyidagi v2.1 matni tarixiy boshlang‘ich reja; undagi NOT_STARTED yoki “GitHubga yuklanmagan” bayonotlari joriy holat emas. Joriy source va status uchun execution.json/ACTIVE_TASK/APPROVALS/manager review ustuvor.
 

@@ -185,6 +185,13 @@ jobs:
           TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
         run: npm run test:adjustments
 
+      - name: Gate G7 — Run real HTTP + PostgreSQL Manual Payments, Allocations, Promises, Reversals & Receipts integration test suite (PAY-IT-01..PAY-IT-10)
+        timeout-minutes: 3
+        env:
+          EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS: "true"
+          TEST_DATABASE_ADMIN_URL: postgresql://eduerp_pg_superuser:ci_superuser_password_only@127.0.0.1:5432/eduerp_test_ci_admin
+        run: npm run test:payments
+
   docker-dev-smoke:
     name: "Build and smoke-test the dev Compose stack (migrator + /health + /ready)"
     runs-on: ubuntu-latest

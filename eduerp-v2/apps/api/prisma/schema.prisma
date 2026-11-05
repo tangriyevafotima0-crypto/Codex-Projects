@@ -795,6 +795,11 @@ model Payment {
   amountUzs         BigInt   @map("amount_uzs") @db.BigInt
   currency          String   @default("UZS") @db.Char(3)
   paymentMethod     String   @map("payment_method") @db.VarChar(16)
+  paidAt            DateTime @default(now()) @map("paid_at") @db.Timestamptz(6)
+  recordedAt        DateTime @default(now()) @map("recorded_at") @db.Timestamptz(6)
+  externalReference String?  @map("external_reference") @db.VarChar(128)
+  paymentNote       String?  @map("payment_note") @db.VarChar(500)
+  sourceChannel     String   @default("ADMIN_MANUAL_ENTRY") @map("source_channel") @db.VarChar(32)
   recordedByAdminId String   @map("recorded_by_admin_id") @db.Uuid
   idempotencyKey    String   @map("idempotency_key") @db.VarChar(128)
   requestHash       String   @map("request_hash") @db.Char(64)
@@ -933,10 +938,13 @@ model Receipt {
   paymentId                String    @unique @map("payment_id") @db.Uuid
   studentId                String    @map("student_id") @db.Uuid
   amountUzs                BigInt    @map("amount_uzs") @db.BigInt
+  currency                 String    @default("UZS") @db.Char(3)
   paymentMethod            String    @map("payment_method") @db.VarChar(16)
   remainingDebtSnapshotUzs BigInt    @map("remaining_debt_snapshot_uzs") @db.BigInt
   nextDueDateSnapshot      DateTime? @map("next_due_date_snapshot") @db.Date
   isFiscalTaxReceipt       Boolean   @default(false) @map("is_fiscal_tax_receipt")
+  paidAtSnapshot           DateTime  @default(now()) @map("paid_at_snapshot") @db.Timestamptz(6)
+  recordedAtSnapshot       DateTime  @default(now()) @map("recorded_at_snapshot") @db.Timestamptz(6)
   issuedAt                 DateTime  @default(now()) @map("issued_at") @db.Timestamptz(6)
 
   payment Payment @relation(fields: [paymentId, centerId, studentId], references: [id, centerId, studentId], onDelete: Restrict, onUpdate: Restrict)

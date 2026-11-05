@@ -1,3 +1,3 @@
 # Joriy manager tasdiqlari
 
-S01–S09 APPROVED;45/120step=37.5%,9/24stage. S08/S09 exact tested revision92f30d623371df306acca5d209340ebafac892da; strictCI41986428281 va independent41986428266SUCCESS, DockerPASS. Dalil state/reviews/S08-S09-M.md va evidence JSON. Oldingi S01–S07reviewlar tarixiy dalil bo‘lib qoladi. S10FULL-N READY_TO_ASSIGN; S10 yoki release APPROVED emas.
+S01–S10 APPROVED;50/120step=41.67%,10/24stage. S10 exact testedrevision859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af; strictCI42029866557 va independent42029866488success,132tests+DockerPASS. Dalil state/reviews/S10-N.md va JSON. S01–S09oldreviewlar saqlangan. S11FULL-O READY_TO_ASSIGN; S11/releaseAPPROVEDemas.

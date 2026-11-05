@@ -1,0 +1,57 @@
+# S11FULL-O — kassa smenasi, xarajat, va’dalar va reconciliatsiya
+
+Codex manager topshirig‘i. Scope: 11.01–11.05 bitta to‘liq candidate paket. Bir paket ichida oraliq manager javobini kutmang. Yakun IN_REVIEW; S12 payroll/Telegram/production boshlanmaydi. Exact base va approved holat root TASK_INPUT.jsonda. Oldingi chat/ZIP kerak emas.
+
+## A. Kirish, predecessor va doimiy chegaralar
+
+START_HERE/TASK_INPUT/VERIFY_INPUT.py orqali input hashlarini tekshiring. AGENTS.md, ACTIVE_TASK, OWNER_DECISIONS01–05, USER_WORKING_PREFERENCES, ARGON_LEARNING, joriy S10-N manager review va handoff, S11stage/promptlar, haqiqiy OpenAPI/SQL/Prisma/helperlar o‘qilsin. Bu assignment katta full-stage scopega ruxsat; eski promptdagi har step orasida kutish/global executionni tahrirlash ko‘rsatmasidan yuqori turadi. Global registrlar/APPROVALS/manager review read-only.
+
+S01–S10 manager tasdiqlagan source inputda, manager replay fix ham bor. To‘lov ilova bilan o‘tmaydi; cash/card/Click/Payme/transfer faqat tashqi to‘lov usuli. S11 kassa hisobi va nazorati, bank/provider operatsiyasi emas. S10 payment/allocation/receipt/reversalni ikkinchi modulda nusxalamang. Auth, config/tokens, ClockService.setTestNow, DATE parser, BigInt money, default-deny, tenant isolation, immutable ledger, durable package lesson ownership, lockfile va G1–G7ni saqlang.
+
+## B. 11.01 — CashModule va smena lifecycle
+
+Fayllar: apps/api/src/cash/{cash.module.ts,cash.controller.ts,dto.ts,shifts.service.ts}; mavjud arxitekturaga moslab AppModule, contracts, OpenAPI/inventory va RBAC birga yangilansin. Mavjud CashShift ishlatilsin, parallel cash session modeli yo‘q.
+
+POST /api/v1/cash-shifts/open va /:shift_id/close mavjud kontraktga mos real HTTP operatsiyalar bo‘lsin. Director/Admin vakolati canonical matrix bo‘yicha, Teacher/Vendor/parent denied. Live actor/center/license checks cached replaydan oldin. Markazda bitta OPEN shift — mavjud partial UNIQUE bilan; turli keyli parallel open faqat bitta smena, boshqasiga typed409, yangi clientkey birday openingni yashirin merge qilmasin. Opening cash nonnegative BigInt UZS, server center-local shift_date/opened_at/actor saqlansin. O‘tgan shiftni yashirin ochish/closed shiftni qayta ochish yo‘q. Yangi opening floatni oldingi smenaning counted summasidan avtomatik ko‘chirish biznes qoidasini o‘ylab topmang; explicit amount bilan audit.
+
+Close mutable shift rowni lock qilib payment/reversal/expense bilan bir xil serialization chegarasida ishlasin; expectedVersion, counted amount va reconciliation. Discrepancy = counted − expected signed BigInt, farq bo‘lsa sabab majburiy. Counted money expectedni ustidan yozmasin, discrepancy expensega aylantirilmasin. CLOSED row DB trigger bilan immutable, close replay faqat aynan original key uchun aynan original result; boshqa key/version stale409. Ikkita parallelclose, closevsPAY/expense/reversal testida bitta to‘g‘ri serialorder yoki typed conflict; partial commit/yopiq shiftga mutatsiya yo‘q. Mavjud S10guardlarini shu haqiqiy API bilan ulang, autoopen va bypass yo‘q.
+
+Lock tartibini hujjatlashtiring: S10student/shift/invoice, reversalrequest/advisory/student/invoice/shift, yangi cashoperatsiyalar o‘rtasida sikl paydo bo‘lmasin. Zarur joyda kichik scoped refactor qiling; real concurrent test bilan isbotlang. Mutatsiya oldi state cache emas, lockdan keyingi jonli snapshot. Locktimeout/deadlock retry mavjud bounded helper bilan, cheksiz kutish yo‘q, no catch-and-success.
+
+## C. 11.02 — Xarajat va append-only reversal
+
+apps/api/src/cash/expenses.service.ts; canonical CashExpense immutable model ishlatilsin. Category, positive amount, payment method, sabab va hujjat/reference metadata, actor/center/open shift majburiy. Real upload/storage/pultransfer qo‘shilmaydi; metadata ruxsatli scopega tegishli bo‘lsin, tashqi URLfetch yoki soxta storage upload yo‘q. Canonical contractdagi Admin/Director recording huquqini saqlang; tasdiqlanmagan yangi limit/approvalgrantni o‘ylab topmang. Reversal approval uchun Director-only konservativ cheklov va source-backed matrix; tasdiqlanmagan Admin reversal vakolati yopiq.
+
+Original expense UPDATE/DELETE qilinmaydi. Canonical reverses_expense_id bilan yangi immutable yozuv, unique one-reversal ownership/constraint va canonical ledger EXPENSE_REVERSED orqali ta’siri bir marta. Reverse-of-reversal, cross-center, boshqa shift lineage va reversed duplicate deny; bir original uchun parallel turli keylar ikki marta cashni oshirmasin. To‘liq reversal yetarli; partial expense reversal yangi biznes funksiyasini o‘ylab topmang. Closed originalshift immutable; originalni qayta yozmasdan current open shiftga correction bog‘lash kerak bo‘lsa aniq auditable contract, unsupportedcase failclosed.
+
+Cash expense naqdni kamaytiradi, card/Click/Payme/transfer expense naqdni kamaytirmaydi. Noncash expense method breakdown alohida, cash columniga yashirmang. Reversal asl method va amountdan kelib chiqadi, request bilan cash/noncashni almashtirib drawer yaratish taqiqlansin. CashExpense+ledger+shiftprojection+audit+outbox bitta transaction. Enoughcash/negativeexpected behavior source/policy bilan izchil bo‘lsin; tasdiqlanmagan overdraft limitini accepteddeb yozmang. BigInt overflow preflight typed error va 0committedrows.
+
+## D. 11.03 — Promise lifecycle va qarzdorlar
+
+apps/api/src/cash/promises.service.ts. S10 AllocationService'dagi existing atomic payment+promise seamless ulanadi, duplicate ledgercommand yo‘q. Qarz qolsa valid promise_date talab; promise_date yo‘q/old date uchun yangi paymentrollback. Inputformat/parsing va yangi operatsiya eligibility tekshiruvini ajrating: keyingi kundagi originalkey+body replay oldresponse qaytarsin, fresh key aynaneski date bilan422 va 0rows. Liveauthorizationoldcachehamtekshirilsin.
+
+Same invoice uchun ketma-ket partialpayments, revisedpromisedate va qarz summasi old promisesni ikki marta eslatishga sabab bo‘lmasin. Active promise ownership/history/version va supersede/cancel semanticsni aniq belgilang; oddiy payment tarixini o‘chirmang. Source CASE-22 debtpaid bo‘lganda FULFILLED; T11.03dagi CANCELLED ifodasi faol eslatmani bekor qilish talabidir. Paid promise canonical FULFILLED bo‘lib qolishi mumkin, alohida cancelled/superseded holat kerak bo‘lsa sabab bilan; paid historyni shunchaki CANCELLEDga rewrite qilmang. Qarz0 bo‘lsa active/due reminder candidate0, immutable outbox oldeventsdelete emas. Actual Telegram delivery S14, worker scheduler future stage; hozir due/query eligibility va cancel event seam, haqiqiy xabar yuborish yo‘q, yetkazildi degan soxta da’vo yo‘q.
+
+Samecenter role-safe overdue/debtor list, requiredindexes/dateTZ, paid debt0 va future promises filter. Student-level total vs invoice-level debt aralashtirilmasin; overpayment/unappliedcredit payment allocationni soxta qarzga aylantirmasin. Reversal debtni qayta ochsa oldfulfilledpromise automaticactive bo‘lib qolmasin; yangi explicit promise or pendingneeded flag, olddate/no-consentdeadline yasamang. Bekor staff/READ_ONLYlicense mutant endpointdeny; Teacherga moliyamaydonlari yo‘q.
+
+## E. 11.04 — Kanonik reconciliatsiya va hisobot
+
+apps/api/src/cash/reconciliation.service.ts. Read endpointshift summary: openingfloat; methodwise gross paymentreceipts; payment record corrections/refunds; expenses va reversals; cashnetexpected; noncashnet; counted, discrepancyreason, closeactor/time. No doublecount: unapplied credit ham haqiqiy paymentningbirqismi, invoiceallocationyanaalohidatumanamount qo‘shilmasin. Loan/feecharge paymentcashreceipt emas. Paymentnote/refundreason cross-centerga sizmasin.
+
+T11.04: opening0 +cash3200000−expense150000=3050000; card1800000expectedcashga kirmaydi. Openingfloat, cashrefund vsnoncashrefund va expensereversal alohida ishlasin. Totals immutablepayments/executions/expenses/ledgerdan recompute bo‘lsin; CashShift kesh ustunlaridan shunchaki javob berib uni verification deya atamang. Close oldida recomputedexpected vs storedprojection drift bo‘lsa failclosed/auditeddiagnostic, tarixni yashirin tuzatmang. Rawrowtampering fixture drift uchun salbiy test kerak; productionrecordUPDATE routineyo‘q.
+
+Read summary bir izchil snapshotda olinishi uchun transaction isolation/shiftlock yoki immutable closedsnapshotdan foydalansin. Parallel yangi payment va close oralig‘ida mixedbefore/aftertotal chiqmasin. Center-local shiftdate bilan UTC paid_at va recorded_at alohida: kech qaydcurrentOPENshiftga tushadi, closedhistoricalshiftning totalsini o‘zgartirmaydi. ExistingS10 time fields saqlansin. Closedsummary lateststudent debtprojection emas, o‘sha shiftfinancial snapshot. Receiptoldremainingbalance historicalsnapshotligicha qoladi.
+
+## F. 11.05 — Real test, CI, kontrakt va topshirish
+
+apps/api/test/cash/{cash-lifecycle.integration.test.ts,...}, cash-unit.test.ts, npm run test:cash, GateG8. Bitta giant testcase ortida boshqa assertions yashirmang: independent cases va meaningfulstateassertions. Faqat testcase nomida race/rollback bo‘lishi yetmaydi.
+
+Majburiy testmatrix: Director/Adminpositive/Teacherdeny/cross-center/READ_ONLY/revokedreplay; opening0/nonzero/racingopen; countmatch/discrepancywithoutreason/withreason/parallelclose; closedmutationDBreject; paymentvsclose, expensevsclose, reversalvsclose va haqiqiy S10 payment API; allmethods cashseparation; category/doc/amount validation; expensereversal once+parallel+reverseofreversal; ledgerformula3200000−150000=3050000/card1800000; refund/openfloat/discrepancy; repeatedpartialpromise/dateexpiry/old key va fresh key; paid promise uchun kelajak reminder yo‘q; rollback injection har writebosqichida barcha bog‘liq jadvallardagi row count and balances unchanged; projectiondrift and superuser bo‘lmagan rollar. Concurrency bounded wait va deterministicstartbarrier, testcommitni ikkalasini kutib deadlockqilmang.
+
+Exact helper API va importlarni o‘qing: ClockService.setTestNow mavjud; setFixedNowForTesting yo‘q. executeOptimisticUpdate helper SET/RETURNING ownershipni boshqaradi; qo‘shaloqupdated_at yoki inventedoption yo‘q. Immutable SELECTFORUPDATE uchun UPDATEgrant qo‘shmang; mutableowner/advisory lock bilan serialization. Prismawidth/SQLCHECK/TSunion/fixturestring mos bo‘lsin. Full tsctypecheck tsctranspile/ASTdan alohida. Manager testfixlarni blindlypreserve qilib yangi identifiersni declare qilmaslik takrorlanmasin.
+
+Deps lockpreserve; haqiqiy ehtiyoj bo‘lsa packageedits+needs_manager_dependency_refresh; fakeoffline lock/client yo‘q. Additive yangi migration; acceptedoldmigrationchecksumlar saqlansin. Exacthelpercatalog, fresh/upgrade migration suite va grants/DBready/Docker ishlaydigan image yangilansin. npmci, prismagenerate, lint, typecheck, build, unit,G1–G8, Docker real available muhitda; unavailableNOT_RUN, soxta PASS yo‘q.
+
+Docs: ADR-011, architecture/API/RBAC/events kerakli diff, docs/verification/S11.md actualcommands+counts+NOT_RUN, planning/state/steps/11.01..05.md va handoffs/S11.md. Handoff keyingi S12 payrollga data interface, immutablemoney/date/shiftclose invariants va qolganpolicygatesni ko‘rsatsin; payrollni o‘zi yozmasin.
+
+Output S11FULL_O_SUBMISSION.zip: faqat shu INPUT_MANIFESTdan keyingi yangi/o‘zgargan source+SUBMISSION.json, statusIN_REVIEW; task_id/base_commit/candidate_input_commit/files[path,sha256]/deleted_files/actual_tests/not_run/needs_manager_dependency_refresh. Paths loyihaeduerp-v2/relative exact; arxivhash/CRC/pathunique. node_modules/dist/pyc/generatedclient/secret/fulloldinputZIP yo‘q. Birpaketda hammasini yakunlang, approval managerda.

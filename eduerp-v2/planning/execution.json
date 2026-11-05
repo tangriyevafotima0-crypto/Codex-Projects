@@ -1025,11 +1025,11 @@
       "test_id": "T10.01",
       "acceptance": "Payment commit va outbox atomik; bir key+bir body bitta payment; bir key+boshqa amount 409; pul string/minor-unit bilan, float yo‘q.",
       "prompt": "prompts/S10/01.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S10-N.md",
+      "reviewed_revision": "859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "10.02",
@@ -1048,11 +1048,11 @@
       "test_id": "T10.02",
       "acceptance": "500000 invoicega 300000 payment →200000 qarz; 600000 payment →0 qarz+100000 unapplied credit. Allocation yig‘indisi paymentdan oshmaydi.",
       "prompt": "prompts/S10/02.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S10-N.md",
+      "reviewed_revision": "859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "10.03",
@@ -1071,11 +1071,11 @@
       "test_id": "T10.03",
       "acceptance": "4000000 xato yozuv o‘chmaydi; Director tasdiqlangan reversal va 400000 yangi paymentdan keyin net400000. Partial refund va double approval ortiqcha qaytarishga yo‘l qo‘ymaydi.",
       "prompt": "prompts/S10/03.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S10-N.md",
+      "reviewed_revision": "859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "10.04",
@@ -1094,11 +1094,11 @@
       "test_id": "T10.04",
       "acceptance": "Kvitansiya ledger commitdan keyin yaratiladi; unique raqam, amount/method/date va remaining balance bor; fiscal chek deb belgilanmaydi; begona studentga berilmaydi.",
       "prompt": "prompts/S10/04.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S10-N.md",
+      "reviewed_revision": "859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "10.05",
@@ -1115,11 +1115,11 @@
       "test_id": "T10.05",
       "acceptance": "Ikki parallel bir xil idempotency key bitta to‘lov yaratadi; reversal originalni o‘zgartirmaydi",
       "prompt": "prompts/S10/05.md",
-      "status": "NOT_STARTED",
-      "evidence": null,
-      "reviewed_revision": null,
-      "review_result": null,
-      "reviewer": null
+      "status": "APPROVED",
+      "evidence": "state/reviews/S10-N.md",
+      "reviewed_revision": "859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af",
+      "review_result": "PASS",
+      "reviewer": "Codex-manager"
     },
     {
       "id": "11.01",

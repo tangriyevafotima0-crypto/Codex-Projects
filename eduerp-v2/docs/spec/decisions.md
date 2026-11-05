@@ -204,7 +204,7 @@ Har bir `D01`–`D25` qaror uchun `Muammo`, `Manba (Source)`, `Alternativalar`, 
 - **Evidence:** `NONE_YET`
 
 <a id="D12"></a>
-### `D12` — Click / Payme / Perechisleniye: Qo‘lda Qayd Etish vs Real To‘lov Shlyuzi (`Payment Gateway`)
+### `D12` — Click / Payme / Perechisleniye: Qo‘lda Qayd Etish vs Real To‘lov Shlyuzi (`Payment Gateway` — `OWNER-20261105-05`: faqat tashqi to‘lov usuli qaydi, gateway yo‘q)
 - **Muammo:** PDF 3- va 5-sahifalarda Admin naqd va karta (`Click/Payme/Perechisleniye`) to‘lovlarni qabul qilishi aytilgan; bu kassada to‘lov turini qo‘lda belgilashmi yoki avtomatik Click/Payme merchant webhook integratsiyasimi?
 - **Manba (`Source`):** `PDF p.3 Sec 3 (Admin)`, `PDF p.5 Sec 4.5`; `planning/02_DECISIONS.md#D12`; `docs/spec/business-rules.md#br-05`, `#br-09`.
 - **Alternativalar:**
@@ -346,7 +346,7 @@ Har bir `D01`–`D25` qaror uchun `Muammo`, `Manba (Source)`, `Alternativalar`, 
 - **Evidence:** `PARTIAL_ACCEPTED via OWNER-20261104-03 #3 (rolling-month short-month renewal clamp continues from clamped day Jan31->Feb28/29->Mar28/29 without restoring 31 anchor; 12-lesson package cancelled-lesson CreditNote adjustment remains DECISION_REQUIRED fail-closed)`
 
 <a id="D22"></a>
-### `D22` — Refund Qarzni Qayta Ochishi va `Invoice` / `CreditNote` / `Cash Refund` Tartibi
+### `D22` — Refund Qarzni Qayta Ochishi va `Invoice` / `CreditNote` / `Cash Refund` Tartibi (`OWNER-20261105-05`: xato to‘lov reversal qarzni qayta ochadi; xizmat bekor qilish/CreditNote refund qismi pending/gated)
 - **Muammo:** Xato to‘lov qaytarilganda (`Storno`) va markazdan ketayotgan o‘quvchiga pul qaytarilganda (`Cash Refund`) invoice qarzi qanday o‘zgarishi (`BR-07`, `CASE-13`, `CASE-14`).
 - **Manba (`Source`):** `PDF p.5 Sec 4.5`; `planning/02_DECISIONS.md#D22`, `05_DOMAIN_RULES.md`; `docs/spec/business-rules.md#br-07`.
 - **Alternativalar:**

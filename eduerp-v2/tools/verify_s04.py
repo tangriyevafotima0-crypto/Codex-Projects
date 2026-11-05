@@ -242,6 +242,16 @@ def verify_prisma_schema_and_coverage(
         if req_field not in bc_block:
             raise ValueError(f"[ERR_S08_L02_MISSING_CYCLE_FIELD] BillingCycle missing {req_field}")
 
+    pay_block = model_blocks["Payment"]
+    for req_field in ["paidAt", "recordedAt", "externalReference", "paymentNote", "sourceChannel"]:
+        if req_field not in pay_block:
+            raise ValueError(f"[ERR_S10_MISSING_PAYMENT_FIELD] Payment missing {req_field}")
+
+    rcpt_block = model_blocks["Receipt"]
+    for req_field in ["currency", "paidAtSnapshot", "recordedAtSnapshot"]:
+        if req_field not in rcpt_block:
+            raise ValueError(f"[ERR_S10_MISSING_RECEIPT_FIELD] Receipt missing {req_field}")
+
     for ent, tbl in MUTABLE_ENTITIES.items():
         blk = model_blocks[ent]
         if f'@@map("{tbl}")' not in blk:
@@ -305,18 +315,22 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
     s06_mig_path = root / "apps/api/prisma/migrations/20261104000300_s06_auth_fixes_and_student_foundation/migration.sql"
     s07_mig_path = root / "apps/api/prisma/migrations/20261104000400_s07_academics_schedule_substitutes_grades/migration.sql"
     s08_mig_path = root / "apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql"
+    s10_mig_path = root / "apps/api/prisma/migrations/20261105000600_s10_payments_allocations_reversals_receipts/migration.sql"
 
     s05_sql = s05_mig_path.read_text(encoding="utf-8")
     s06_sql = s06_mig_path.read_text(encoding="utf-8")
     s07_sql = s07_mig_path.read_text(encoding="utf-8")
     s08_sql = s08_mig_path.read_text(encoding="utf-8")
+    s10_sql = s10_mig_path.read_text(encoding="utf-8")
 
     if '"billing_cycle_lesson_allocations"' not in s08_sql or '"uq_bcla_enrollment_lesson"' not in s08_sql:
         raise ValueError("[ERR_S08_L02_MISSING_BCLA] Migration 000500 must define billing_cycle_lesson_allocations with uq_bcla_enrollment_lesson")
     if '"discount_policy_status"' not in s08_sql or '"freeze_policy_status"' not in s08_sql:
         raise ValueError("[ERR_S09_MISSING_POLICY_STATUS_COLS] Migration 000500 must define discount_policy_status and freeze_policy_status")
+    if '"paid_at"' not in s10_sql or '"recorded_at"' not in s10_sql or '"paid_at_snapshot"' not in s10_sql:
+        raise ValueError("[ERR_S10_MISSING_PAYMENT_TIMESTAMPS] Migration 000600 must define paid_at, recorded_at, and paid_at_snapshot")
 
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql)
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql, s10_sql)
     expected_tables = set(ALL_ENTITIES.values())
     if set(table_cols.keys()) != expected_tables:
         diff = set(table_cols.keys()) ^ expected_tables
@@ -388,7 +402,7 @@ def verify_migration_and_db_roles(root: Path, mig_sql: str | None = None) -> dic
 
     return {
         "sql_tables_created": len(table_cols),
-        "migrations_verified": 5,
+        "migrations_verified": 6,
         "foreign_keys_restrict": fk_count,
         "named_check_constraints_verified": len(REQUIRED_CHECK_CONSTRAINTS),
         "partial_unique_indexes_verified": len(REQUIRED_PARTIAL_INDEXES),
@@ -413,7 +427,10 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
     s08_sql = (
         root / "apps/api/prisma/migrations/20261104000500_s08_billing_policy_cycles_trials_invoices/migration.sql"
     ).read_text(encoding="utf-8")
-    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql)
+    s10_sql = (
+        root / "apps/api/prisma/migrations/20261105000600_s10_payments_allocations_reversals_receipts/migration.sql"
+    ).read_text(encoding="utf-8")
+    table_cols = parse_migration_table_columns(mig_sql, s05_sql, s06_sql, s07_sql, s08_sql, s10_sql)
     table_cols.update(parse_migration_table_columns(s06_sql))
     table_cols.update(parse_migration_table_columns(s08_sql))
 
@@ -470,6 +487,14 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "apps/api/src/adjustments/adjustments.controller.ts",
         "apps/api/test/adjustments-unit.test.ts",
         "apps/api/test/adjustments/adjustments-lifecycle.integration.test.ts",
+        "apps/api/src/payments/dto.ts",
+        "apps/api/src/payments/allocation.service.ts",
+        "apps/api/src/payments/receipts.service.ts",
+        "apps/api/src/payments/payment.service.ts",
+        "apps/api/src/payments/reversal.service.ts",
+        "apps/api/src/payments/payments.controller.ts",
+        "apps/api/test/payments-unit.test.ts",
+        "apps/api/test/payments/payments-lifecycle.integration.test.ts",
     ]
     if test_corpus is None:
         test_corpus = "\n".join((root / rel).read_text(encoding="utf-8") for rel in ts_files)
@@ -503,6 +528,11 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         code = f"ADJ-IT-{i:02d}"
         if code not in test_corpus:
             raise ValueError(f"[ERR_S09_MISSING_ADJ_IT] Missing required Stage 09 integration test scenario {code}")
+
+    for i in range(1, 11):
+        code = f"PAY-IT-{i:02d}"
+        if code not in test_corpus:
+            raise ValueError(f"[ERR_S10_MISSING_PAY_IT] Missing required Stage 10 integration test scenario {code}")
 
     if "EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS" not in test_corpus or "eduerp_test_" not in test_corpus:
         raise ValueError("[ERR_S04_HARNESS_GUARD] Missing destructive test harness safety guards")
@@ -548,8 +578,8 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         raise ValueError("[ERR_S05_MISSING_RBAC_CSV] docs/security/rbac-matrix.csv does not exist")
     with rbac_csv_path.open(encoding="utf-8") as f:
         rbac_rows = list(csv.DictReader(f))
-    if len(rbac_rows) < 45:
-        raise ValueError("[ERR_S09_RBAC_CSV_ROWS] docs/security/rbac-matrix.csv must cover all 45 Stage 03-09 operations")
+    if len(rbac_rows) < 49:
+        raise ValueError("[ERR_S10_RBAC_CSV_ROWS] docs/security/rbac-matrix.csv must cover all 49 Stage 03-10 operations")
 
     return {
         "db_integration_scenarios_verified": 21,
@@ -558,6 +588,7 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "academics_integration_scenarios_verified": 13,
         "billing_integration_scenarios_verified": 13,
         "adjustments_integration_scenarios_verified": 8,
+        "payments_integration_scenarios_verified": 10,
         "rbac_matrix_rows_verified": len(rbac_rows),
         "ts_sql_insert_statements_verified": inserts_verified,
         "node_target": nvmrc,

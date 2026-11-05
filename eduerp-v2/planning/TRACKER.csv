@@ -44,11 +44,11 @@ step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
 09.03,09,"Freeze interval, dars kesishmasi va keyingi davr kreditini hisoblash",apps/api/src/adjustments/freeze-credit.ts,09.02,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
 09.04,09,"Chiqish sanasi, besh sabab va yakuniy hisobni yozish",apps/api/src/adjustments/withdrawal.ts,09.03,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
 09.05,09,"Review, regressiya va handoff",planning/state/handoffs/S09.md,09.04,APPROVED,state/reviews/S08-S09-M.md,92f30d623371df306acca5d209340ebafac892da
-10.01,10,Naqd/karta/Click/Payme/transfer qaydini pulning kichik birligida va tranzaksiyada yozish,apps/api/src/payments/payment.service.ts,09.05,NOT_STARTED,,
-10.02,10,"Qisman, ortiqcha va ko‘p invoicega taqsimlangan to‘lovni hisoblash",apps/api/src/payments/allocation.service.ts,10.01,NOT_STARTED,,
-10.03,10,"Sababli tuzatish so‘rovi, rahbar tasdig‘i va append-only reversal yaratish",apps/api/src/payments/reversal.service.ts,10.02,NOT_STARTED,,
-10.04,10,Noyob kvitansiya raqami va tasdiqlangan ledgerdan elektron kvitansiya yaratish,apps/api/src/payments/receipts.service.ts,10.03,NOT_STARTED,,
-10.05,10,"Review, regressiya va handoff",planning/state/handoffs/S10.md,10.04,NOT_STARTED,,
+10.01,10,Naqd/karta/Click/Payme/transfer qaydini pulning kichik birligida va tranzaksiyada yozish,apps/api/src/payments/payment.service.ts,09.05,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
+10.02,10,"Qisman, ortiqcha va ko‘p invoicega taqsimlangan to‘lovni hisoblash",apps/api/src/payments/allocation.service.ts,10.01,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
+10.03,10,"Sababli tuzatish so‘rovi, rahbar tasdig‘i va append-only reversal yaratish",apps/api/src/payments/reversal.service.ts,10.02,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
+10.04,10,Noyob kvitansiya raqami va tasdiqlangan ledgerdan elektron kvitansiya yaratish,apps/api/src/payments/receipts.service.ts,10.03,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
+10.05,10,"Review, regressiya va handoff",planning/state/handoffs/S10.md,10.04,APPROVED,state/reviews/S10-N.md,859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af
 11.01,11,"Kassa ochish, sanalgan pul, discrepancy va yopilgan smenani qulflash",apps/api/src/cash/shifts.service.ts,10.05,NOT_STARTED,,
 11.02,11,"Xarajat toifasi, hujjat, vakolat va reversal bilan naqd chiqimini yozish",apps/api/src/cash/expenses.service.ts,11.01,NOT_STARTED,,
 11.03,11,"Partial payment va promise atomik commandini integratsiya qilish, debt yopilganda eslatmani bekor qilish",apps/api/src/cash/promises.service.ts,11.02,NOT_STARTED,,

@@ -142,3 +142,22 @@ export type FreezeCreditBasis =
   | 'GROSS_PROPORTIONAL'
   | 'CALENDAR_DAY_PROPORTIONAL'
   | 'CASH_REFUND';
+
+export type PaymentMethod = 'CASH' | 'CARD' | 'CLICK' | 'PAYME' | 'TRANSFER';
+
+export type PaymentSourceChannel = 'ADMIN_MANUAL_ENTRY' | 'DIRECTOR_MANUAL_ENTRY';
+
+export type CashShiftStatus = 'OPEN' | 'CLOSED';
+
+export type PromiseToPayStatus = 'ACTIVE' | 'FULFILLED' | 'CANCELLED' | 'OVERDUE_NOTIFIED';
+
+export type ReversalOrRefundKind = 'ERROR_STORNO_REVERSAL' | 'PARTIAL_REFUND' | 'FULL_REFUND';
+
+export type ReversalOrRefundStatus =
+  | 'PENDING_DIRECTOR_APPROVAL'
+  | 'APPROVED_EXECUTED'
+  | 'REJECTED';
+
+export type ReversalDecision = 'APPROVED_EXECUTED' | 'REJECTED';
+
+export type DebtEffectPolicy = 'REOPEN_INVOICE_DEBT' | 'CLOSE_WITH_CREDIT_NOTE';

@@ -1,0 +1,154 @@
+{
+  "task_id": "S10FULL-N",
+  "status": "REVIEW_PASS_MANAGER_ASSISTED",
+  "base_commit": "42aeeeda869960acfc0d6381a1b5c1f24864a3e2",
+  "original_candidate_commit": "12492efa6539b14bb3426c1ddd614ee34030d7eb",
+  "tested_revision": "859fcb7e1b8013e96f0eb6f593b07f1a9ad1e8af",
+  "strict_run_id": 42029866557,
+  "strict_conclusion": "success",
+  "strict_jobs": [
+    127253263645,
+    127253335129,
+    127254759474
+  ],
+  "docker_conclusion": "success",
+  "independent_run_id": 42029866488,
+  "independent_job_id": 127253263549,
+  "independent_conclusion": "success",
+  "tests": {
+    "contracts": 1,
+    "api_unit": 49,
+    "worker": 4,
+    "G1_database": 18,
+    "G2_auth": 14,
+    "G3_students": 6,
+    "G4_academics": 10,
+    "G5_billing": 13,
+    "G6_adjustments": 6,
+    "G7_payments": 11,
+    "total": 132,
+    "failed": 0
+  },
+  "before_probe": {
+    "run_id": 42029483060,
+    "first": 201,
+    "same_day": 201,
+    "next_day": 422,
+    "payment_count": 1
+  },
+  "after_probe": {
+    "first": {
+      "status": 201,
+      "body": {
+        "payment_id": "e731dff8-e2a7-4913-bdb0-52553ccc5acb",
+        "receipt_id": "fa253bb8-7c33-4fd6-be2c-792ce68ace11",
+        "receipt_number": "RCP-202611-000001",
+        "student_id": "11111111-2222-4333-8444-000000000040",
+        "cash_shift_id": "2a457058-f8b9-4d88-a08a-4163228d080c",
+        "amount_uzs": "300000",
+        "currency": "UZS",
+        "payment_method": "CASH",
+        "paid_at_utc": "2026-11-05T07:00:00.000Z",
+        "recorded_at_utc": "2026-11-05T07:00:00.000Z",
+        "late_entry": false,
+        "external_reference": null,
+        "payment_note": null,
+        "source_channel": "DIRECTOR_MANUAL_ENTRY",
+        "allocated_total_uzs": "300000",
+        "unapplied_credit_uzs": "0",
+        "unapplied_credit_id": null,
+        "remaining_debt_uzs": "200000",
+        "promise_id": "9714f946-c4d8-4a4b-a385-c5eac33cf278",
+        "promise_date": "2026-11-05",
+        "allocations": [
+          {
+            "allocation_id": "90e9dd79-be52-4f47-a964-03750425d8bd",
+            "invoice_id": "ad0ad70d-076e-4b9b-8b2b-077c865541fd",
+            "allocated_amount_uzs": "300000",
+            "resulting_invoice_debt_uzs": "200000",
+            "resulting_invoice_status": "PARTIALLY_PAID"
+          }
+        ],
+        "is_fiscal_tax_receipt": false
+      }
+    },
+    "sameDay": {
+      "status": 201,
+      "body": {
+        "currency": "UZS",
+        "amount_uzs": "300000",
+        "late_entry": false,
+        "payment_id": "e731dff8-e2a7-4913-bdb0-52553ccc5acb",
+        "promise_id": "9714f946-c4d8-4a4b-a385-c5eac33cf278",
+        "receipt_id": "fa253bb8-7c33-4fd6-be2c-792ce68ace11",
+        "student_id": "11111111-2222-4333-8444-000000000040",
+        "allocations": [
+          {
+            "invoice_id": "ad0ad70d-076e-4b9b-8b2b-077c865541fd",
+            "allocation_id": "90e9dd79-be52-4f47-a964-03750425d8bd",
+            "allocated_amount_uzs": "300000",
+            "resulting_invoice_status": "PARTIALLY_PAID",
+            "resulting_invoice_debt_uzs": "200000"
+          }
+        ],
+        "paid_at_utc": "2026-11-05T07:00:00.000Z",
+        "payment_note": null,
+        "promise_date": "2026-11-05",
+        "cash_shift_id": "2a457058-f8b9-4d88-a08a-4163228d080c",
+        "payment_method": "CASH",
+        "receipt_number": "RCP-202611-000001",
+        "source_channel": "DIRECTOR_MANUAL_ENTRY",
+        "recorded_at_utc": "2026-11-05T07:00:00.000Z",
+        "external_reference": null,
+        "remaining_debt_uzs": "200000",
+        "allocated_total_uzs": "300000",
+        "unapplied_credit_id": null,
+        "unapplied_credit_uzs": "0",
+        "is_fiscal_tax_receipt": false
+      }
+    },
+    "nextDay": {
+      "status": 201,
+      "body": {
+        "currency": "UZS",
+        "amount_uzs": "300000",
+        "late_entry": false,
+        "payment_id": "e731dff8-e2a7-4913-bdb0-52553ccc5acb",
+        "promise_id": "9714f946-c4d8-4a4b-a385-c5eac33cf278",
+        "receipt_id": "fa253bb8-7c33-4fd6-be2c-792ce68ace11",
+        "student_id": "11111111-2222-4333-8444-000000000040",
+        "allocations": [
+          {
+            "invoice_id": "ad0ad70d-076e-4b9b-8b2b-077c865541fd",
+            "allocation_id": "90e9dd79-be52-4f47-a964-03750425d8bd",
+            "allocated_amount_uzs": "300000",
+            "resulting_invoice_status": "PARTIALLY_PAID",
+            "resulting_invoice_debt_uzs": "200000"
+          }
+        ],
+        "paid_at_utc": "2026-11-05T07:00:00.000Z",
+        "payment_note": null,
+        "promise_date": "2026-11-05",
+        "cash_shift_id": "2a457058-f8b9-4d88-a08a-4163228d080c",
+        "payment_method": "CASH",
+        "receipt_number": "RCP-202611-000001",
+        "source_channel": "DIRECTOR_MANUAL_ENTRY",
+        "recorded_at_utc": "2026-11-05T07:00:00.000Z",
+        "external_reference": null,
+        "remaining_debt_uzs": "200000",
+        "allocated_total_uzs": "300000",
+        "unapplied_credit_id": null,
+        "unapplied_credit_uzs": "0",
+        "is_fiscal_tax_receipt": false
+      }
+    },
+    "payment_count": 1
+  },
+  "manager_fix_project_files": 2,
+  "owner_decision": "OWNER-20261105-05",
+  "limitations": [
+    "Foundation scope only; no production release approval",
+    "Real PG and Docker tests run on GitHub Actions",
+    "Actual gateway/transfer excluded; unconfirmed service refund/cancellation policy gated"
+  ]
+}
