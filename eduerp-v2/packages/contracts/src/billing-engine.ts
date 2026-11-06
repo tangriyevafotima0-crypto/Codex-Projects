@@ -408,9 +408,8 @@ async function resolveCanonicalGroupTariffAsOf(
        FROM "course_price_history"
       WHERE "center_id" = $1::uuid
         AND "course_id" = $2::uuid
-        AND ("group_id" = $3::uuid OR "group_id" IS NULL)
-      ORDER BY CASE WHEN "group_id" = $3::uuid THEN 0 ELSE 1 END ASC,
-               "effective_from" DESC,
+        AND "group_id" = $3::uuid
+      ORDER BY "effective_from" DESC,
                "target_version_snapshot" DESC,
                "created_at" DESC,
                "id" DESC`,

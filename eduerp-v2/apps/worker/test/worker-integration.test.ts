@@ -472,7 +472,7 @@ describe('Gate G10 — Stage 13 Outbox Lease/Fencing/Retry/DLQ, 09:00 Promise Re
         cycleId,
         CENTER_A.centerId,
         enrollmentId,
-        `2026-11-FIX-${seq}`,
+        '2026-11',
         CENTER_A.policyId,
       ],
     );
@@ -2398,8 +2398,8 @@ describe('Gate G10 — Stage 13 Outbox Lease/Fencing/Retry/DLQ, 09:00 Promise Re
          "id", "center_id", "student_id", "enrollment_id",
          "credit_reason", "amount_uzs", "source_event_key", "actor_type", "actor_staff_id"
        ) VALUES
-       ($1::uuid, $3::uuid, $4::uuid, $6::uuid, 'FREEZE_COMPENSATION', 120000, $8, 'STAFF', $10::uuid),
-       ($2::uuid, $3::uuid, $5::uuid, $7::uuid, 'FREEZE_COMPENSATION', 120000, $9, 'STAFF', $10::uuid)`,
+       ($1::uuid, $3::uuid, $4::uuid, $6::uuid, 'FREEZE_NEXT_PERIOD_CREDIT', 120000, $8, 'STAFF', $10::uuid),
+       ($2::uuid, $3::uuid, $5::uuid, $7::uuid, 'FREEZE_NEXT_PERIOD_CREDIT', 120000, $9, 'STAFF', $10::uuid)`,
       [
         crypto.randomUUID(),
         crypto.randomUUID(),
@@ -3141,7 +3141,7 @@ describe('Gate G10 — Stage 13 Outbox Lease/Fencing/Retry/DLQ, 09:00 Promise Re
       if (fs.existsSync(candidate)) {
         const content = fs.readFileSync(candidate, 'utf8');
         assert.equal(
-          content.includes('apps/api') || content.includes('@eduerp/api'),
+          Array.from(content.matchAll(/(?:\bfrom\s*|\bimport\s*\(|\brequire\s*\()(['\"])([^'\"]+)\1/g)).some((match) => match[2].includes('apps/api') || match[2].includes('@eduerp/api')),
           false,
           `Worker source file ${rel} must not import from apps/api at runtime`,
         );
@@ -3176,4 +3176,51 @@ describe('Gate G10 — Stage 13 Outbox Lease/Fencing/Retry/DLQ, 09:00 Promise Re
     assert.notEqual(badProc.code, 0);
     assert.match(badProc.stderr, /worker_startup_failed/);
   });
+  it('WORKER-IT-25 (manager regression): active course history never overrides group baseline before a future group tariff, and the future group price activates on its own date', async () => {
+    const courseId = crypto.randomUUID();
+    const groupId = crypto.randomUUID();
+    const studentId = crypto.randomUUID();
+    const enrollmentId = crypto.randomUUID();
+    await env.apiPool.query(
+      `INSERT INTO courses (id,center_id,name,default_monthly_fee_uzs,default_lessons_per_cycle,status)
+       VALUES ($1,$2,'Manager group precedence course',600000,12,'ACTIVE')`,
+      [courseId, CENTER_A.centerId],
+    );
+    await env.apiPool.query(
+      `INSERT INTO course_groups (id,center_id,course_id,name,primary_teacher_id,billing_mode,current_fee_uzs,lessons_per_cycle,schedule_days_json,starts_time,duration_minutes,timezone,status,billing_policy_version_id)
+       VALUES ($1,$2,$3,'Manager future group tariff',$4,'CALENDAR_PRO_RATA',300000,12,'["MON","WED","FRI"]','09:00',90,'Asia/Tashkent','ACTIVE',$5)`,
+      [groupId, CENTER_A.centerId, courseId, CENTER_A.teacher1Id, CENTER_A.policyId],
+    );
+    await env.apiPool.query(
+      `INSERT INTO students (id,center_id,student_code,full_name,normalized_name,status)
+       VALUES ($1,$2,'MGR-TARIFF-25','Synthetic tariff student','synthetic tariff student','ACTIVE')`,
+      [studentId, CENTER_A.centerId],
+    );
+    await env.apiPool.query(
+      `INSERT INTO enrollments (id,center_id,student_id,group_id,status,enrolled_at_date)
+       VALUES ($1,$2,$3,$4,'ACTIVE','2026-11-01')`,
+      [enrollmentId, CENTER_A.centerId, studentId, groupId],
+    );
+    await env.apiPool.query(
+      `INSERT INTO course_price_history (id,center_id,course_id,group_id,previous_fee_uzs,new_fee_uzs,effective_from,changed_by_staff_id,target_version_snapshot)
+       VALUES ($1,$2,$3,NULL,480000,600000,'2026-01-01',$4,2),
+              ($5,$2,$3,$6,300000,350000,'2026-12-01',$4,2)`,
+      [crypto.randomUUID(), CENTER_A.centerId, courseId, CENTER_A.directorId, crypto.randomUUID(), groupId],
+    );
+    const port = new CanonicalSqlBillingCycleWorkerPort(workerDb);
+    const first = await port.issueWorkerInvoiceForCycle({
+      centerId: CENTER_A.centerId, enrollmentId, cycleType: 'CALENDAR_MONTH',
+      cycleKey: 'CAL:2026-11', periodStartDate: '2026-11-01', systemJobName: 'ManagerTariff25',
+    });
+    const second = await port.issueWorkerInvoiceForCycle({
+      centerId: CENTER_A.centerId, enrollmentId, cycleType: 'CALENDAR_MONTH',
+      cycleKey: 'CAL:2026-12', periodStartDate: '2026-12-01', systemJobName: 'ManagerTariff25',
+    });
+    const snapshots = await env.apiPool.query<{ tariff_snapshot_uzs: string }>(
+      `SELECT tariff_snapshot_uzs::text FROM invoices WHERE id = ANY($1::uuid[]) ORDER BY issued_at, invoice_number`,
+      [[first.invoice.invoice_id, second.invoice.invoice_id]],
+    );
+    assert.deepEqual(snapshots.rows.map((row) => row.tariff_snapshot_uzs), ['300000', '350000']);
+  });
+
 });
