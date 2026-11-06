@@ -58,7 +58,7 @@ export type CanonicalFaultInjectionStep =
   | 'OUTBOX_EVENT';
 
 export interface CanonicalSqlQueryExecutor {
-  query<T = Record<string, unknown>>(
+  query<T extends Record<string, unknown> = Record<string, unknown>>(
     sql: string,
     params?: readonly unknown[],
   ): Promise<{ readonly rows: readonly T[]; readonly rowCount?: number | null }>;

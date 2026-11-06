@@ -11,10 +11,7 @@ import {
   CanonicalFaultInjectionStep,
   CanonicalInvoiceLineDto,
   CanonicalInvoiceResponseDto,
-  CollectionTiming,
-  DueDateRule,
   executeCanonicalBillingCycleIssuanceInTx,
-  InvoiceStatus,
   loadCanonicalInvoiceResponseInTx,
 } from '@eduerp/contracts';
 import * as crypto from 'node:crypto';
@@ -85,7 +82,7 @@ export class InvoiceGeneratorService {
     @Inject(API_CONFIG_TOKEN) private readonly config: ApiEnvConfig,
     @Inject(DatabaseService) private readonly databaseService: DatabaseService,
     @Inject(ClockService) private readonly clock: ClockService,
-    @Inject(BillingPolicyService) private readonly policyService: BillingPolicyService,
+    @Inject(BillingPolicyService) _policyService: BillingPolicyService,
   ) {}
 
   public async loadInvoiceResponseInTx(
