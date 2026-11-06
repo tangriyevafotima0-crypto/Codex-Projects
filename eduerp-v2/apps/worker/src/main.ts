@@ -1,4 +1,19 @@
+import { BillingCycleWorkerPort } from '@eduerp/contracts';
 import { loadWorkerEnv, redactWorkerConfig, WorkerEnvConfig } from './config/env';
+import { sanitizeWorkerErrorMessage, WorkerDatabase } from './database';
+import {
+  ExternalNotificationTransportAdapter,
+  OutboxWorker,
+} from './outbox.worker';
+import { RemindersWorker } from './reminders.worker';
+import { SchedulesWorker } from './schedules.worker';
+import { TeacherPingWorker } from './teacher-ping.worker';
+
+export * from './database';
+export * from './outbox.worker';
+export * from './reminders.worker';
+export * from './teacher-ping.worker';
+export * from './schedules.worker';
 
 export type WorkerLifecycleState = 'IDLE' | 'RUNNING' | 'STOPPING' | 'STOPPED';
 
@@ -14,19 +29,39 @@ export interface WorkerLogEvent {
 export class WorkerRuntimeSkeleton {
   private readonly config: WorkerEnvConfig;
   private readonly logger: (entry: WorkerLogEvent) => void;
+  private readonly db: WorkerDatabase;
+  public readonly outboxWorker: OutboxWorker;
+  public readonly remindersWorker: RemindersWorker;
+  public readonly teacherPingWorker: TeacherPingWorker;
+  public readonly schedulesWorker: SchedulesWorker;
   private state: WorkerLifecycleState = 'IDLE';
-  private heartbeatTimer: NodeJS.Timeout | null = null;
+  private pollTimer: NodeJS.Timeout | null = null;
+  private inFlightTick: Promise<void> | null = null;
+  private pollCycleCount = 0;
 
   constructor(
     config: WorkerEnvConfig,
-    logger: (entry: WorkerLogEvent) => void = (entry) => process.stdout.write(`${JSON.stringify(entry)}\n`),
+    logger: (entry: WorkerLogEvent) => void = (entry) =>
+      process.stdout.write(`${JSON.stringify(entry)}\n`),
+    customDb?: WorkerDatabase,
+    customTransportAdapter?: ExternalNotificationTransportAdapter,
+    customBillingCyclePort?: BillingCycleWorkerPort,
   ) {
     this.config = config;
     this.logger = logger;
+    this.db = customDb ?? new WorkerDatabase(config);
+    this.outboxWorker = new OutboxWorker(config, this.db, customTransportAdapter);
+    this.remindersWorker = new RemindersWorker(config, this.db);
+    this.teacherPingWorker = new TeacherPingWorker(config, this.db);
+    this.schedulesWorker = new SchedulesWorker(config, this.db, customBillingCyclePort);
   }
 
   public getState(): WorkerLifecycleState {
     return this.state;
+  }
+
+  public getPollCycleCount(): number {
+    return this.pollCycleCount;
   }
 
   public start(): void {
@@ -40,25 +75,90 @@ export class WorkerRuntimeSkeleton {
       worker_id: this.config.workerId,
       center_slug: this.config.centerSlug,
       details: {
-        stage_boundary: 'S03_FOUNDATION_SKELETON_ONLY_NO_OUTBOX_BUSINESS_JOBS_YET',
+        stage_boundary: 'S13_OUTBOX_REMINDERS_PINGS_SCHEDULER_ACTIVE',
         config: redactWorkerConfig(this.config),
       },
       timestamp_utc: new Date().toISOString(),
     });
 
-    this.heartbeatTimer = setInterval(() => {
-      if (this.state === 'RUNNING') {
-        this.logger({
-          level: 'info',
-          event: 'worker_idle_heartbeat',
-          worker_id: this.config.workerId,
-          center_slug: this.config.centerSlug,
-          details: { bot_outbound_enabled: this.config.botOutboundEnabled },
-          timestamp_utc: new Date().toISOString(),
-        });
+    // S01: Schedule non-overlapping automatic poll cycles on pollIntervalMs
+    this.pollTimer = setInterval(() => {
+      if (this.state === 'RUNNING' && this.inFlightTick === null) {
+        void this.executePollCycle();
       }
     }, this.config.pollIntervalMs);
-    // The daemon must stay alive while waiting for work; stop() clears this handle.
+  }
+
+  /**
+   * S01: Executes one full non-overlapping worker poll cycle across all Stage 13 jobs
+   * (`remindersWorker`, `teacherPingWorker`, `schedulesWorker`, `outboxWorker`) with
+   * per-job failure isolation so a policy/transient error in one job never aborts the
+   * remaining jobs in the same cycle.
+   */
+  public async executePollCycle(nowUtc: Date = new Date()): Promise<void> {
+    if (this.state !== 'RUNNING' || this.inFlightTick !== null) {
+      return;
+    }
+    const tickPromise = (async () => {
+      this.pollCycleCount += 1;
+      const isolatedTasks: Array<{
+        readonly jobName: string;
+        readonly run: () => Promise<unknown>;
+      }> = [
+        {
+          jobName: 'PromiseReminderJob',
+          run: () => this.remindersWorker.runPromiseReminderTick({ nowUtc }),
+        },
+        {
+          jobName: 'TeacherPingAndEscalationJob',
+          run: () => this.teacherPingWorker.runTeacherPingAndEscalationTick({ nowUtc }),
+        },
+        {
+          jobName: 'BillingCycleCutoffAndCatchUpJob',
+          run: () => this.schedulesWorker.runBillingCycleCutoffAndCatchUpJob({ nowUtc }),
+        },
+        {
+          jobName: 'UnclosedCashShiftReminderJob',
+          run: () => this.schedulesWorker.runUnclosedCashShiftReminderJob({ nowUtc }),
+        },
+        {
+          jobName: 'TrialNoShowFollowUpJob',
+          run: () => this.schedulesWorker.runTrialNoShowFollowUpJob({ nowUtc }),
+        },
+        {
+          jobName: 'OutboxTickJob',
+          run: () => this.outboxWorker.runOutboxTick({ nowUtc }),
+        },
+      ];
+
+      for (const task of isolatedTasks) {
+        if (this.state !== 'RUNNING') {
+          break;
+        }
+        try {
+          await task.run();
+        } catch (err: unknown) {
+          this.logger({
+            level: 'warn',
+            event: 'worker_job_isolated_error',
+            worker_id: this.config.workerId,
+            center_slug: this.config.centerSlug,
+            details: {
+              job_name: task.jobName,
+              reason: sanitizeWorkerErrorMessage(err),
+            },
+            timestamp_utc: new Date().toISOString(),
+          });
+        }
+      }
+    })();
+
+    this.inFlightTick = tickPromise;
+    try {
+      await tickPromise;
+    } finally {
+      this.inFlightTick = null;
+    }
   }
 
   public async stop(signal: string): Promise<void> {
@@ -66,10 +166,17 @@ export class WorkerRuntimeSkeleton {
       return;
     }
     this.state = 'STOPPING';
-    if (this.heartbeatTimer) {
-      clearInterval(this.heartbeatTimer);
-      this.heartbeatTimer = null;
+    if (this.pollTimer) {
+      clearInterval(this.pollTimer);
+      this.pollTimer = null;
     }
+    if (this.inFlightTick) {
+      await Promise.race([
+        this.inFlightTick,
+        new Promise<void>((resolve) => setTimeout(resolve, this.config.shutdownTimeoutMs)),
+      ]);
+    }
+    await this.db.close();
     this.state = 'STOPPED';
     this.logger({
       level: 'info',

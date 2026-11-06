@@ -1,0 +1,130 @@
+{
+  "task_id": "S13FIX-S",
+  "base_commit": "690914fc7aa46cb58dfe176a50cffc4a4ae239b1",
+  "candidate_input_commit": "595f07bde8a2a4a1980b87f559a1a510edf437c0",
+  "accepted_s12_commit_preserved": "0b7ea62efe10503908e3176bf608d55c62ddf819",
+  "status": "IN_REVIEW",
+  "completed_steps": [
+    "13.01",
+    "13.02",
+    "13.03",
+    "13.04",
+    "13.05"
+  ],
+  "remediated_findings": [
+    "S01",
+    "S02",
+    "S03",
+    "S04",
+    "S05",
+    "S06",
+    "S07",
+    "S08"
+  ],
+  "needs_manager_dependency_refresh": false,
+  "files": [
+    {
+      "path": "eduerp-v2/ARTIFACT_PROOF.md",
+      "sha256": "e1ccc0ce5ca88cf02265c6da77ff3017dd44deb38a4595f66cf8063d782fe98a",
+      "bytes": 1785
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/database.ts",
+      "sha256": "a5d6b6c9fb985f580fe9df5c0079dd8e0daabe79ee852d2b084c768ad5d843cc",
+      "bytes": 5327
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/main.ts",
+      "sha256": "4988cc37d0d5538909551f740b5dab064d1dcae9ca67db571486aaf92c61a74b",
+      "bytes": 7121
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/outbox.worker.ts",
+      "sha256": "8f8dc40e2b21dab25855720573bf8c5d3ec78caa363ad230b4e0010159552454",
+      "bytes": 79979
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/reminders.worker.ts",
+      "sha256": "f083e6966855ed6adfc1e1067cfc4fd5d36e1ac4849f5a50f9fdd24d641fcc65",
+      "bytes": 18288
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/schedules.worker.ts",
+      "sha256": "5565789b742f88a792301c66d4688680318dcf46af298c4565ad5dfa935fa955",
+      "bytes": 75629
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/teacher-ping.worker.ts",
+      "sha256": "fcb6afda38ad25115b538ba0ad9c21cc88508f7fb6d2e402c029b8cda7672a9a",
+      "bytes": 20025
+    },
+    {
+      "path": "eduerp-v2/apps/worker/test/worker-integration.test.ts",
+      "sha256": "f1124267bb505f3e44a3df4534dce483adf220a5f52f131f3b1e58a39c65c7f1",
+      "bytes": 81994
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-013-outbox-worker-lease-fencing-reminders-and-scheduler.md",
+      "sha256": "c52308fd3c0a9f4abf24002ef4b6b60cf49485d5418dbc34700f352a0ccc7642",
+      "bytes": 5867
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S13-S.md",
+      "sha256": "b9118005a53c11936054dd9ab15243c4e3fccdb3840bd3c90271b8b8891490a9",
+      "bytes": 6262
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S13.md",
+      "sha256": "dc4be025cbfcadc32f06678eb2b54273694758cd07c896869b57bf83cdb24202",
+      "bytes": 3569
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S13.md",
+      "sha256": "452f7cf145f9f2fe89c74cc89c85085a8abcb1df4ab1f2905279afab252e38ee",
+      "bytes": 2483
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.01.md",
+      "sha256": "4d98e5197a7fb32869a2e8bfc31257ff132a64924c4716c9452579db4f12e01a",
+      "bytes": 630
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.02.md",
+      "sha256": "27d5353a207b316db233cec1da06102a804dfe47d017f87059a289a2fc9d6230",
+      "bytes": 506
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.03.md",
+      "sha256": "c0a5063908e5fabf2bbd836c5004bb4316efacde74c2646fe4e698002fd9c41b",
+      "bytes": 456
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.04.md",
+      "sha256": "1284545b1c97a4f9031069d6bf69c98aafd2194c850bf2054bccf28e8f675885",
+      "bytes": 576
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.05.md",
+      "sha256": "fdc1f4f521901b0ca245fbb3545896c4ff15f4bc788e8517edeccd942fc20e56",
+      "bytes": 473
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "c8cbaba818718cfbd8824b0f9ea85e9c89f54502b78fdd290a980fa155703556",
+      "bytes": 37507
+    }
+  ],
+  "deleted_files": [],
+  "actual_tests": [
+    "python3 -B VERIFY_INPUT.py -> PASS (552 files)",
+    "python3 -B tools/verify_s01_s02.py -> PASS",
+    "python3 -B tools/verify_s04.py -> PASS (332 SQL INSERTs, 46 models, 8 migrations, WORKER-IT-01..16 verified)",
+    "python3 -B planning/tools/check_plan.py -> PASS",
+    "python3 -B planning/tools/test_plan.py -> PASS (96 acceptance scenarios)",
+    "python3 -B manager_reference/audit_submission.py -> PACKAGING PASS"
+  ],
+  "not_run": [
+    "npm run test:worker (Gate G10 WORKER-IT-01..16) -> NOT_RUN in offline sandbox VM (no local node_modules or running PostgreSQL 16 daemon; wired in infra/ci/eduerp-ci.yml)",
+    "npm run test:attendance (Gate G9) & npm run typecheck & npm run lint -> NOT_RUN in offline sandbox VM"
+  ]
+}

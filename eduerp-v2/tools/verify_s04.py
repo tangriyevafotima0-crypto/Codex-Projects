@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""EduERP v2.0 — Stage 04..09 Offline Structural, Schema, SQL, RBAC & Test Verifier (tools/verify_s04.py).
+"""EduERP v2.0 — Stage 04..13 Offline Structural, Schema, SQL, RBAC & Test Verifier (tools/verify_s04.py).
 
 Verifies all Stage 04 (`04.01`..`04.05`, `F01`..`F10`), Stage 05 (`05.01`..`05.05`), Stage 06 (`06.01`..`06.05`),
-Stage 07 (`07.01`..`07.05`), Stage 08 (`08.01`..`08.05`, `K01`..`K08`, `L01`..`L03`), and Stage 09 (`09.01`..`09.05`,
-`OWNER-20261105-04`) artifacts honestly:
+Stage 07 (`07.01`..`07.05`), Stage 08 (`08.01`..`08.05`, `K01`..`K08`, `L01`..`L03`), Stage 09 (`09.01`..`09.05`,
+`OWNER-20261105-04`), Stage 10..12, and Stage 13 (`13.01`..`13.05`, `S01`..`S08`) artifacts honestly:
 1. `apps/api/prisma/schema.prisma` maps all 46 canonical entities, has ZERO `P1012` 1-to-1 composite relation uniqueness errors,
    defines composite `@id([centerId, actorId, operationType, clientOperationUuid])` on `ClientOperationLog`, and includes
    `L02` package allocation snapshot fields on `BillingCycle` and `OWNER-20261105-04` S09 policy confirmation fields on
    `BillingPolicyVersion`, `DiscountApproval`, and `FreezeRecord`.
-2. Cumulative PostgreSQL migrations (`000100`..`000500`) define all 46 canonical tables plus technical helper tables
+2. Cumulative PostgreSQL migrations (`000100`..`000800`) define all 46 canonical tables plus technical helper tables
    (`auth_rate_limit_buckets`, `billing_cycle_lesson_allocations`), `ON DELETE RESTRICT` FKs, 9 named CHECKs,
    5 partial unique indexes, immutability triggers, relational lineage triggers, and least-privilege role grants.
 3. Every SQL `INSERT INTO` statement in TypeScript source/tests references valid columns from the cumulative SQL migrations.
-4. `docs/security/rbac-matrix.csv` covers all 45 Stage 03–09 operations.
+4. `docs/security/rbac-matrix.csv` covers all 60 Stage 03–12 operations.
+5. `apps/worker/test/worker-integration.test.ts` declares all 16 Stage 13 scenarios (`WORKER-IT-01..16`).
 """
 from __future__ import annotations
 
@@ -532,6 +533,13 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "apps/api/src/attendance/attendance.controller.ts",
         "apps/api/test/attendance-unit.test.ts",
         "apps/api/test/attendance/attendance-lifecycle.integration.test.ts",
+        "apps/worker/src/database.ts",
+        "apps/worker/src/outbox.worker.ts",
+        "apps/worker/src/reminders.worker.ts",
+        "apps/worker/src/teacher-ping.worker.ts",
+        "apps/worker/src/schedules.worker.ts",
+        "apps/worker/src/main.ts",
+        "apps/worker/test/worker-integration.test.ts",
     ]
     if test_corpus is None:
         test_corpus = "\n".join((root / rel).read_text(encoding="utf-8") for rel in ts_files)
@@ -580,6 +588,11 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         code = f"ATT-IT-{i:02d}"
         if code not in test_corpus:
             raise ValueError(f"[ERR_S12_MISSING_ATT_IT] Missing required Stage 12 integration test scenario {code}")
+
+    for i in range(1, 17):
+        code = f"WORKER-IT-{i:02d}"
+        if code not in test_corpus:
+            raise ValueError(f"[ERR_S13_MISSING_WORKER_IT] Missing required Stage 13 integration test scenario {code}")
 
     if "EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS" not in test_corpus or "eduerp_test_" not in test_corpus:
         raise ValueError("[ERR_S04_HARNESS_GUARD] Missing destructive test harness safety guards")
@@ -638,6 +651,7 @@ def verify_integration_tests_and_sql_columns(root: Path, test_corpus: str | None
         "payments_integration_scenarios_verified": 10,
         "cash_integration_scenarios_verified": 13,
         "attendance_integration_scenarios_verified": 12,
+        "worker_integration_scenarios_verified": 16,
         "rbac_matrix_rows_verified": len(rbac_rows),
         "ts_sql_insert_statements_verified": inserts_verified,
         "node_target": nvmrc,
@@ -740,7 +754,7 @@ def main() -> int:
         "s04_negative_self_tests": neg,
     }
     print(json.dumps(summary, indent=2, ensure_ascii=False))
-    print("PASS: tools/verify_s04.py verified all Stage 04..09 schema, migration, DB role, RBAC, and test invariants.")
+    print("PASS: tools/verify_s04.py verified all Stage 04..13 schema, migration, DB role, RBAC, and test invariants.")
     return 0
 
 

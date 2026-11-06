@@ -28,7 +28,8 @@
     "test:adjustments": "npm run build && npm --workspace=@eduerp/api run test:adjustments",
     "test:payments": "npm run build && npm --workspace=@eduerp/api run test:payments",
     "test:cash": "npm run build && npm --workspace=@eduerp/api run test:cash",
-    "test:attendance": "npm run build && npm --workspace=@eduerp/api run test:attendance"
+    "test:attendance": "npm run build && npm --workspace=@eduerp/api run test:attendance",
+    "test:worker": "npm run build && npm --workspace=@eduerp/worker run test:integration"
   },
   "devDependencies": {
     "@types/node": "24.13.6",
