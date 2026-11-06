@@ -55,3 +55,8 @@ S01–S12approved60/120=50%,12/24. S12isolated171tests+Docker,fullR172PASSbefore
 
 ## S review — current state,2026-11-06
 S13FIX-S raw184PASS/4FAIL overallFAIL, G10 12PASS/4FAIL. S01–S12 remain60/120=50%. NextS13FIX-T T01–T06wholeworkerfix/acceptance. Repeatedpoll financialgate unresolved, so noS14draft thisbatch. No productsource or fixture managerassists inSreview. Shortchat+actualsourceevidence+limitcheckpoint remain. No empirical modelcomparison; submissionmodel unspecified.
+
+
+## T acceptance and stable executor folder —2026-11-06
+User explicitly wants the connected folder to remain permanent. Executorroot:/Users/selfish/Documents/Codex/2026-11-03/bun/work/gemini-eduerp-s13t; historicalname does not restrictfuturestage. Managerarchivesoldinput/submission/checkpoint and preparesnewverifiedbaselineinsamefolder; usercopiespromptonly,noZIPreupload/manualreextract/newpermission. BackupZIPstillavailable. Do notoverwriteunknownnewexecutorchanges.
+S01–S13approved65/12054.17%,199tests+Docker;nextS14FULL-UwholeTelegramstage+sharednotificationconfigOWNER06. Allchannelscenterselectable/managed/defaultOFF; realdeliverynotauthorized. Historicalper-artifactlimits/speculationunchanged; no modelbenchmark.

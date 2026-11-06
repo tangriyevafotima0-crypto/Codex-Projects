@@ -468,24 +468,27 @@ model GradeEntry {
 }
 
 model BillingPolicyVersion {
-  id                           String    @id @default(uuid()) @db.Uuid
-  centerId                     String    @map("center_id") @db.Uuid
-  versionNumber                Int       @map("version_number")
-  billingMode                  String    @map("billing_mode") @db.VarChar(32)
-  roundingMode                 String    @map("rounding_mode") @db.VarChar(32)
-  discountStackingMode         String    @default("UNCONFIGURED") @map("discount_stacking_mode") @db.VarChar(32)
-  freezeCreditBasis            String    @default("UNCONFIGURED") @map("freeze_credit_basis") @db.VarChar(32)
-  rollingMonthEndMode          String    @map("rolling_month_end_mode") @db.VarChar(32)
-  packageCancelMode            String    @map("package_cancel_mode") @db.VarChar(32)
-  refundDebtMode               String    @map("refund_debt_mode") @db.VarChar(32)
-  firstPartialChargeMode       String    @default("UNCONFIGURED") @map("first_partial_charge_mode") @db.VarChar(32)
-  cancelledLessonProrationMode String    @default("EXCLUDE_CANCELLED_FROM_PLANNED") @map("cancelled_lesson_proration_mode") @db.VarChar(32)
-  policyConfirmationStatus     String    @default("UNCONFIGURED") @map("policy_confirmation_status") @db.VarChar(24)
-  discountPolicyStatus         String    @default("UNCONFIGURED") @map("discount_policy_status") @db.VarChar(24)
-  freezePolicyStatus           String    @default("UNCONFIGURED") @map("freeze_policy_status") @db.VarChar(24)
-  effectiveFromDate            DateTime? @map("effective_from_date") @db.Date
-  createdByStaffId             String?   @map("created_by_staff_id") @db.Uuid
-  createdAt                    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  id                               String    @id @default(uuid()) @db.Uuid
+  centerId                         String    @map("center_id") @db.Uuid
+  versionNumber                    Int       @map("version_number")
+  billingMode                      String    @map("billing_mode") @db.VarChar(32)
+  roundingMode                     String    @map("rounding_mode") @db.VarChar(32)
+  discountStackingMode             String    @default("UNCONFIGURED") @map("discount_stacking_mode") @db.VarChar(32)
+  freezeCreditBasis                String    @default("UNCONFIGURED") @map("freeze_credit_basis") @db.VarChar(32)
+  rollingMonthEndMode              String    @map("rolling_month_end_mode") @db.VarChar(32)
+  packageCancelMode                String    @map("package_cancel_mode") @db.VarChar(32)
+  refundDebtMode                   String    @map("refund_debt_mode") @db.VarChar(32)
+  firstPartialChargeMode           String    @default("UNCONFIGURED") @map("first_partial_charge_mode") @db.VarChar(32)
+  cancelledLessonProrationMode     String    @default("EXCLUDE_CANCELLED_FROM_PLANNED") @map("cancelled_lesson_proration_mode") @db.VarChar(32)
+  policyConfirmationStatus         String    @default("UNCONFIGURED") @map("policy_confirmation_status") @db.VarChar(24)
+  discountPolicyStatus             String    @default("UNCONFIGURED") @map("discount_policy_status") @db.VarChar(24)
+  freezePolicyStatus               String    @default("UNCONFIGURED") @map("freeze_policy_status") @db.VarChar(24)
+  notificationPolicyStatus         String    @default("UNCONFIGURED") @map("notification_policy_status") @db.VarChar(24)
+  promiseReminderChannelPolicy     String    @default("UNCONFIGURED_CHANNEL_POLICY") @map("promise_reminder_channel_policy") @db.VarChar(40)
+  notificationPolicyEffectiveUntil DateTime? @map("notification_policy_effective_until") @db.Date
+  effectiveFromDate                DateTime? @map("effective_from_date") @db.Date
+  createdByStaffId                 String?   @map("created_by_staff_id") @db.Uuid
+  createdAt                        DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
 
   billingCycles     BillingCycle[]
   invoices          Invoice[]
@@ -1148,25 +1151,29 @@ model OutboxConsumerReceipt {
 }
 
 model NotificationDelivery {
-  id                 String   @id @default(uuid()) @db.Uuid
-  centerId           String   @map("center_id") @db.Uuid
-  outboxEventId      String   @map("outbox_event_id") @db.Uuid
-  recipientType      String   @map("recipient_type") @db.VarChar(16)
-  recipientId        String   @map("recipient_id") @db.Uuid
-  telegramChatId     BigInt?  @map("telegram_chat_id") @db.BigInt
-  deliveryStatus     String   @map("delivery_status") @db.VarChar(24)
-  attemptCount       Int      @default(0) @map("attempt_count")
-  nextAttemptAt      DateTime @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
-  lastLeaseToken     BigInt   @default(0) @map("last_lease_token") @db.BigInt
-  telegramMessageId  BigInt?  @map("telegram_message_id") @db.BigInt
-  retryAfterSeconds  Int?     @map("retry_after_seconds")
-  version            Int      @default(1)
-  createdAt          DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt          DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  id                    String   @id @default(uuid()) @db.Uuid
+  centerId              String   @map("center_id") @db.Uuid
+  outboxEventId         String   @map("outbox_event_id") @db.Uuid
+  recipientType         String   @map("recipient_type") @db.VarChar(16)
+  recipientId           String   @map("recipient_id") @db.Uuid
+  targetStudentId       String?  @map("target_student_id") @db.Uuid
+  payloadProjectionJson Json?    @map("payload_projection_json") @db.JsonB
+  policyVersionId       String?  @map("policy_version_id") @db.Uuid
+  telegramChatId        BigInt?  @map("telegram_chat_id") @db.BigInt
+  deliveryStatus        String   @map("delivery_status") @db.VarChar(24)
+  attemptCount          Int      @default(0) @map("attempt_count")
+  nextAttemptAt         DateTime @default(now()) @map("next_attempt_at") @db.Timestamptz(6)
+  lastLeaseToken        BigInt   @default(0) @map("last_lease_token") @db.BigInt
+  telegramMessageId     BigInt?  @map("telegram_message_id") @db.BigInt
+  retryAfterSeconds     Int?     @map("retry_after_seconds")
+  version               Int      @default(1)
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt             DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
 
   outboxEvent OutboxEvent @relation(fields: [outboxEventId, centerId], references: [id, centerId], onDelete: Restrict, onUpdate: Restrict)
 
   @@unique([outboxEventId, recipientType, recipientId])
+  @@index([centerId, targetStudentId])
   @@map("notification_deliveries")
 }
 

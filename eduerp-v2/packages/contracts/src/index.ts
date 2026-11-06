@@ -268,3 +268,70 @@ export function applyOfflineAttendanceSyncAck(
     }),
   );
 }
+
+export type OutboxEventStatus =
+  | 'PENDING'
+  | 'LEASED'
+  | 'COMPLETED'
+  | 'DEAD_LETTER'
+  | 'SUPERSEDED_BY_RESTORE';
+
+export type NotificationRecipientType = 'GUARDIAN' | 'DIRECTOR' | 'TEACHER' | 'ADMIN';
+
+export type NotificationDeliveryStatus =
+  | 'QUEUED'
+  | 'API_ACCEPTED'
+  | 'RETRY_429'
+  | 'FAILED_403_BLOCKED'
+  | 'SKIPPED_UNLINKED'
+  | 'DEAD_LETTER';
+
+export type PromiseReminderChannelPolicy =
+  | 'UNCONFIGURED_CHANNEL_POLICY'
+  | 'CONFIRMED_GUARDIAN_ONLY'
+  | 'CONFIRMED_ADMIN_AND_GUARDIAN';
+
+export interface BillingCycleWorkerIssueParams {
+  readonly centerId: string;
+  readonly enrollmentId: string;
+  readonly cycleType: BillingCycleType;
+  readonly cycleKey: string;
+  readonly periodStartDate: string;
+  readonly periodEndDate?: string | null;
+  readonly systemJobName: string;
+  readonly testFaultAfterStep?: import('./billing-engine').CanonicalFaultInjectionStep;
+}
+
+export interface BillingCycleWorkerIssueResult {
+  readonly invoice: {
+    readonly invoice_id: string;
+    readonly invoice_number: string;
+    readonly student_id: string;
+    readonly enrollment_id: string;
+    readonly billing_cycle_id: string;
+    readonly effective_net_charge_uzs: string;
+    readonly remaining_debt_uzs: string;
+    readonly status: string;
+  };
+  readonly replayedByCycleIdentity: boolean;
+}
+
+export interface BillingCycleWorkerPort {
+  issueWorkerInvoiceForCycle(
+    params: BillingCycleWorkerIssueParams,
+  ): Promise<BillingCycleWorkerIssueResult>;
+}
+
+export const OUTBOX_MAX_ATTEMPTS = 8;
+
+export function computeOutboxBackoffDelaySeconds(
+  attemptCount: number,
+  jitterSeconds = 0,
+): number {
+  const clampedAttempt = Math.max(1, Math.min(20, Math.trunc(attemptCount)));
+  const baseDelay = Math.min(3600, Math.pow(2, clampedAttempt) * 5);
+  const safeJitter = Math.max(0, Math.min(5, Math.trunc(jitterSeconds)));
+  return Math.min(3600, baseDelay + safeJitter);
+}
+
+export * from './billing-engine';

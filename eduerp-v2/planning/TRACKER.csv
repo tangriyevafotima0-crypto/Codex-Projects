@@ -59,11 +59,11 @@ step_id,stage,task,targets,depends_on,status,evidence,reviewed_revision
 12.03,12,"Eski Excelni rad etish, Teacher tasdig‘ini himoyalash va Admin sababli override yozish",apps/api/src/attendance/conflicts.service.ts,12.02,APPROVED,state/reviews/S12-S13-R.md,commit:0b7ea62efe10503908e3176bf608d55c62ddf819
 12.04,12,"Tasdiqlangan absence/late hodisasi, trial activation va billingga bog‘lash",apps/api/src/attendance/attendance.events.ts,12.03,APPROVED,state/reviews/S12-S13-R.md,commit:0b7ea62efe10503908e3176bf608d55c62ddf819
 12.05,12,"Review, regressiya va handoff",planning/state/handoffs/S12.md,12.04,APPROVED,state/reviews/S12-S13-R.md,commit:0b7ea62efe10503908e3176bf608d55c62ddf819
-13.01,13,"DB outboxni lease bilan olish, bounded retry va dead-letter holatini yozish",apps/worker/src/outbox.worker.ts,12.05,CHANGES_REQUIRED,state/reviews/S13-S.md,commit:7103887c0f687c66aa81fadb0011586a7a088eab
-13.02,13,"Markaz vaqtida 09:00 va’da eslatmasi, to‘langan qarzni qayta tekshirish",apps/worker/src/reminders.worker.ts,13.01,CHANGES_REQUIRED,state/reviews/S13-S.md,commit:7103887c0f687c66aa81fadb0011586a7a088eab
-13.03,13,"20 daqiqada davomat yo‘q bo‘lsa ping, dars tugaganda Admin escalation yozish",apps/worker/src/teacher-ping.worker.ts,13.02,CHANGES_REQUIRED,state/reviews/S13-S.md,commit:7103887c0f687c66aa81fadb0011586a7a088eab
-13.04,13,"Billing, smena, trial no-show follow-up va missed job catch-upni idempotent qilish",apps/worker/src/schedules.worker.ts,13.03,CHANGES_REQUIRED,state/reviews/S13-S.md,commit:7103887c0f687c66aa81fadb0011586a7a088eab
-13.05,13,"Review, regressiya va handoff",planning/state/handoffs/S13.md,13.04,CHANGES_REQUIRED,state/reviews/S13-S.md,commit:7103887c0f687c66aa81fadb0011586a7a088eab
+13.01,13,"DB outboxni lease bilan olish, bounded retry va dead-letter holatini yozish",apps/worker/src/outbox.worker.ts,12.05,APPROVED,state/reviews/S13-T.md,commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f
+13.02,13,"Markaz vaqtida 09:00 va’da eslatmasi, to‘langan qarzni qayta tekshirish",apps/worker/src/reminders.worker.ts,13.01,APPROVED,state/reviews/S13-T.md,commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f
+13.03,13,"20 daqiqada davomat yo‘q bo‘lsa ping, dars tugaganda Admin escalation yozish",apps/worker/src/teacher-ping.worker.ts,13.02,APPROVED,state/reviews/S13-T.md,commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f
+13.04,13,"Billing, smena, trial no-show follow-up va missed job catch-upni idempotent qilish",apps/worker/src/schedules.worker.ts,13.03,APPROVED,state/reviews/S13-T.md,commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f
+13.05,13,"Review, regressiya va handoff",planning/state/handoffs/S13.md,13.04,APPROVED,state/reviews/S13-T.md,commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f
 14.01,14,Bir martalik invite va Telegram contact.user_id tekshiruvi bilan vasiy bog‘lash,apps/bot/src/linking.ts,13.05,NOT_STARTED,,
 14.02,14,Guardian so‘rovlari va Director approval callbacklarini backend command API orqali ulash,apps/bot/src/queries.ts,14.01,NOT_STARTED,,
 14.03,14,"Kvitansiya, absence, late, xavfsizlik va smena xabarlarini navbatdan yuborish",apps/bot/src/notifications.ts,14.02,NOT_STARTED,,

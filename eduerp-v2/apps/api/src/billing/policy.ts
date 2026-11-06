@@ -7,6 +7,7 @@ import type {
   FreezeCreditBasis,
   PackageCancelMode,
   PolicyConfirmationStatus,
+  PromiseReminderChannelPolicy,
   RollingMonthEndMode,
   RoundingMode,
 } from '@eduerp/contracts';
@@ -57,6 +58,13 @@ export const ALLOWED_POLICY_CONFIRMATION_STATUSES: ReadonlySet<PolicyConfirmatio
   'CONFIRMED',
 ]);
 
+export const ALLOWED_PROMISE_REMINDER_CHANNEL_POLICIES: ReadonlySet<PromiseReminderChannelPolicy> =
+  new Set([
+    'UNCONFIGURED_CHANNEL_POLICY',
+    'CONFIRMED_GUARDIAN_ONLY',
+    'CONFIRMED_ADMIN_AND_GUARDIAN',
+  ]);
+
 export const CONFIRMED_DISCOUNT_STACKING_MODES: ReadonlySet<DiscountStackingMode> = new Set([
   'MAX_SINGLE',
   'MAX_SINGLE_DISCOUNT',
@@ -93,6 +101,9 @@ export interface BillingPolicyVersionDto {
   readonly policy_confirmation_status: PolicyConfirmationStatus;
   readonly discount_policy_status: PolicyConfirmationStatus;
   readonly freeze_policy_status: PolicyConfirmationStatus;
+  readonly notification_policy_status: PolicyConfirmationStatus;
+  readonly promise_reminder_channel_policy: PromiseReminderChannelPolicy;
+  readonly notification_policy_effective_until: string | null;
   readonly effective_from_date: string | null;
   readonly created_by_staff_id: string | null;
   readonly created_at_utc: string;
@@ -115,12 +126,11 @@ function formatPgDateOrNull(val: unknown): string | null {
 
 /**
  * Maps a `billing_policy_versions` row to `BillingPolicyVersionDto`.
- * K02 & OWNER-20261105-04 Invariant:
+ * K02, OPEN_CHANNEL_02 & OWNER-20261105-04 Invariant:
  * - Never fabricates `'CONFIRMED'` or `'2026-01-01'` when fields are missing or null;
  *   legacy/unconfigured rows map to `policy_confirmation_status = 'UNCONFIGURED'` and `effective_from_date = null`.
- * - General S08 `policy_confirmation_status = 'CONFIRMED'` NEVER auto-confirms S09 `discount_policy_status` or
- *   `freeze_policy_status`; when `discount_policy_status` / `freeze_policy_status` is not `'CONFIRMED'`,
- *   S09 discount/freeze features remain `'UNCONFIGURED'` and fail closed (`403 POLICY_DECISION_NOT_CONFIRMED`).
+ * - General S08 `policy_confirmation_status = 'CONFIRMED'` NEVER auto-confirms S09 `discount_policy_status` /
+ *   `freeze_policy_status` OR S13 `notification_policy_status` / `promise_reminder_channel_policy`.
  */
 export function mapBillingPolicyRowToDto(row: {
   id: string;
@@ -138,6 +148,9 @@ export function mapBillingPolicyRowToDto(row: {
   policy_confirmation_status?: string | null;
   discount_policy_status?: string | null;
   freeze_policy_status?: string | null;
+  notification_policy_status?: string | null;
+  promise_reminder_channel_policy?: string | null;
+  notification_policy_effective_until?: unknown;
   effective_from_date?: unknown;
   created_by_staff_id?: string | null;
   created_at: Date | string;
@@ -150,6 +163,17 @@ export function mapBillingPolicyRowToDto(row: {
 
   const freezePolicyStatus: PolicyConfirmationStatus =
     row.freeze_policy_status === 'CONFIRMED' ? 'CONFIRMED' : 'UNCONFIGURED';
+
+  const notificationPolicyStatus: PolicyConfirmationStatus =
+    row.notification_policy_status === 'CONFIRMED' ? 'CONFIRMED' : 'UNCONFIGURED';
+
+  const rawChannelPolicy = row.promise_reminder_channel_policy;
+  const promiseReminderChannelPolicy: PromiseReminderChannelPolicy =
+    notificationPolicyStatus === 'CONFIRMED' &&
+    (rawChannelPolicy === 'CONFIRMED_GUARDIAN_ONLY' ||
+      rawChannelPolicy === 'CONFIRMED_ADMIN_AND_GUARDIAN')
+      ? rawChannelPolicy
+      : 'UNCONFIGURED_CHANNEL_POLICY';
 
   const rawFirstPartial = row.first_partial_charge_mode;
   const firstPartialChargeMode: FirstPartialChargeMode =
@@ -188,6 +212,11 @@ export function mapBillingPolicyRowToDto(row: {
     policy_confirmation_status: confirmationStatus,
     discount_policy_status: discountPolicyStatus,
     freeze_policy_status: freezePolicyStatus,
+    notification_policy_status: notificationPolicyStatus,
+    promise_reminder_channel_policy: promiseReminderChannelPolicy,
+    notification_policy_effective_until: formatPgDateOrNull(
+      row.notification_policy_effective_until,
+    ),
     effective_from_date: formatPgDateOrNull(row.effective_from_date),
     created_by_staff_id: row.created_by_staff_id ?? null,
     created_at_utc: new Date(row.created_at).toISOString(),
@@ -289,13 +318,6 @@ export function assertConfirmedPolicyForBillingExecution(params: {
   }
 }
 
-/**
- * Enforces `OWNER-20261105-04` and `09.02` explicit center discount stacking & approval policy confirmation:
- * - General S08 billing `policy_confirmation_status = 'CONFIRMED'` does NOT confirm S09 discounts;
- *   `discount_policy_status` must be `'CONFIRMED'`, `effective_from_date <= periodStartDate`,
- *   `rounding_mode === 'HALF_UP_UZS_INT'`, and `discount_stacking_mode` must be an explicitly confirmed
- *   center choice (`MAX_SINGLE` or `SEQUENTIAL` variant).
- */
 export function assertConfirmedPolicyForDiscountExecution(params: {
   readonly policy: BillingPolicyVersionDto;
   readonly periodStartDate: string;
@@ -341,13 +363,6 @@ export function assertConfirmedPolicyForDiscountExecution(params: {
   return mode;
 }
 
-/**
- * Enforces `OWNER-20261105-04` and `09.03` explicit center freeze credit basis confirmation:
- * - General S08 billing `policy_confirmation_status = 'CONFIRMED'` does NOT confirm S09 freeze credits;
- *   `freeze_policy_status` must be `'CONFIRMED'`, `effective_from_date <= periodStartDate`,
- *   `rounding_mode === 'HALF_UP_UZS_INT'`, and `freeze_credit_basis` must be an explicitly confirmed
- *   center choice (`NET_PROPORTIONAL_LESSON` or `DISABLED` variant).
- */
 export function assertConfirmedPolicyForFreezeExecution(params: {
   readonly policy: BillingPolicyVersionDto;
   readonly periodStartDate: string;
@@ -409,6 +424,9 @@ const POLICY_SELECT_COLUMNS = `
   "policy_confirmation_status"::text AS policy_confirmation_status,
   "discount_policy_status"::text AS discount_policy_status,
   "freeze_policy_status"::text AS freeze_policy_status,
+  "notification_policy_status"::text AS notification_policy_status,
+  "promise_reminder_channel_policy"::text AS promise_reminder_channel_policy,
+  "notification_policy_effective_until"::text AS notification_policy_effective_until,
   "effective_from_date"::text AS effective_from_date,
   "created_by_staff_id"::text AS created_by_staff_id,
   "created_at"
@@ -430,6 +448,9 @@ type RawPolicyRow = {
   policy_confirmation_status: string | null;
   discount_policy_status: string | null;
   freeze_policy_status: string | null;
+  notification_policy_status?: string | null;
+  promise_reminder_channel_policy?: string | null;
+  notification_policy_effective_until?: unknown;
   effective_from_date: unknown;
   created_by_staff_id: string | null;
   created_at: Date;
@@ -478,6 +499,9 @@ export class BillingPolicyService {
       'policy_confirmation_status',
       'discount_policy_status',
       'freeze_policy_status',
+      'notification_policy_status',
+      'promise_reminder_channel_policy',
+      'notification_policy_effective_until',
       'effective_from_date',
     ]);
 
@@ -509,8 +533,6 @@ export class BillingPolicyService {
     }
     const policyConfirmationStatus = confirmationStatusRaw as PolicyConfirmationStatus;
 
-    // OWNER-20261105-04: S09 discount_stacking_mode and freeze_credit_basis are NEVER auto-confirmed
-    // unless explicitly provided by the Director in the request!
     const hasExplicitDiscountMode =
       obj.discount_stacking_mode !== undefined && obj.discount_stacking_mode !== null;
     if (hasExplicitDiscountMode && typeof obj.discount_stacking_mode !== 'string') {
@@ -536,6 +558,65 @@ export class BillingPolicyService {
     const freezeCreditBasis = hasExplicitFreezeBasis
       ? (obj.freeze_credit_basis as string).trim().toUpperCase()
       : 'UNCONFIGURED';
+
+    const hasExplicitChannelPolicy =
+      obj.promise_reminder_channel_policy !== undefined &&
+      obj.promise_reminder_channel_policy !== null;
+    const rawChannelPolicy = hasExplicitChannelPolicy
+      ? typeof obj.promise_reminder_channel_policy === 'string'
+        ? obj.promise_reminder_channel_policy.trim().toUpperCase()
+        : ''
+      : 'UNCONFIGURED_CHANNEL_POLICY';
+    if (
+      !ALLOWED_PROMISE_REMINDER_CHANNEL_POLICIES.has(
+        rawChannelPolicy as PromiseReminderChannelPolicy,
+      )
+    ) {
+      throw new ApiHttpException({
+        statusCode: 400,
+        errorCode: 'VALIDATION_ERROR',
+        message:
+          'promise_reminder_channel_policy must be UNCONFIGURED_CHANNEL_POLICY, CONFIRMED_GUARDIAN_ONLY, or CONFIRMED_ADMIN_AND_GUARDIAN',
+      });
+    }
+    let promiseReminderChannelPolicy = rawChannelPolicy as PromiseReminderChannelPolicy;
+
+    let notificationPolicyStatus: PolicyConfirmationStatus = 'UNCONFIGURED';
+    if (obj.notification_policy_status !== undefined && obj.notification_policy_status !== null) {
+      const nsRaw =
+        typeof obj.notification_policy_status === 'string'
+          ? obj.notification_policy_status.trim().toUpperCase()
+          : '';
+      if (!ALLOWED_POLICY_CONFIRMATION_STATUSES.has(nsRaw as PolicyConfirmationStatus)) {
+        throw new ApiHttpException({
+          statusCode: 400,
+          errorCode: 'VALIDATION_ERROR',
+          message: 'notification_policy_status must be UNCONFIGURED or CONFIRMED',
+        });
+      }
+      notificationPolicyStatus = nsRaw as PolicyConfirmationStatus;
+    } else if (
+      hasExplicitChannelPolicy &&
+      promiseReminderChannelPolicy !== 'UNCONFIGURED_CHANNEL_POLICY'
+    ) {
+      notificationPolicyStatus = policyConfirmationStatus;
+    }
+    if (
+      promiseReminderChannelPolicy === 'UNCONFIGURED_CHANNEL_POLICY' ||
+      notificationPolicyStatus === 'UNCONFIGURED'
+    ) {
+      notificationPolicyStatus = 'UNCONFIGURED';
+      promiseReminderChannelPolicy = 'UNCONFIGURED_CHANNEL_POLICY';
+    }
+
+    const notificationPolicyEffectiveUntil =
+      obj.notification_policy_effective_until !== undefined &&
+      obj.notification_policy_effective_until !== null
+        ? validateIsoDate(
+            obj.notification_policy_effective_until,
+            'notification_policy_effective_until',
+          )
+        : null;
 
     const refundDebtMode =
       typeof obj.refund_debt_mode === 'string' && obj.refund_debt_mode.trim().length > 0
@@ -621,7 +702,8 @@ export class BillingPolicyService {
       billingMode !== 'LESSON_PACKAGE_12' &&
       firstPartialChargeMode === 'UNCONFIGURED' &&
       !hasExplicitDiscountMode &&
-      !hasExplicitFreezeBasis
+      !hasExplicitFreezeBasis &&
+      !hasExplicitChannelPolicy
     ) {
       throw new ApiHttpException({
         statusCode: 422,
@@ -726,6 +808,9 @@ export class BillingPolicyService {
           policy_confirmation_status: policyConfirmationStatus,
           discount_policy_status: discountPolicyStatus,
           freeze_policy_status: freezePolicyStatus,
+          notification_policy_status: notificationPolicyStatus,
+          promise_reminder_channel_policy: promiseReminderChannelPolicy,
+          notification_policy_effective_until: notificationPolicyEffectiveUntil,
           effective_from_date: effectiveFromDate,
         },
         handler: async (tx) => {
@@ -734,12 +819,10 @@ export class BillingPolicyService {
             principal.centerId,
           ]);
 
-          // If the Director is adding an S09 discount/freeze policy version on top of an already-confirmed S08 billing policy
-          // without repeating first_partial_charge_mode, inherit the latest confirmed S08 first_partial_charge_mode (if any).
           if (
             obj.first_partial_charge_mode === undefined &&
             firstPartialChargeMode === 'UNCONFIGURED' &&
-            (hasExplicitDiscountMode || hasExplicitFreezeBasis)
+            (hasExplicitDiscountMode || hasExplicitFreezeBasis || hasExplicitChannelPolicy)
           ) {
             const prevS08 = await tx.query<{ first_partial_charge_mode: FirstPartialChargeMode }>(
               `SELECT "first_partial_charge_mode"::text AS first_partial_charge_mode
@@ -774,8 +857,9 @@ export class BillingPolicyService {
                "rolling_month_end_mode", "package_cancel_mode",
                "cancelled_lesson_proration_mode", "refund_debt_mode",
                "policy_confirmation_status", "discount_policy_status",
-               "freeze_policy_status", "effective_from_date",
-               "created_by_staff_id", "created_at"
+               "freeze_policy_status", "notification_policy_status",
+               "promise_reminder_channel_policy", "notification_policy_effective_until",
+               "effective_from_date", "created_by_staff_id", "created_at"
              ) VALUES (
                $1::uuid, $2::uuid, $3::int, $4,
                $5, $6,
@@ -783,8 +867,9 @@ export class BillingPolicyService {
                $9, $10,
                $11, $12,
                $13, $14,
-               $15, $16::date,
-               $17::uuid, $18::timestamptz
+               $15, $16,
+               $17, $18::date,
+               $19::date, $20::uuid, $21::timestamptz
              )
              RETURNING ${POLICY_SELECT_COLUMNS}`,
             [
@@ -803,6 +888,9 @@ export class BillingPolicyService {
               policyConfirmationStatus,
               discountPolicyStatus,
               freezePolicyStatus,
+              notificationPolicyStatus,
+              promiseReminderChannelPolicy,
+              notificationPolicyEffectiveUntil,
               effectiveFromDate,
               principal.staffId,
               now.toISOString(),

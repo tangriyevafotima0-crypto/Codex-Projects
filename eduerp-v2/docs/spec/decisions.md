@@ -456,3 +456,7 @@ Har bir `D01`–`D25` qaror uchun `Muammo`, `Manba (Source)`, `Alternativalar`, 
 | **`R08` & `R09`** | `planning/SOURCE_REQUIREMENTS.csv` | `4–5` / `5` | **`3–5` / `3,5`** | Rahbarning 50%/grant tasdig‘i va Adminning qarzdorlar/va’da sanasi bilan ishlashi PDF 3-sahifa (`Sec 3`) va 4–5-sahifalarda berilgan (`C06`). |
 | **`R05.01`–`R05.03`** | `planning/requirements.csv` | `source_pages = 3–4` | **`source_page = 1,3–4`** | 100% Staff-Only tamoyili PDF 1-sahifa (`Sec 1, band 1`) va 3–4-sahifalarda (`Sec 2.2, Sec 3`) berilgan (`C06`). |
 | **`R08.01`–`03`, `R09.03`, `R10.02`, `R10.04`, `R11.02`–`03`** | `planning/requirements.csv` | `4–5` / `3,5` | **Aniq sahifa (`4` / `5` / `3–4`)** | Har bir step qamragan aniq PDF bo‘limi (`4.1` p.4, `4.2` p.4, `4.4` p.5, `4.5` p.5, `4.6` p.5) bilan `source_page` va `source_section` 100% tenglashtirildi (`C06`). |
+
+
+## Manager owner-channel resolution,2026-11-06
+OPEN_CHANNEL_01 and OPEN_CHANNEL_02 channel selection resolved by OWNER-20261106-06: percenter centrally manageable Web/In-App/MobilePush/Telegram multi-select, all defaultOFF. Source: directuserresponse in planning/state/OWNER_DECISIONS.md. Previous table entries remain historical; this resolution supersedes only thesechannelchoice rows. Role/objectauthorization and actualtransport readiness remain individually gated.

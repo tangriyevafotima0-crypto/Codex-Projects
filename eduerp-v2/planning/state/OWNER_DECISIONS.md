@@ -57,3 +57,13 @@ User:“click paymelar kiritilmaydi. agar click qilinsa ham buni baribir ro‘yx
 - S10paymentrecordmanualledgercommand, receiptichkielektronkvitansiya. Realpulqaytarish/bankoperatsiyasi appbilanbajarilmaydi. Edit/deleteso‘rovi accountingrecordcorrectionappend-onlyreversal, originalhistorysaqlanadi.
 - Qarzgaoidfollow-upga user“birinchi aytgan gapimdan tushunib ol”dedi; bundan barchaexternalrefund/xizmatcancellationpolicyACCEPTEDdebxulosaqilinmaydi. Erroneouspaymentrecordreversalledgerarithmeticsource’dagireceivable’ni restorationqiladi; servicerefund/cancelcharge uchun alohidaapprovedadjustmentboundary, D22ochiqqismi saqlanadi. GatewayrefundAPI/realtransfer/gatewaycostyo‘q.
 - Realcustomerpaymentdataimport/deploy/liveTelegramruxsatiemas. Existingowner01staffroles/owner02–04policiesunchanged.
+
+
+## OWNER-20261106-06 — Teacher/Admin notification channels
+
+Status: ACCEPTED_REQUIREMENT, direct user response in this chat,2026-11-06.
+Question: Teacher ping and Admin reminders should use which channels?
+User: “hammasi bo‘lsin ammo standardda o‘chiq ammo umumiy tanlash, o‘zgartirish va boshqaruvi bo‘lsin”.
+
+Web/In-App, MobilePush and Telegram channel options are required. Each center can centrally select one or multiple channels, change and manage them; all defaultOFF. Backendconfig/version/audit and typedconsumercontracts are shared; S14implementsTelegram/backendmanagement, S15web andS17mobile consume thisconfig in theirstages. Missingimplementation/provider/config stayspending/deferred,neverfakeSENT. Directorcenteradministration usesexistingroleboundary; no newAdminsettingswrite grant inferred.
+Applies to OPEN_CHANNEL01/02 Teacher/Adminnotification questions. Parent/student remainTelegram-only; otherOPENRBAC/financialdecisions unchanged. Actualexternalmessages/deploy/realcustomerdataprocessing not authorized by thisdecision.

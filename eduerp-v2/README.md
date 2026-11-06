@@ -1,4 +1,4 @@
-> Current manager status: S01–S12 approved (60/120 =50%). S13 changes required: S candidate184PASS/4FAIL; next S13FIX-T. Evidence planning/state/reviews/S13-S.md. No production release approval.
+> Current manager status: S01–S13 approved (65/120 =54.17%). S13 manager-assisted199tests+Docker; next S14FULL-U. Owner06: all notification channels configurable per center, defaultOFF. Evidence planning/state/reviews/S13-T.md. No production/live-send approval.
 
 # EduERP v2.0 — B2B Turnkey O‘quv Markazi Platformasi (`eduerp-v2/`)
 

@@ -1374,10 +1374,10 @@
       "test_id": "T13.01",
       "acceptance": "Worker DB commitdan oldin yiqilsa lease tugagach retry; tashqi senddan keyin yiqilsa duplicate ehtimoli kuzatiladi; poison event DLQga, qolganlari davom etadi.",
       "prompt": "prompts/S13/01.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S13-S.md",
-      "reviewed_revision": "commit:7103887c0f687c66aa81fadb0011586a7a088eab",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S13-T.md",
+      "reviewed_revision": "commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1399,10 +1399,10 @@
       "test_id": "T13.02",
       "acceptance": "Center local09:00da due debt qayta hisoblanadi; payment qilingan promisega xabar yo‘q; worker ertalab offline bo‘lsa catch-up siyosati bo‘yicha bir marta.",
       "prompt": "prompts/S13/02.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S13-S.md",
-      "reviewed_revision": "commit:7103887c0f687c66aa81fadb0011586a7a088eab",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S13-T.md",
+      "reviewed_revision": "commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1424,10 +1424,10 @@
       "test_id": "T13.03",
       "acceptance": "20 daqiqada submitted bo‘lmasa bitta ping; cancelled lesson yoki substitute eski teacherga ping bermaydi; lesson endda Admin escalation bir marta.",
       "prompt": "prompts/S13/03.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S13-S.md",
-      "reviewed_revision": "commit:7103887c0f687c66aa81fadb0011586a7a088eab",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S13-T.md",
+      "reviewed_revision": "commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1449,10 +1449,10 @@
       "test_id": "T13.04",
       "acceptance": "Ikki worker bir vaqt billing jobni ishga tushirsa bitta effect; timezone/clock boundary, restart catch-up va disabled center siyosati sinovlangan. Trial no-show follow-up vazifasi yaratiladi.",
       "prompt": "prompts/S13/04.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S13-S.md",
-      "reviewed_revision": "commit:7103887c0f687c66aa81fadb0011586a7a088eab",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S13-T.md",
+      "reviewed_revision": "commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {
@@ -1470,10 +1470,10 @@
       "test_id": "T13.05",
       "acceptance": "Worker to‘xtab qaytsa hodisalar yo‘qolmaydi; bekor qarzga eslatma ketmaydi",
       "prompt": "prompts/S13/05.md",
-      "status": "CHANGES_REQUIRED",
-      "evidence": "state/reviews/S13-S.md",
-      "reviewed_revision": "commit:7103887c0f687c66aa81fadb0011586a7a088eab",
-      "review_result": "CHANGES_REQUIRED",
+      "status": "APPROVED",
+      "evidence": "state/reviews/S13-T.md",
+      "reviewed_revision": "commit:ddd3ab1fe873e854425bfb9d67793371bde79c3f",
+      "review_result": "PASS",
       "reviewer": "Codex-manager"
     },
     {

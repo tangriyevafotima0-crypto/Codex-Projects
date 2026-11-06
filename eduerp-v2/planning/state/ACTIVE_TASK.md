@@ -1,6 +1,6 @@
 # ACTIVE TASK
 
-Task: **S13FIX-T**. Executor: Argon; manager: Codex. READY_TO_ASSIGN.
-S01–S12 APPROVED:60/120=50%,12/24stages. S13CHANGES_REQUIRED: S original strict184PASS/4FAIL (G10 12PASS/4FAIL), Docker skipped. Independent fixedclock CURRENT_CYCLE_ONLY threepolls create Jan/Feb/Mar olddebt1440000; billing confirmation also implicitly authorizes notification channel.
-Read rootTASK_INPUT, AGENTS, assignmentS13FIX-T, reviewS13-S+evidence, OWNER01–05, learning/preferences. Full S candidate7103887c0f687c66aa81fadb0011586a7a088eab in nextZIP plus current managergovernance. No oldZIP/chat needed.
-Scope T01–T06 + all13.01–13.05fix/acceptance onepacket; no intermediate managerwait. Preserve approvedS12/auth/DBguard/readiness/Clock/DATE/immutableledger/lock and migrations01–08; additive09+ifneeded. Global managerregistries read-only; outputS13FIX_T_SUBMISSION.zip IN_REVIEW. Shortchat, detailedfiles, limitcheckpoint+partialartifact. StopS14/liveTelegram/gateway/production/payroll.
+Task: **S14FULL-U**. Executor:Argon/Gemini; manager:Codex. READY_TO_ASSIGN.
+S01–S13 APPROVED65/120=54.17%,13/24stages; exactsourceddd3ab1fe873e854425bfb9d67793371bde79c3f,CI42177148672SUCCESS3/3,199PASS+Docker.
+Next14.01–14.05fullTelegram/notificationmanagement underOWNER-20261106-06:Web/In-App/MobilePush/Telegram percenterselectable,allOFFbydefault. ActualS14backend+Telegramadapter/localfakeprovider; S15/S17UI/nativepushpending. No actualmessages. Readassignment/reviewS13-T+JSON/OWNER01–06/learning/preferences/rootTASK_INPUT.
+Persistentroot:/Users/selfish/Documents/Codex/2026-11-03/bun/work/gemini-eduerp-s13t. Samefolderpermission,archiveoldtask,newbaselinepreparedmanager. NewoutputS14FULL_U_SUBMISSION.zipIN_REVIEW. Globalapprovalregistersread-only,migration01–09immutable,new10+ifneeded. StopS15/liveTelegram/gateway/payroll/production.

@@ -1,0 +1,162 @@
+{
+  "task_id": "S13FIX-T",
+  "reviewer": "Codex-manager",
+  "review_date_local": "2026-11-06",
+  "base_commit": "cca475dd3bfc1cb7d323d57035ed158d53a72a63",
+  "artifact_sha256": "52a93e69f04392ded816bd65144a69374d48c3f197ec9c35920a273a3a07f702",
+  "source_delta_files": 26,
+  "deleted_files": [],
+  "raw_submission_commit": "2d9b5f2d4604490047b94f77701cc95334cba128",
+  "raw_branch": "argon/s13fix-t-review",
+  "approved_source_commit": "ddd3ab1fe873e854425bfb9d67793371bde79c3f",
+  "approved_source_tree": "03d20e0e5a10a340097e8b095da0466a319cb835",
+  "approved_source_branch": "codex/s13-t-runtime-review",
+  "result": "APPROVED_MANAGER_ASSISTED",
+  "strict_ci": {
+    "run_id": 42177148672,
+    "result": "SUCCESS_3_OF_3_WITH_DOCKER",
+    "contract_job_id": 127758117591,
+    "build_pg_job_id": 127758153052,
+    "docker_job_id": 127759394666,
+    "tests_pass": 199,
+    "tests_fail": 0,
+    "tests_cancelled": 0,
+    "counts": {
+      "contracts": 2,
+      "api_unit": 61,
+      "worker_unit_subprocess": 7,
+      "db": 19,
+      "auth": 14,
+      "students": 6,
+      "academics": 10,
+      "billing": 13,
+      "adjustments": 6,
+      "payments": 11,
+      "cash": 13,
+      "attendance": 12,
+      "worker_integration": 25
+    }
+  },
+  "raw_limitations": [
+    "Original npm install E404: worker requested nonexistent @eduerp/contracts@2.0.0-draft.s05, actual workspace2.0.0-s03.0.",
+    "Original worker manifest also removed canonical test:integration script, breaking root GateG10; lock refresh explicitly requested.",
+    "After install support: unused imports/constructor field, unconstrained SQL executor generic, old policy DTO fixtures prevented lint/typecheck."
+  ],
+  "first_assisted_runs": {
+    "strict_ci_run_id": 42175803284,
+    "result": "20workerPASS/4FAIL (overlapping shared fixture cycle17/18, invalid credit reason19, source-comment false-positive import24)",
+    "focused_run_id": 42175885838,
+    "independent_tariff_run_id": 42176015733,
+    "observation": "Accepted group resolver300000, new shared API invoice600000; real200 incorrect charge."
+  },
+  "final_focused": {
+    "run_id": 42177148613,
+    "job_id": 127758117309,
+    "result": "25PASS/0FAIL, same guardedPG independent backlog/channel/tariff observations"
+  },
+  "manager_assist_paths": [
+    "apps/worker/package.json",
+    "package-lock.json",
+    "apps/api/src/billing/invoice-generator.ts",
+    "packages/contracts/src/billing-engine.ts",
+    "apps/api/test/adjustments-unit.test.ts",
+    "apps/api/test/billing-unit.test.ts",
+    "apps/worker/test/worker-integration.test.ts"
+  ],
+  "manager_assists": [
+    "Actual worker workspace dependency version, required test:integration script and genuine refreshed package-lock.",
+    "Remove unused invoice imports; preserve DI constructor slot without unread field.",
+    "Constrain shared SQL generic to record rows, matching pg while retaining typed queries.",
+    "Add explicit UNCONFIGURED notification defaults in old unit fixtures.",
+    "Restore accepted group-only historical tariff semantics; course history must not override group baseline/custom price. Added permanent WORKER-IT25 for future group price300000->350000 with course600000.",
+    "Worker fixtures use real month cycle key, valid FREEZE_NEXT_PERIOD_CREDIT; import isolation checks actual declarations instead of prose comments."
+  ],
+  "observations": {
+    "before_manager_tariff_fix": {
+      "unconfigured_package": {
+        "api_http": 200,
+        "worker_result": {
+          "invoice": {
+            "invoice_id": "598d67fe-2229-4428-8bbf-c9ea9f1124b4",
+            "invoice_number": "INV-202611-000001",
+            "student_id": "11111111-2222-4333-8444-000000000040",
+            "enrollment_id": "4ecc972d-08a2-460f-b86b-657c855864ea",
+            "billing_cycle_id": "7c8ae953-9ef3-49b2-9b15-cdb73e4ed67c",
+            "effective_net_charge_uzs": "480000",
+            "remaining_debt_uzs": "480000",
+            "status": "ISSUED_OPEN"
+          },
+          "replayedByCycleIdentity": true
+        },
+        "persisted": [
+          {
+            "effective_net_charge_uzs": "480000",
+            "remaining_debt_uzs": "480000"
+          }
+        ]
+      },
+      "channel_policy": "UNCONFIGURED_CHANNEL_POLICY",
+      "channel_env_configured": false,
+      "current_only_repeated_ticks": [],
+      "current_only_historical_cycles": [],
+      "future_group_tariff": {
+        "group_fee": "300000",
+        "invoice_http": 200,
+        "invoice_tariff": "600000",
+        "invoice_net": "600000"
+      }
+    },
+    "after_manager_tariff_fix": {
+      "unconfigured_package": {
+        "api_http": 200,
+        "worker_result": {
+          "invoice": {
+            "invoice_id": "73b28508-b22b-4817-a98d-70bb14f98da8",
+            "invoice_number": "INV-202611-000001",
+            "student_id": "11111111-2222-4333-8444-000000000040",
+            "enrollment_id": "fbe4afa5-a549-4b80-920a-8a918198fb98",
+            "billing_cycle_id": "bbe6570a-81cd-435a-a83c-839ecd28ff06",
+            "effective_net_charge_uzs": "480000",
+            "remaining_debt_uzs": "480000",
+            "status": "ISSUED_OPEN"
+          },
+          "replayedByCycleIdentity": true
+        },
+        "persisted": [
+          {
+            "effective_net_charge_uzs": "480000",
+            "remaining_debt_uzs": "480000"
+          }
+        ]
+      },
+      "channel_policy": "UNCONFIGURED_CHANNEL_POLICY",
+      "channel_env_configured": false,
+      "current_only_repeated_ticks": [],
+      "current_only_historical_cycles": [],
+      "future_group_tariff": {
+        "group_fee": "300000",
+        "invoice_http": 200,
+        "invoice_tariff": "300000",
+        "invoice_net": "300000"
+      }
+    }
+  },
+  "closure": {
+    "backlog": "Repeated CURRENT_CYCLE_ONLY old-start polls persist zero historical cycles; original1.44M debt reproduced beforeT and now prevented.",
+    "channel_policy": "No channel env/config yields UNCONFIGURED_CHANNEL_POLICY instead of promoting billingCONFIRMED.",
+    "privacy": "WORKER-IT21 exact childscope and recipient projection passed.",
+    "crash_shutdown": "WORKER-IT22 actual child_process SIGKILL and persistent send marker recovery, IT23 real pg_sleep bounded stop, IT24 startup/dependency isolation passed.",
+    "billing": "Single shared transactional implementation, actual old API G5 and new worker parity/rollback/race cases passed after tariff fix."
+  },
+  "owner_decision": {
+    "id": "OWNER-20261106-06",
+    "source": "User async response in this chat",
+    "quote": "hammasi bo'lsin ammo standardda o'chiq ammo umumiy tanlash, o'zgartirish va boshqaruvi bo'lsin",
+    "interpretation": "Teacher/Admin notifications support Web/In-App, Mobile Push and Telegram; each center centrally selects one/multiple channels and changes/manages them. All default off. S14 shared config/backend+Telegram, S15/S17 UI/native push integration pending. No expansion of Parent/Student login scope or permission to send actual messages."
+  },
+  "approved_steps": 65,
+  "total_steps": 120,
+  "next_task": "S14FULL-U",
+  "live_external_delivery": "NOT_RUN; no actual Telegram/provider message sent",
+  "persistent_workspace": "/Users/selfish/Documents/Codex/2026-11-03/bun/work/gemini-eduerp-s13t"
+}

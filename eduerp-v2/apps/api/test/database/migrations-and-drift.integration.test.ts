@@ -304,7 +304,7 @@ describe('PostgreSQL Migrations, Real PrismaClient ORM, Additive Upgrade & Drift
       .filter((d) => d.isDirectory())
       .map((d) => d.name)
       .sort();
-    assert.equal(allMigrationDirs.length, 8);
+    assert.equal(allMigrationDirs.length, 9);
 
     const predecessorDirs = allMigrationDirs.slice(0, 6);
     const s11Dir = allMigrationDirs[6];
