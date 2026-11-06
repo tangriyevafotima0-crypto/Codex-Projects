@@ -1,6 +1,6 @@
 # ACTIVE TASK
 
-Task: **S13FIX-S**, Argon executor, Codex manager, READY_TO_ASSIGN.
-S01–S12 APPROVED60/120=50%,12/24stages. S12isolated171tests+Docker,CI42095495844. S13CHANGES_REQUIRED:runtime no automaticpoll/defaultsynthetictransport/G10beforehook0PASS8CANCELLED plus sourceboundaryfindings.
-Read assignmentS13FIX-S, reviewS12-S13-R+JSON, OWNER01–05, ARGON_LEARNING/preferences and rootTASK_INPUT. Fullcandidate595f07bde8a2a4a1980b87f559a1a510edf437c0 plus two managertestassists in completeinputZIP; no oldZIPneeded. All13.01–13.05fix+acceptance onepackage; no intermediate managerwait.
-PreserveapprovedS12counter/history,auth/APP_GUARD/DBsingleton/readiness/Clock/DATE/temporalreplay/immutableledger/lockfile; migrations01–08immutable,additive09+ifneeded. Globalregistriesread-only;outputS13FIX_S_SUBMISSION.zip IN_REVIEW. Shortchat+detailedfileevidence;limitcheckpoint+partialartifact before exhaustion. StopS14/liveTelegram/provider/gateway/production/payrollimplementation.
+Task: **S13FIX-T**. Executor: Argon; manager: Codex. READY_TO_ASSIGN.
+S01–S12 APPROVED:60/120=50%,12/24stages. S13CHANGES_REQUIRED: S original strict184PASS/4FAIL (G10 12PASS/4FAIL), Docker skipped. Independent fixedclock CURRENT_CYCLE_ONLY threepolls create Jan/Feb/Mar olddebt1440000; billing confirmation also implicitly authorizes notification channel.
+Read rootTASK_INPUT, AGENTS, assignmentS13FIX-T, reviewS13-S+evidence, OWNER01–05, learning/preferences. Full S candidate7103887c0f687c66aa81fadb0011586a7a088eab in nextZIP plus current managergovernance. No oldZIP/chat needed.
+Scope T01–T06 + all13.01–13.05fix/acceptance onepacket; no intermediate managerwait. Preserve approvedS12/auth/DBguard/readiness/Clock/DATE/immutableledger/lock and migrations01–08; additive09+ifneeded. Global managerregistries read-only; outputS13FIX_T_SUBMISSION.zip IN_REVIEW. Shortchat, detailedfiles, limitcheckpoint+partialartifact. StopS14/liveTelegram/gateway/production/payroll.

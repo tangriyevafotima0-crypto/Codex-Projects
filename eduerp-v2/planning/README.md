@@ -1,6 +1,6 @@
 # Joriy loyiha holati — 2026-11-06
 
-S01–S12 APPROVED60/120=50%,12/24stage. S12isolated171realtests+DockerPASS. S13CHANGES_REQUIRED,fullcandidate172PASSpreG10/8CANCELLEDworkerfixtures,independentnopoll/faketransport. NextS13FIX-Sfullfix/acceptance. ExactACTIVE_TASK;dalilstate/reviews/S12-S13-R.md. Planpercentageeffort/releasepercentageemas.
+S01–S12 APPROVED60/120=50%,12/24stage. S13CHANGES_REQUIRED:184PASS/4FAIL, G10 12PASS/4FAIL, Docker skipped; repeatedcurrent-onlypoll olddebt and channelpolicy fallback remain. NextS13FIX-T wholefix/acceptance. ExactACTIVE_TASK; reviewstate/reviews/S13-S.md. Planpercentage effort/releasepercentage emas.
 
 Quyidagi v2.1 matni tarixiy boshlang‘ich reja; undagi NOT_STARTED yoki “GitHubga yuklanmagan” bayonotlari joriy holat emas. Joriy source va status uchun execution.json/ACTIVE_TASK/APPROVALS/manager review ustuvor.
 

@@ -1,0 +1,172 @@
+{
+  "task_id": "S13FIX-S",
+  "reviewer": "Codex-manager",
+  "review_date_local": "2026-11-06",
+  "base_commit": "690914fc7aa46cb58dfe176a50cffc4a4ae239b1",
+  "artifact_sha256": "44f7aa2f50a656b99148923ab36da0acdcd5e5ecbfca088c5af542f344946645",
+  "source_delta_files": 18,
+  "deleted_files": [],
+  "raw_submission_commit": "7103887c0f687c66aa81fadb0011586a7a088eab",
+  "raw_branch": "argon/s13fix-s-review",
+  "diagnostic_commit": "c5c1a5ba0151164babb767a167e2fc8677ef6d4a",
+  "diagnostic_branch": "codex/s13-s-runtime-review",
+  "diagnostic_source_changes": "None. Only root manager probe/workflow added; no product/test fixture assists.",
+  "strict_ci": {
+    "run_id": 42165358390,
+    "contract_job_id": 127720439421,
+    "build_and_pg_job_id": 127720482941,
+    "result": "FAILURE",
+    "tests_pass": 184,
+    "tests_fail": 4,
+    "tests_cancelled": 0,
+    "counts": {
+      "contracts": 2,
+      "api_unit": 61,
+      "worker_unit_subprocess": 5,
+      "db": 19,
+      "auth": 14,
+      "students": 6,
+      "academics": 10,
+      "billing": 13,
+      "adjustments": 6,
+      "payments": 11,
+      "cash": 13,
+      "attendance": 12,
+      "worker_integration_pass": 12,
+      "worker_integration_fail": 4
+    },
+    "failed_cases": [
+      {
+        "id": "WORKER-IT-03",
+        "code": "23505",
+        "constraint": "idx_enrollments_active_student_group",
+        "category": "fixture before core assertions"
+      },
+      {
+        "id": "WORKER-IT-06",
+        "code": "23505",
+        "constraint": "uq_lesson_occurrences_group_starts",
+        "category": "fixture before core assertions"
+      },
+      {
+        "id": "WORKER-IT-12",
+        "code": "23505",
+        "constraint": "idx_enrollments_active_student_group",
+        "category": "fixture before core assertions"
+      },
+      {
+        "id": "WORKER-IT-16",
+        "code": "23505",
+        "constraint": "idx_enrollments_active_student_group",
+        "category": "fixture before core assertions"
+      }
+    ],
+    "docker": "SKIPPED due to G10 failure"
+  },
+  "focused_runs": [
+    {
+      "run_id": 42165547158,
+      "job_id": 127721057277,
+      "worker_result": "12PASS/4FAIL"
+    },
+    {
+      "run_id": 42165766721,
+      "job_id": 127721776123,
+      "worker_result": "12PASS/4FAIL"
+    }
+  ],
+  "independent_observations": {
+    "unconfigured_package": {
+      "api_http": 200,
+      "worker_result": {
+        "invoice": {
+          "invoice_id": "2001c28b-7b1c-4096-b040-1a82a9d3658b",
+          "invoice_number": "INV-202611-000001",
+          "student_id": "11111111-2222-4333-8444-000000000040",
+          "enrollment_id": "e9158e28-0724-4d52-9751-709f142f40c9",
+          "billing_cycle_id": "6fc0bad6-44c4-4e5b-a767-3b09f43ad522",
+          "effective_net_charge_uzs": "480000",
+          "remaining_debt_uzs": "480000",
+          "status": "ISSUED_OPEN"
+        },
+        "replayedByCycleIdentity": true
+      },
+      "persisted": [
+        {
+          "effective_net_charge_uzs": "480000",
+          "remaining_debt_uzs": "480000"
+        }
+      ]
+    },
+    "channel_policy": "CONFIRMED_ADMIN_AND_GUARDIAN",
+    "channel_env_configured": false,
+    "current_only_repeated_ticks": [],
+    "current_only_historical_cycles": [
+      {
+        "cycle_key": "ROL:2026-01-31",
+        "period_start_date": "2026-01-31",
+        "remaining_debt_uzs": "480000"
+      },
+      {
+        "cycle_key": "ROL:2026-02-28",
+        "period_start_date": "2026-02-28",
+        "remaining_debt_uzs": "480000"
+      },
+      {
+        "cycle_key": "ROL:2026-03-28",
+        "period_start_date": "2026-03-28",
+        "remaining_debt_uzs": "480000"
+      }
+    ]
+  },
+  "independent_interpretation": {
+    "channel_policy": "Billing policy CONFIRMED with no channel env setting resolves CONFIRMED_ADMIN_AND_GUARDIAN; does not establish feature-specific channel consent.",
+    "bounded_backlog": "Three repeated CURRENT_CYCLE_ONLY ticks at fixed 2026-11-05 create Jan31/Feb28/Mar28 rolling cycles, 480000 debt each, total1440000. Per-invocation limit is not a persistent window/budget.",
+    "package_probe": "Original manager hypothesis of package UNCONFIGURED-first-partial rejection was disproven: canonical API legitimately returns200 under existing package-specific exception; worker only replays that invoice. Not an executor defect or fresh-worker formula-parity proof."
+  },
+  "source_findings": [
+    {
+      "id": "T02",
+      "priority": "P1",
+      "description": "Parallel SQL billing implementation duplicates accepted API engine; repeated-poll retroactive debt proven independently."
+    },
+    {
+      "id": "T03",
+      "priority": "P1",
+      "description": "Billing confirmation silently becomes channel authorization; independently observed."
+    },
+    {
+      "id": "T04",
+      "priority": "P1",
+      "description": "Batch attendance guardian presend guard uses any active child when payload.student_id absent; sends whole batch payload; adversarial PG proof not yet run."
+    },
+    {
+      "id": "T05",
+      "priority": "P2",
+      "description": "stop timeout followed by unbounded pool.end; crash tests simulate adapter exceptions/fresh objects, not process death; source review, not demonstrated process timeout."
+    },
+    {
+      "id": "T01",
+      "priority": "P1",
+      "description": "Actual4fixturefailures; WORKER-IT13 title overstates actual leap2028/previouscatchup/PKG2 assertions."
+    }
+  ],
+  "checks": {
+    "packaging": "PASS exact18file delta/CRC/hash/paths",
+    "local": "npm ci, Prisma generate, lint, strict typecheck, build, 68unit/subprocess PASS",
+    "python_schema_plan": "PASS",
+    "live_outbound": "NOT_RUN; synthetic adapters only"
+  },
+  "improvements": [
+    "Real automatic timer and per-job isolation have actual PostgreSQL positive case WORKER-IT09 PASS.",
+    "Default unbound adapter and disabled attempt budget handling pass WORKER-IT10.",
+    "Fencing transition simulations pass WORKER-IT11; genuine OS crash remains unverified.",
+    "Rolling boundary/PKG1 SQL issuance and read-only/missing-license guards have passing assertions.",
+    "Ping no longer changes pay recipient; bounded scan case WORKER-IT15 passes."
+  ],
+  "approved_steps": 60,
+  "total_steps": 120,
+  "stage13_result": "CHANGES_REQUIRED",
+  "next_task": "S13FIX-T",
+  "manager_assist_paths": []
+}
