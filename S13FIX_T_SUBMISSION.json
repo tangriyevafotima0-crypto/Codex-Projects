@@ -1,0 +1,307 @@
+{
+  "task_id": "S13FIX-T",
+  "stage": "S13",
+  "steps": [
+    "13.01",
+    "13.02",
+    "13.03",
+    "13.04",
+    "13.05"
+  ],
+  "status": "IN_REVIEW",
+  "base_commit": "cca475dd3bfc1cb7d323d57035ed158d53a72a63",
+  "candidate_input_commit": "7103887c0f687c66aa81fadb0011586a7a088eab",
+  "accepted_s12_commit_to_preserve": "0b7ea62efe10503908e3176bf608d55c62ddf819",
+  "needs_manager_dependency_refresh": true,
+  "dependency_refresh_reason": "apps/worker/package.json explicitly declares pg@8.23.1 and @types/pg@8.23.1; package-lock.json was not fabricated in the offline sandbox.",
+  "changed_files": [
+    "eduerp-v2/ARTIFACT_PROOF.md",
+    "eduerp-v2/apps/api/prisma/migrations/20261106000900_s13_notification_policy_and_delivery_scope/migration.sql",
+    "eduerp-v2/apps/api/prisma/schema.prisma",
+    "eduerp-v2/apps/api/src/billing/invoice-generator.ts",
+    "eduerp-v2/apps/api/src/billing/policy.ts",
+    "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+    "eduerp-v2/apps/worker/package.json",
+    "eduerp-v2/apps/worker/src/database.ts",
+    "eduerp-v2/apps/worker/src/main.ts",
+    "eduerp-v2/apps/worker/src/outbox.worker.ts",
+    "eduerp-v2/apps/worker/src/reminders.worker.ts",
+    "eduerp-v2/apps/worker/src/schedules.worker.ts",
+    "eduerp-v2/apps/worker/test/worker-integration.test.ts",
+    "eduerp-v2/apps/worker/test/worker.test.ts",
+    "eduerp-v2/docs/architecture/adr/ADR-013-outbox-worker-lease-fencing-reminders-and-scheduler.md",
+    "eduerp-v2/docs/verification/S13-T.md",
+    "eduerp-v2/docs/verification/S13.md",
+    "eduerp-v2/packages/contracts/src/billing-engine.ts",
+    "eduerp-v2/packages/contracts/src/index.ts",
+    "eduerp-v2/planning/state/handoffs/S13.md",
+    "eduerp-v2/planning/state/steps/13.01.md",
+    "eduerp-v2/planning/state/steps/13.02.md",
+    "eduerp-v2/planning/state/steps/13.03.md",
+    "eduerp-v2/planning/state/steps/13.04.md",
+    "eduerp-v2/planning/state/steps/13.05.md",
+    "eduerp-v2/tools/verify_s04.py"
+  ],
+  "deleted_files": [],
+  "files": [
+    {
+      "path": "eduerp-v2/ARTIFACT_PROOF.md",
+      "sha256": "8ecfc292a2604655a8bd32066313f09df79122a9ed9fc0529646b9fa88f39ce8",
+      "size": 3805,
+      "size_bytes": 3805,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/migrations/20261106000900_s13_notification_policy_and_delivery_scope/migration.sql",
+      "sha256": "1cbc06f7a52c9a7762a3d2595fb3418b2de48ff9a06097a9291451561ec1d4a2",
+      "size": 1978,
+      "size_bytes": 1978,
+      "change_type": "created"
+    },
+    {
+      "path": "eduerp-v2/apps/api/prisma/schema.prisma",
+      "sha256": "a7767f7fc7d6b1d0d732af9b9c9e01676a8a38d50c1f668a56b83679b444a4aa",
+      "size": 71162,
+      "size_bytes": 71162,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/invoice-generator.ts",
+      "sha256": "37c458188d9ffaa6460f093ab43dedcbcd49c1558b7f85639137d5734014ce2a",
+      "size": 11402,
+      "size_bytes": 11402,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/api/src/billing/policy.ts",
+      "sha256": "85c688867d7fe7647415252156a1b3645bd32245a63d04ac6bad5ce7484a00b2",
+      "size": 42203,
+      "size_bytes": 42203,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/api/test/database/migrations-and-drift.integration.test.ts",
+      "sha256": "bfac5e7c33a9293433800f0bda1c365bab7e5d569590ae46bdaaed3d25f156fb",
+      "size": 22156,
+      "size_bytes": 22156,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/package.json",
+      "sha256": "e7e7292aa5758cc8d93e57534534d2b163df5cc595572f05a00d143d8b4d0e8a",
+      "size": 616,
+      "size_bytes": 616,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/database.ts",
+      "sha256": "7e3fec9a81dfdb34a6a7c0d194b52291ff70e50865caa51b38d0049fa436c892",
+      "size": 8254,
+      "size_bytes": 8254,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/main.ts",
+      "sha256": "bf41e2dd5e41f29f66e914ce03351dc1a76f5b70356f936bb205f785b08464eb",
+      "size": 10442,
+      "size_bytes": 10442,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/outbox.worker.ts",
+      "sha256": "f72388c4395b244253b554bb901526023cfca997f16d50dea1f84e4eaaa48d3c",
+      "size": 86084,
+      "size_bytes": 86084,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/reminders.worker.ts",
+      "sha256": "fa9dcd20249ca456a251f51066d49a0aaafca1410d08ed7c35af2b689284a137",
+      "size": 24348,
+      "size_bytes": 24348,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/src/schedules.worker.ts",
+      "sha256": "6005b7f218062340cc315e87b1f97bc0056f4ccbbb4dcf9d2d2a534d52cfccc5",
+      "size": 35469,
+      "size_bytes": 35469,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/test/worker-integration.test.ts",
+      "sha256": "a3c3b9ae418ca0afa29ed0b2ae1671c3c1bcd8ddbda712f2b5f275134080bc28",
+      "size": 135567,
+      "size_bytes": 135567,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/apps/worker/test/worker.test.ts",
+      "sha256": "3969ec4b8ade1e5c1a064909946d13a0ca957d05aebad410e6053c566c306150",
+      "size": 8899,
+      "size_bytes": 8899,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/docs/architecture/adr/ADR-013-outbox-worker-lease-fencing-reminders-and-scheduler.md",
+      "sha256": "4af5b75c364bad97252500df9549c73ddd76e4637b17387ce509d31f459e76ac",
+      "size": 7528,
+      "size_bytes": 7528,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S13-T.md",
+      "sha256": "8866b581504b7b298402576a7cc9e9559dd232e359b7b04443a7433d81afdbe7",
+      "size": 10410,
+      "size_bytes": 10410,
+      "change_type": "created"
+    },
+    {
+      "path": "eduerp-v2/docs/verification/S13.md",
+      "sha256": "85afb0b31d89b2e7f300e978b24550aca08307e2e198884afdf4a0c2b3adf671",
+      "size": 4774,
+      "size_bytes": 4774,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/billing-engine.ts",
+      "sha256": "2234fb1f256f66be20cf11b933e1bd1b48777b5f58cca9a62b2369155668c26c",
+      "size": 71530,
+      "size_bytes": 71530,
+      "change_type": "created"
+    },
+    {
+      "path": "eduerp-v2/packages/contracts/src/index.ts",
+      "sha256": "2bf7bdbb79988d604cae7f8862d1a68d1ea273aa83cca337ace2059cca1ab8c0",
+      "size": 10909,
+      "size_bytes": 10909,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/planning/state/handoffs/S13.md",
+      "sha256": "c5ffa979848497f87e43985deddd2ef9f34636f804f81527eb21c9b178458e01",
+      "size": 2156,
+      "size_bytes": 2156,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.01.md",
+      "sha256": "07e7b24e3d52bebb625ea0487a729a42d8d6fa8eb59a1a3b62a8661468ce0ac6",
+      "size": 516,
+      "size_bytes": 516,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.02.md",
+      "sha256": "38ea932418fc28ffea0e2fa5f9a03aa20c3f53d9c33c6612216bd814fae8c363",
+      "size": 644,
+      "size_bytes": 644,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.03.md",
+      "sha256": "805068b6822f946c6477859b5b0791b360b84b8fb983d4610ab95952ebaaca56",
+      "size": 470,
+      "size_bytes": 470,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.04.md",
+      "sha256": "7f14fbd3ea335224476ef3d9a5efd8fdfa157b40287105cd6cc61e740705c869",
+      "size": 542,
+      "size_bytes": 542,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/planning/state/steps/13.05.md",
+      "sha256": "5a66ec5e54123073c627c3b63d8d5b1c9ed94c175ba8fca595146b5de150fb57",
+      "size": 526,
+      "size_bytes": 526,
+      "change_type": "modified"
+    },
+    {
+      "path": "eduerp-v2/tools/verify_s04.py",
+      "sha256": "fdd6e9695d4297e7aca4bdc30ddc38ecb55e9491d7d62961ac92f741fdd92f00",
+      "size": 39336,
+      "size_bytes": 39336,
+      "change_type": "modified"
+    }
+  ],
+  "tests_declared": [
+    "WORKER-IT-01",
+    "WORKER-IT-02",
+    "WORKER-IT-03",
+    "WORKER-IT-04",
+    "WORKER-IT-05",
+    "WORKER-IT-06",
+    "WORKER-IT-07",
+    "WORKER-IT-08",
+    "WORKER-IT-09",
+    "WORKER-IT-10",
+    "WORKER-IT-11",
+    "WORKER-IT-12",
+    "WORKER-IT-13",
+    "WORKER-IT-14",
+    "WORKER-IT-15",
+    "WORKER-IT-16",
+    "WORKER-IT-17",
+    "WORKER-IT-18",
+    "WORKER-IT-19",
+    "WORKER-IT-20",
+    "WORKER-IT-21",
+    "WORKER-IT-22",
+    "WORKER-IT-23",
+    "WORKER-IT-24"
+  ],
+  "actual_tests": [
+    {
+      "command": "python3 -B VERIFY_INPUT.py",
+      "status": "PASS",
+      "exit_code": 0,
+      "note": "Verified all 555 input files and SHA256 hashes before edits."
+    },
+    {
+      "command": "python3 -B eduerp-v2/tools/verify_s01_s02.py",
+      "status": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -B eduerp-v2/tools/verify_s04.py",
+      "status": "PASS",
+      "exit_code": 0,
+      "note": "Verified 46 Prisma models, 9 cumulative migrations (000100..000900), 349 TS SQL INSERT statements, RBAC matrix, and WORKER-IT-01..24."
+    },
+    {
+      "command": "python3 -B eduerp-v2/planning/tools/check_plan.py",
+      "status": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -B eduerp-v2/planning/tools/test_plan.py",
+      "status": "PASS",
+      "exit_code": 0
+    },
+    {
+      "command": "python3 -B manager_reference/audit_submission.py --source . --zip S13FIX_T_SUBMISSION.zip",
+      "status": "PASS",
+      "exit_code": 0
+    }
+  ],
+  "not_run": [
+    {
+      "command": "npm run lint && npm run typecheck && npm test",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox has no node_modules directory installed and blocks npm registry access; requires manager dependency refresh (needs_manager_dependency_refresh: true) and execution."
+    },
+    {
+      "command": "EDUERP_ALLOW_DESTRUCTIVE_DB_TESTS=true npm run test:db",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox has no local PostgreSQL server (pg_isready/postgres binary absent) and no node_modules; requires manager PostgreSQL 17 environment to execute WORKER-IT-01..24 and DB-IT-01..21."
+    },
+    {
+      "command": "docker build -f apps/worker/Dockerfile . && docker compose -f infra/compose.dev.yml config --quiet",
+      "status": "NOT_RUN",
+      "reason": "Offline sandbox has no docker CLI or daemon installed."
+    }
+  ]
+}
